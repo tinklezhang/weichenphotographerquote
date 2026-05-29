@@ -651,6 +651,7 @@
         <div id="reviewName" style="font-size:13px; font-weight:600; color:#2C1F14; margin-bottom:4px;"></div>
         <div id="reviewDate" style="font-size:12px; color:#7A6252;"></div>
       </div>
+      <div id="reviewWelcome" style="background:#FFF8F0; border:1px solid #EDE0D4; border-radius:12px; padding:13px 15px; font-size:12px; line-height:1.6; color:#6B4F35; margin-bottom:16px;"></div>
       <!-- Quote breakdown -->
       <div id="reviewBreakdown" style="font-size:13px; color:#4A3525; line-height:2; margin-bottom:18px;"></div>
       <!-- Total -->
@@ -672,6 +673,7 @@
   const SHOOT_RATE = 200;
   const FINE_RATE = 40;
   const TRANSPORT_PRICES = [200, 300, 400];
+  const FORM_ENDPOINT = 'https://formsubmit.co/ajax/70addcc7599561751d550ce9a948b3c1';
 
   let currentMode = 'self';
   let currentDuration = 1;
@@ -718,7 +720,7 @@
       shootingDuration: 'Shooting Duration',
       editing: 'Standard edited photos included',
       included: 'Included',
-      photo: 'photo',
+      photo: 'photos',
       editingHint: 'Includes 50 - 80 standard edited photos per hour.',
       weekendHint: 'Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.',
       outOfCity: 'Out-of-City Shoot?',
@@ -764,6 +766,12 @@
       errorName: 'Please enter your name.',
       errorEmail: 'Please enter a valid email address.',
       errorDate: 'Please choose today or a future date.',
+      welcomeMessage: 'I am truly honored that you are considering Weichen as your event photographer. Here is your quote summary. A copy will also be sent to photographer Weichen, and she will reply within 24 hours.',
+      emailIntro: 'I am truly honored that you are considering Weichen as your event photographer. Here is your quote summary. A copy has also been sent to photographer Weichen, and she will reply within 24 hours.',
+      emailSectionClient: 'Client Information',
+      emailSectionQuote: 'Quote Details',
+      emailSectionTotal: 'Estimated Total Before Tax',
+      emailClosing: 'Thank you again for your trust. This quote is an estimate before tax, and the final booking details will be confirmed with Weichen.',
       submitSuccess: 'Quote sent. A copy has been sent to your email.',
       submitFail: 'Submission failed. Please try again or send email directly.',
     },
@@ -844,6 +852,12 @@
       errorName: '请填写您的姓名。',
       errorEmail: '请填写有效邮箱。',
       errorDate: '请选择今天或未来日期。',
+      welcomeMessage: '非常荣幸您可以考虑选择 Weichen 作为您的活动摄影师。这是您的报价单摘要。我们也会同步发送给摄影师 Weichen，她会在 24 小时内回复您。',
+      emailIntro: '非常荣幸您可以考虑选择 Weichen 作为您的活动摄影师。这是您的报价单摘要。我们也已同步发送给摄影师 Weichen，她会在 24 小时内回复您。',
+      emailSectionClient: '客户信息',
+      emailSectionQuote: '报价明细',
+      emailSectionTotal: '税前预估总额',
+      emailClosing: '再次感谢您的信任。此报价为税前预估，最终拍摄安排与费用以和 Weichen 确认为准。',
       submitSuccess: '报价已发送，同时已抄送到您的邮箱。',
       submitFail: '发送失败，请重试或直接给摄影师发邮件。',
     }
@@ -920,6 +934,12 @@
       errorName: 'Pakilagay ang iyong pangalan.',
       errorEmail: 'Pakilagay ang valid na email address.',
       errorDate: 'Pumili ng petsa ngayon o sa hinaharap.',
+      welcomeMessage: 'Ikinagagalak namin na kinokonsidera mo si Weichen bilang iyong event photographer. Narito ang iyong quote summary. Ipapadala rin ang kopya kay photographer Weichen, at sasagot siya sa loob ng 24 oras.',
+      emailIntro: 'Ikinagagalak namin na kinokonsidera mo si Weichen bilang iyong event photographer. Narito ang iyong quote summary. Naipadala rin ang kopya kay photographer Weichen, at sasagot siya sa loob ng 24 oras.',
+      emailSectionClient: 'Client Information',
+      emailSectionQuote: 'Quote Details',
+      emailSectionTotal: 'Estimated Total Before Tax',
+      emailClosing: 'Maraming salamat sa iyong tiwala. Tinatayang quote ito bago ang buwis; ang final booking details ay kukumpirmahin kay Weichen.',
       submitSuccess: 'Naipadala ang quote. May kopya ring ipinadala sa iyong email.',
       submitFail: 'Hindi naipadala. Subukan muli o mag-email nang direkta.',
     }
@@ -1068,25 +1088,47 @@
     const dateVal = document.getElementById('sessionDateField').value;
     const dateStr = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
 
+    const details = [
+      L.clientLine(name, email),
+      L.eventLine(eventType),
+      L.dateLine(dateStr, startTime),
+      '',
+      L.shootLine(hours, fmt(shoot)),
+      L.editLine(includedMin, includedMax),
+    ];
+
+    if (late > 0) details.push(L.lateLine(fmt(late)));
+    if (transportEnabled) details.push(L.travelLine(modeLabel, dur, fmt(transport)));
+
     let body = L.quoteHeader + '\n' + '─'.repeat(28) + '\n';
-    body += L.clientLine(name, email) + '\n';
-    body += L.eventLine(eventType) + '\n';
-    body += L.dateLine(dateStr, startTime) + '\n';
-    body += '─'.repeat(28) + '\n';
-    body += L.shootLine(hours, fmt(shoot)) + '\n';
-    body += L.editLine(includedMin, includedMax) + '\n';
-    if (late > 0) body += L.lateLine(fmt(late)) + '\n';
-    if (transportEnabled) body += L.travelLine(modeLabel, dur, fmt(transport)) + '\n';
+    body += L.emailIntro + '\n\n';
+    body += details.join('\n') + '\n';
     body += '─'.repeat(28) + '\n';
     body += L.totalLine(fmt(total)) + '\n';
-    body += '\n' + L.footerNote;
-    return { body, total: fmt(total), dateStr, email, name };
+    body += '\n' + L.emailClosing;
+
+    return {
+      body,
+      total: fmt(total),
+      dateStr,
+      email,
+      name,
+      eventType,
+      startTime,
+      shoot: fmt(shoot),
+      late: fmt(late),
+      transport: fmt(transport),
+      includedMin,
+      includedMax,
+      dur,
+      modeLabel,
+    };
   }
 
   const reviewStrings = {
     en: {
       title: 'Review Your Quote',
-      subtitle: 'Please confirm the details before submitting.',
+      subtitle: 'Please confirm the details before Weichen receives your quote.',
       nameLabel: '👤',
       emailLabel: '✉️',
       dateLabel: '📅',
@@ -1098,7 +1140,7 @@
     },
     zh: {
       title: '确认您的报价',
-      subtitle: '提交前请最后确认信息。',
+      subtitle: '提交前请最后确认信息，Weichen 会收到这份报价。',
       nameLabel: '👤',
       emailLabel: '✉️',
       dateLabel: '📅',
@@ -1110,7 +1152,7 @@
     },
     fil: {
       title: 'Suriin ang Iyong Quote',
-      subtitle: 'Pakikumpirma ang detalye bago mag-submit.',
+      subtitle: 'Pakikumpirma ang detalye bago matanggap ni Weichen ang quote.',
       nameLabel: '👤',
       emailLabel: '✉️',
       dateLabel: '📅',
@@ -1197,6 +1239,7 @@
     document.getElementById('reviewName').style.display = 'block';
     document.getElementById('reviewDate').textContent = dateStr ? R.dateLabel + ' ' + dateStr + (startTime ? ' ' + startTime : '') : '';
     document.getElementById('reviewDate').style.display = dateStr || startTime ? 'block' : 'none';
+    document.getElementById('reviewWelcome').textContent = L.welcomeMessage;
 
     // Breakdown rows
     let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.eventType}</span><span style="font-weight:600;text-align:right">${getEventLabel()}</span></div>`;
@@ -1229,27 +1272,38 @@
     const R = reviewStrings[currentLang];
     const btn = document.getElementById('reviewCopyBtn');
     const hint = document.getElementById('reviewCopyHint');
-    const { body, total, name, email } = buildQuoteText();
+    const quote = buildQuoteText();
+    const { hours, shoot, late, transport, includedMin, includedMax } = quoteMath();
+    const { total, name, email, eventType, dateStr, startTime, modeLabel, dur } = quote;
+    const dateTime = `${dateStr || 'Not selected'}${startTime ? ' · ' + startTime : ''}`;
+    const payload = {
+      _subject: `Photography Quote - ${name} - $${total}`,
+      _cc: email,
+      _replyto: email,
+      _template: 'box',
+      _captcha: 'false',
+      Welcome: L.emailIntro,
+      [L.emailSectionClient]: `${name} · ${email}`,
+      [L.eventType]: eventType,
+      [L.sessionDate]: dateTime,
+      [L.shooting]: `${hours}h × $200 = $${fmt(shoot)}`,
+      [L.editing]: `${includedMin} - ${includedMax} ${L.photo}`,
+      [L.emailSectionTotal]: `$${total}`,
+      Note: L.emailClosing,
+    };
+
+    if (late > 0) payload[L.lateSurcharge] = `$${fmt(late)}`;
+    if (transportEnabled) payload[`${modeLabel} · ${dur}`] = `$${fmt(transport)}`;
 
     btn.disabled = true;
     btn.textContent = R.sending;
     hint.textContent = '';
 
     try {
-      const res = await fetch('https://formsubmit.co/ajax/tinklezhang@gmail.com', {
+      const res = await fetch(FORM_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          _subject: `Photography Quote - ${name} - $${total}`,
-          _cc: email,
-          _replyto: email,
-          _template: 'table',
-          _captcha: 'false',
-          client_name: name,
-          client_email: email,
-          quote_total_before_tax: `$${total}`,
-          quote_details: body,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error('FormSubmit request failed');
