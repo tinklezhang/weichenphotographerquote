@@ -7,6 +7,10 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body {
+      overflow-x: hidden;
+    }
+
     body {
       font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
       background: #FAF8F5;
@@ -328,6 +332,18 @@
       font-size: 13px;
       color: #7A6252;
       padding: 5px 0;
+      gap: 12px;
+    }
+
+    .breakdown-row span:first-child {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      line-height: 1.4;
+    }
+
+    .breakdown-row span:last-child {
+      flex-shrink: 0;
+      text-align: right;
     }
 
     .breakdown-row.subtotal {
@@ -482,6 +498,7 @@
       text-decoration: none;
       border-bottom: 1px solid rgba(107,79,53,0.35);
       padding-bottom: 2px;
+      overflow-wrap: anywhere;
     }
 
     /* Validation error */
@@ -509,8 +526,29 @@
       .card { border-radius: 0; }
       .body { padding: 24px 20px; }
       .header { padding: 28px 20px 22px; }
+      .lang-toggle { top: 10px; right: 10px; }
+      .header h1 { font-size: 20px; padding: 0 54px; line-height: 1.25; }
       .shoot-types { grid-template-columns: repeat(4, 1fr); gap: 6px; }
       .type-btn .t-label { font-size: 10px; }
+      .transport-modes { grid-template-columns: 1fr; }
+      .duration-options { gap: 6px; }
+      .transport-btn .t-name,
+      .duration-btn .d-time,
+      .duration-btn .d-price { overflow-wrap: anywhere; }
+      .breakdown { padding: 16px; }
+      .breakdown-row {
+        align-items: flex-start;
+      }
+      .breakdown-row:not(.subtotal) {
+        flex-direction: column;
+        gap: 3px;
+      }
+      .breakdown-row span:last-child {
+        align-self: flex-end;
+      }
+      .link-row {
+        gap: 10px;
+      }
       .select-field,
       .info-field input,
       .info-field select,
@@ -679,7 +717,7 @@
     <div class="link-row">
       <a href="https://www.weichenzhang.ca" target="_blank" rel="noopener" data-i18n="websiteLink">Website</a>
       <a href="https://www.facebook.com/weichen.zhang.7" target="_blank" rel="noopener" data-i18n="facebookLink">Facebook</a>
-      <a href="mailto:tinklezhang@gmail.com" data-i18n="emailLink">Send email to me</a>
+      <a href="https://www.instagram.com/weichenzhang_/" target="_blank" rel="noopener" data-i18n="instagramLink">Instagram</a>
     </div>
 
   </div>
@@ -794,7 +832,7 @@
       footer: 'Estimated quote before tax. Final pricing subject to mutual agreement.',
       websiteLink: 'Website',
       facebookLink: 'Facebook',
-      emailLink: 'Send email to me',
+      instagramLink: 'Instagram',
       // dynamic
       eventType: 'Photography type',
       shooting: 'Shooting',
@@ -885,7 +923,7 @@
       footer: '此为税前预估报价，最终费用以双方确认为准。',
       websiteLink: '作品网站',
       facebookLink: 'Facebook',
-      emailLink: '给我发邮件',
+      instagramLink: 'Instagram',
       // dynamic
       eventType: '拍摄类型',
       shooting: '小时包价',
@@ -973,7 +1011,7 @@
       footer: 'Tinatayang quote bago ang buwis. Ang huling presyo ay ayon sa napagkasunduan.',
       websiteLink: 'Website',
       facebookLink: 'Facebook',
-      emailLink: 'Mag-email sa akin',
+      instagramLink: 'Instagram',
       eventType: 'Uri ng photography',
       shooting: 'Pagkuha',
       lateSurcharge: 'Evening surcharge after 18:00 (20%)',
