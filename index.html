@@ -155,6 +155,12 @@
 
     .input-row button:hover { background: #EDE0D4; }
 
+    .input-row button:disabled {
+      color: #C1B3A6;
+      background: #F6F1EB;
+      cursor: not-allowed;
+    }
+
     .input-row input {
       flex: 1;
       border: none;
@@ -166,6 +172,11 @@
       background: transparent;
       padding: 0 8px;
       height: 44px;
+    }
+
+    .input-row input:disabled {
+      color: #6B4F35;
+      -webkit-text-fill-color: #6B4F35;
     }
 
     .input-row input::-webkit-inner-spin-button,
@@ -534,9 +545,8 @@
 
     <div class="section-label" data-i18n="eventCategories">Photography Type</div>
     <div class="field" style="margin-bottom:28px;">
-      <select class="select-field" id="eventTypeField" onchange="recalc()">
+      <select class="select-field" id="eventTypeField" onchange="handleEventTypeChange()">
         <option value="family" data-i18n="catFamily">Family & Milestone Photos</option>
-        <option value="branding" data-i18n="catBranding">Corporate Branding / Headshots</option>
         <option value="business" data-i18n="catCorporate">Business Events</option>
         <option value="festivals" data-i18n="catCelebration">Festivals & Fairs</option>
         <option value="performance" data-i18n="catPerformance">Performances & Concerts</option>
@@ -552,11 +562,11 @@
           <span class="rate">$200 / <span data-i18n="hr">hr</span></span>
         </label>
         <div class="input-row" id="hoursRow">
-          <button onclick="adjust('hours', -1)">−</button>
+          <button id="hoursMinus" onclick="adjust('hours', -1)">−</button>
           <div class="input-spacer"></div>
           <input type="number" id="hours" value="1" min="1" max="24" oninput="recalc(); clearError('hoursRow','hoursError')">
           <span class="input-unit" data-i18n="hr">hr</span>
-          <button onclick="adjust('hours', 1)">+</button>
+          <button id="hoursPlus" onclick="adjust('hours', 1)">+</button>
         </div>
         <div class="field-error" id="hoursError"></div>
         <div class="field-hint" data-i18n="editingHint">Includes 50 - 80 standard edited photos per hour.</div>
@@ -620,7 +630,7 @@
       </div>
       <div class="info-field">
         <label data-i18n="sessionDate">Preferred Shoot Date</label>
-        <input type="date" id="sessionDateField" lang="en" onchange="validateDateField(); recalc();">
+        <input type="date" id="sessionDateField" lang="en" oninput="validateDateField(); recalc();" onchange="validateDateField(); recalc();">
         <div class="field-error" id="sessionDateFieldError"></div>
       </div>
       <div class="info-field">
@@ -628,7 +638,7 @@
         <input type="time" id="startTimeField" value="14:00" onchange="recalc()">
       </div>
       <div class="info-field">
-        <label data-i18n="noteToWeichen">Note to Weichen</label>
+        <label data-i18n="noteToWeichen">Note to Weichen (Optional)</label>
         <textarea id="clientNoteField" data-i18n-placeholder="notePlaceholder" placeholder="Optional: location, guest count, style, or special requests"></textarea>
       </div>
     </div>
@@ -734,7 +744,6 @@
       subtitle: 'Photography Quote',
       eventCategories: 'Photography Type',
       catFamily: 'Family & Milestone Photos',
-      catBranding: 'Corporate Branding / Headshots',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Business Events',
       catPerformance: 'Performances & Concerts',
@@ -756,7 +765,7 @@
       emailPlaceholder: 'e.g. hello@email.com',
       sessionDate: 'Preferred Shoot Date',
       startTime: 'Start Time',
-      noteToWeichen: 'Note to Weichen',
+      noteToWeichen: 'Note to Weichen (Optional)',
       notePlaceholder: 'Optional: location, guest count, style, or special requests',
       datePlaceholder: 'e.g. June 15',
       copyHint: '✅ Copied! Now send it to your photographer 📩',
@@ -766,6 +775,7 @@
       included: 'Included',
       photo: 'photos',
       editingHint: 'Includes 50 - 80 standard edited photos per hour.',
+      familyEditingHint: 'Family & milestone photos are a 1-hour session and include 5 - 10 standard edited photos.',
       weekendHint: 'Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.',
       outOfCity: 'Out-of-City Shoot?',
       no: 'No',
@@ -825,7 +835,6 @@
       subtitle: '摄影报价单',
       eventCategories: '拍摄类型',
       catFamily: '家庭 / 纪念照',
-      catBranding: '企业宣传 / 职业头像',
       catCelebration: '节庆 / 市集活动',
       catCorporate: '商务活动',
       catPerformance: '演出 / 音乐会',
@@ -847,7 +856,7 @@
       emailPlaceholder: '例如：hello@email.com',
       sessionDate: '希望拍摄日期',
       startTime: '开始时间',
-      noteToWeichen: '给 Weichen 的留言',
+      noteToWeichen: '给 Weichen 的留言（选填）',
       notePlaceholder: '选填：地点、人数、拍摄风格或特殊需求',
       datePlaceholder: '例如：6月15日',
       copyHint: '✅ 内容已复制，发给你的摄影师吧 📩',
@@ -857,6 +866,7 @@
       included: '已包含',
       photo: '张',
       editingHint: '每小时包含 50 - 80 张标准修片照片。',
+      familyEditingHint: '家庭 / 纪念照为 1 小时拍摄，包含 5 - 10 张标准修片照片。',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
       outOfCity: '是否出城拍摄？',
       no: '否',
@@ -917,7 +927,6 @@
       subtitle: 'Photography Quote',
       eventCategories: 'Uri ng Photography',
       catFamily: 'Family & Milestone Photos',
-      catBranding: 'Corporate Branding / Headshots',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Business Events',
       catPerformance: 'Performances & Concerts',
@@ -933,7 +942,7 @@
       emailPlaceholder: 'hal. hello@email.com',
       sessionDate: 'Gustong Petsa ng Pagkuha',
       startTime: 'Oras ng Simula',
-      noteToWeichen: 'Note to Weichen',
+      noteToWeichen: 'Note to Weichen (Optional)',
       notePlaceholder: 'Optional: location, guest count, style, or special requests',
       datePlaceholder: 'hal. Hunyo 15',
       copyHint: '✅ Nakopya na! Ipadala na sa iyong litratista 📩',
@@ -945,6 +954,7 @@
       included: 'Kasama',
       photo: 'larawan',
       editingHint: 'Kasama ang 50 - 80 standard edited photos kada oras.',
+      familyEditingHint: 'Family & milestone photos are a 1-hour session and include 5 - 10 standard edited photos.',
       weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
       outOfCity: 'Labas ng Lungsod?',
       no: 'Hindi',
@@ -1034,6 +1044,7 @@
       if (strings[lang][key]) el.placeholder = strings[lang][key];
     });
     // Re-render dynamic labels
+    applyEventRules();
     recalc();
   }
 
@@ -1044,6 +1055,7 @@
   }
 
   function getHours() {
+    if (isFamilySession()) return 1;
     return Math.max(0, parseFloat(document.getElementById('hours').value) || 0);
   }
 
@@ -1056,6 +1068,27 @@
     return document.getElementById('eventTypeField').value;
   }
 
+  function isFamilySession() {
+    return getEventKey() === 'family';
+  }
+
+  function handleEventTypeChange() {
+    applyEventRules();
+    recalc();
+  }
+
+  function applyEventRules() {
+    const family = isFamilySession();
+    const hoursInput = document.getElementById('hours');
+    const hoursMinus = document.getElementById('hoursMinus');
+    const hoursPlus = document.getElementById('hoursPlus');
+
+    if (family) hoursInput.value = 1;
+    hoursInput.disabled = family;
+    hoursMinus.disabled = family;
+    hoursPlus.disabled = family;
+  }
+
   function isEveningEvent() {
     const time = document.getElementById('startTimeField').value;
     return !!time && time >= '18:00';
@@ -1066,14 +1099,15 @@
     const shoot = hours * SHOOT_RATE;
     const late = isEveningEvent() ? shoot * 0.2 : 0;
     const transport = transportCost();
+    const family = isFamilySession();
     return {
       hours,
       shoot,
       late,
       transport,
       total: shoot + late + transport,
-      includedMin: Math.round(hours * 50),
-      includedMax: Math.round(hours * 80),
+      includedMin: family ? 5 : Math.round(hours * 50),
+      includedMax: family ? 10 : Math.round(hours * 80),
     };
   }
 
@@ -1100,6 +1134,7 @@
   }
 
   function recalc() {
+    applyEventRules();
     const { hours, shoot, late, transport, total, includedMin, includedMax } = quoteMath();
     const L = strings[currentLang];
     const dur = L.dur[currentDuration];
@@ -1111,6 +1146,7 @@
     document.getElementById('bEditLabel').textContent = `${L.editing} (${includedMin} - ${includedMax} ${photoWord})`;
     document.getElementById('bShoot').textContent = fmt(shoot);
     document.getElementById('bIncluded').textContent = L.included;
+    document.querySelector('[data-i18n="editingHint"]').textContent = isFamilySession() ? L.familyEditingHint : L.editingHint;
     document.getElementById('lateLabel').textContent = L.lateSurcharge;
     document.getElementById('bLate').textContent = fmt(late);
     document.getElementById('lateRow').style.display = late > 0 ? '' : 'none';
@@ -1280,9 +1316,10 @@
   function validateDateField() {
     const field = document.getElementById('sessionDateField');
     const L = strings[currentLang];
-    if (!field.min) field.min = localToday;
+    const today = getLocalToday();
+    field.min = today;
 
-    if (field.value && field.value < field.min) {
+    if (field.value && field.value < today) {
       field.value = '';
       setFieldError('sessionDateField', L.errorDate);
       return false;
@@ -1299,7 +1336,8 @@
     const name = document.getElementById('clientNameField').value.trim();
     const email = document.getElementById('clientEmailField').value.trim();
     const dateVal = document.getElementById('sessionDateField').value;
-    const today = document.getElementById('sessionDateField').min;
+    const today = getLocalToday();
+    document.getElementById('sessionDateField').min = today;
     const note = document.getElementById('clientNoteField').value.trim();
     let valid = true;
 
@@ -1436,14 +1474,21 @@
     }
   }
 
+  function getLocalToday() {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+  }
+
   // Set date minimum to today using local time.
-  const now = new Date();
-  const localToday = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
   const sessionDateField = document.getElementById('sessionDateField');
-  sessionDateField.min = localToday;
+  sessionDateField.min = getLocalToday();
   sessionDateField.addEventListener('focus', () => {
-    sessionDateField.min = localToday;
+    sessionDateField.min = getLocalToday();
   });
+  sessionDateField.addEventListener('click', () => {
+    sessionDateField.min = getLocalToday();
+  });
+  sessionDateField.addEventListener('blur', validateDateField);
 
   setLang(currentLang);
 </script>
