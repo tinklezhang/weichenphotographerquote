@@ -584,11 +584,11 @@
     <div class="section-label" data-i18n="eventCategories">Photography Type</div>
     <div class="field" style="margin-bottom:28px;">
       <select class="select-field" id="eventTypeField" onchange="handleEventTypeChange()">
-        <option value="family" data-i18n="catFamily">Family & Milestone Photos</option>
-        <option value="business" data-i18n="catCorporate">Business Events</option>
         <option value="festivals" data-i18n="catCelebration">Festivals & Fairs</option>
+        <option value="business" data-i18n="catCorporate">Annual Galas & Celebrations</option>
         <option value="performance" data-i18n="catPerformance">Performances & Concerts</option>
         <option value="private" data-i18n="catPrivate">Private Parties</option>
+        <option value="family" data-i18n="catFamily">Family & Milestone Photos</option>
       </select>
     </div>
 
@@ -783,7 +783,7 @@
       eventCategories: 'Photography Type',
       catFamily: 'Family & Milestone Photos',
       catCelebration: 'Festivals & Fairs',
-      catCorporate: 'Business Events',
+      catCorporate: 'Annual Galas & Celebrations',
       catPerformance: 'Performances & Concerts',
       catPrivate: 'Private Parties',
       packages: 'Quick Packages',
@@ -813,7 +813,7 @@
       included: 'Included',
       photo: 'photos',
       editingHint: 'Includes 50 - 80 standard edited photos per hour.',
-      familyEditingHint: 'Family & milestone photos are a 1-hour session and include 5 - 10 standard edited photos.',
+      familyEditingHint: 'Family & milestone photos include 5 - 10 standard edited photos per hour.',
       weekendHint: 'Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.',
       outOfCity: 'Out-of-City Shoot?',
       no: 'No',
@@ -874,7 +874,7 @@
       eventCategories: '拍摄类型',
       catFamily: '家庭 / 纪念照',
       catCelebration: '节庆 / 市集活动',
-      catCorporate: '商务活动',
+      catCorporate: '年会 / 庆典',
       catPerformance: '演出 / 音乐会',
       catPrivate: '私人聚会',
       packages: '快速套餐',
@@ -904,7 +904,7 @@
       included: '已包含',
       photo: '张',
       editingHint: '每小时包含 50 - 80 张标准修片照片。',
-      familyEditingHint: '家庭 / 纪念照为 1 小时拍摄，包含 5 - 10 张标准修片照片。',
+      familyEditingHint: '家庭 / 纪念照每小时包含 5 - 10 张标准修片照片。',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
       outOfCity: '是否出城拍摄？',
       no: '否',
@@ -966,7 +966,7 @@
       eventCategories: 'Uri ng Photography',
       catFamily: 'Family & Milestone Photos',
       catCelebration: 'Festivals & Fairs',
-      catCorporate: 'Business Events',
+      catCorporate: 'Annual Galas & Celebrations',
       catPerformance: 'Performances & Concerts',
       catPrivate: 'Private Parties',
       shootType: 'Uri ng Pagkuha',
@@ -992,7 +992,7 @@
       included: 'Kasama',
       photo: 'larawan',
       editingHint: 'Kasama ang 50 - 80 standard edited photos kada oras.',
-      familyEditingHint: 'Family & milestone photos are a 1-hour session and include 5 - 10 standard edited photos.',
+      familyEditingHint: 'Family & milestone photos include 5 - 10 standard edited photos per hour.',
       weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
       outOfCity: 'Labas ng Lungsod?',
       no: 'Hindi',
@@ -1093,7 +1093,6 @@
   }
 
   function getHours() {
-    if (isFamilySession()) return 1;
     return Math.max(0, parseFloat(document.getElementById('hours').value) || 0);
   }
 
@@ -1116,15 +1115,13 @@
   }
 
   function applyEventRules() {
-    const family = isFamilySession();
     const hoursInput = document.getElementById('hours');
     const hoursMinus = document.getElementById('hoursMinus');
     const hoursPlus = document.getElementById('hoursPlus');
 
-    if (family) hoursInput.value = 1;
-    hoursInput.disabled = family;
-    hoursMinus.disabled = family;
-    hoursPlus.disabled = family;
+    hoursInput.disabled = false;
+    hoursMinus.disabled = false;
+    hoursPlus.disabled = false;
   }
 
   function isEveningEvent() {
@@ -1144,8 +1141,8 @@
       late,
       transport,
       total: shoot + late + transport,
-      includedMin: family ? 5 : Math.round(hours * 50),
-      includedMax: family ? 10 : Math.round(hours * 80),
+      includedMin: family ? Math.round(hours * 5) : Math.round(hours * 50),
+      includedMax: family ? Math.round(hours * 10) : Math.round(hours * 80),
     };
   }
 
