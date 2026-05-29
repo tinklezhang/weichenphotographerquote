@@ -813,7 +813,7 @@
       included: 'Included',
       photo: 'photos',
       editingHint: 'Includes 50 - 80 standard edited photos per hour.',
-      familyEditingHint: 'Family & milestone photos include 5 - 10 standard edited photos per hour.',
+      familyEditingHint: 'Family & milestone photos include 20 - 30 standard edited photos per hour.',
       weekendHint: 'Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.',
       outOfCity: 'Out-of-City Shoot?',
       no: 'No',
@@ -904,7 +904,7 @@
       included: '已包含',
       photo: '张',
       editingHint: '每小时包含 50 - 80 张标准修片照片。',
-      familyEditingHint: '家庭 / 纪念照每小时包含 5 - 10 张标准修片照片。',
+      familyEditingHint: '家庭 / 纪念照每小时包含 20 - 30 张标准修片照片。',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
       outOfCity: '是否出城拍摄？',
       no: '否',
@@ -992,7 +992,7 @@
       included: 'Kasama',
       photo: 'larawan',
       editingHint: 'Kasama ang 50 - 80 standard edited photos kada oras.',
-      familyEditingHint: 'Family & milestone photos include 5 - 10 standard edited photos per hour.',
+      familyEditingHint: 'Family & milestone photos include 20 - 30 standard edited photos per hour.',
       weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
       outOfCity: 'Labas ng Lungsod?',
       no: 'Hindi',
@@ -1141,8 +1141,8 @@
       late,
       transport,
       total: shoot + late + transport,
-      includedMin: family ? Math.round(hours * 5) : Math.round(hours * 50),
-      includedMax: family ? Math.round(hours * 10) : Math.round(hours * 80),
+      includedMin: family ? Math.round(hours * 20) : Math.round(hours * 50),
+      includedMax: family ? Math.round(hours * 30) : Math.round(hours * 80),
     };
   }
 
