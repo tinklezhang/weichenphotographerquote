@@ -303,14 +303,6 @@
     }
     .transport-details.open { max-height: 300px; opacity: 1; }
 
-    .retouch-details {
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.3s ease, opacity 0.2s ease;
-    }
-    .retouch-details.open { max-height: 150px; opacity: 1; }
-
     .breakdown {
       background: #FAF8F5;
       border-radius: 14px;
@@ -391,9 +383,6 @@
       color: #B8A898;
       border-top: 1px solid #EDE5DC;
     }
-
-    #modal-overlay { display: none; }
-    #modal-overlay.open { display: flex !important; }
 
     /* Shoot type pills */
     .shoot-types {
@@ -611,7 +600,7 @@
       </div>
       <div class="breakdown-row">
         <span id="bEditLabel">Standard edited photos</span>
-        <span id="bRetouch">Included</span>
+        <span id="bIncluded">Included</span>
       </div>
       <div class="breakdown-row" id="lateRow" style="display:none;">
         <span id="lateLabel">Evening surcharge</span>
@@ -732,9 +721,6 @@
       photo: 'photo',
       editingHint: 'Includes 50 - 80 standard edited photos per hour.',
       weekendHint: 'Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.',
-      retouching: 'Need additional portrait/body retouching?',
-      retouchingPhotos: 'Detail retouching photos',
-      retouchingHint: 'Optional natural skin, face, body, or blemish retouching. Details can be discussed after photo selection.',
       outOfCity: 'Out-of-City Shoot?',
       no: 'No',
       yes: 'Yes',
@@ -815,9 +801,6 @@
       photo: '张',
       editingHint: '每小时包含 50 - 80 张标准修片照片。',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
-      retouching: '是否需要进一步人像/身材精修？',
-      retouchingPhotos: '精修照片数量',
-      retouchingHint: '可选自然皮肤、面部、身材或瑕疵精修，具体需求可在选片后沟通。',
       outOfCity: '是否出城拍摄？',
       no: '否',
       yes: '是',
@@ -895,9 +878,6 @@
       photo: 'larawan',
       editingHint: 'Kasama ang 50 - 80 standard edited photos kada oras.',
       weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
-      retouching: 'Kailangan ng dagdag na portrait/body retouching?',
-      retouchingPhotos: 'Detail retouching photos',
-      retouchingHint: 'Optional natural skin, face, body, o blemish retouching. Pag-usapan matapos pumili ng photos.',
       outOfCity: 'Labas ng Lungsod?',
       no: 'Hindi',
       yes: 'Oo',
@@ -1042,7 +1022,7 @@
     document.getElementById('bShootLabel').textContent = `${L.shooting} (${hours}h × $200)`;
     document.getElementById('bEditLabel').textContent = `${L.editing} (${includedMin} - ${includedMax} ${photoWord})`;
     document.getElementById('bShoot').textContent = fmt(shoot);
-    document.getElementById('bRetouch').textContent = L.included;
+    document.getElementById('bIncluded').textContent = L.included;
     document.getElementById('lateLabel').textContent = L.lateSurcharge;
     document.getElementById('bLate').textContent = fmt(late);
     document.getElementById('lateRow').style.display = late > 0 ? '' : 'none';
@@ -1101,33 +1081,6 @@
     body += L.totalLine(fmt(total)) + '\n';
     body += '\n' + L.footerNote;
     return { body, total: fmt(total), dateStr, email, name };
-  }
-
-  function copyQuote() {
-    const { body } = buildQuoteText();
-    navigator.clipboard.writeText(body).then(() => {
-      const btn = document.getElementById('copyBtn');
-      btn.textContent = s('copied');
-      setTimeout(() => btn.textContent = s('copyQuote'), 2000);
-    }).catch(() => prompt('', body));
-  }
-
-  function copySendQuote() {
-    const { body, total, dateStr } = buildQuoteText();
-    const name = document.getElementById('clientNameField').value.trim();
-    const msg = strings[currentLang].copyMsg(total, body, name, dateStr);
-    const hintEl = document.getElementById('reviewCopyHint');
-    navigator.clipboard.writeText(msg).then(() => {
-      hintEl.textContent = strings[currentLang].copyHint;
-      const btn = document.getElementById('reviewCopyBtn');
-      btn.textContent = '✅ Copied!';
-      setTimeout(() => {
-        hintEl.textContent = '';
-        btn.textContent = '📋 Copy & Send';
-      }, 3500);
-    }).catch(() => {
-      prompt('Copy and send this:', msg);
-    });
   }
 
   const reviewStrings = {
@@ -1308,123 +1261,6 @@
       hint.textContent = L.submitFail;
       btn.disabled = false;
       btn.textContent = R.copyBtn;
-    }
-  }
-
-  const modalStrings = {
-    en: {
-      title: 'Send Quote to Photographer',
-      subtitle: 'Leave your name and how to reach you — the photographer will get back to you shortly.',
-      namePlaceholder: 'Your Name',
-      contactPlaceholder: 'Phone / Email / WeChat',
-      cancel: 'Cancel',
-      send: '📧 Send Now',
-      sending: 'Sending…',
-      successTitle: '✅ Sent!',
-      successMsg: 'Your quote has been sent. The photographer will reach out soon.',
-      errorEmpty: 'Please enter your name before submitting.',
-      errorFail: 'Submission failed. Please try again or contact directly.',
-    },
-    zh: {
-      title: '发送报价单给摄影师',
-      subtitle: '留下您的姓名和联系方式，摄影师会尽快与您联系。',
-      namePlaceholder: '您的姓名',
-      contactPlaceholder: '电话 / 邮箱 / 微信',
-      cancel: '取消',
-      send: '📧 立即发送',
-      sending: '发送中…',
-      successTitle: '✅ 已发送！',
-      successMsg: '报价单已发送，摄影师会尽快联系您。',
-      errorEmpty: '请先填写您的姓名。',
-      errorFail: '发送失败，请重试或直接联系摄影师。',
-    },
-    fil: {
-      title: 'Ipadala ang Quote sa Litratista',
-      subtitle: 'Ilagay ang iyong pangalan at paraan ng pakikipag-ugnayan — makikipag-ugnayan sa iyo ang litratista.',
-      namePlaceholder: 'Iyong Pangalan',
-      contactPlaceholder: 'Telepono / Email / WeChat',
-      cancel: 'Kanselahin',
-      send: '📧 Ipadala Ngayon',
-      sending: 'Ipinapadala…',
-      successTitle: '✅ Naipadala!',
-      successMsg: 'Naipadala na ang iyong quote. Makikipag-ugnayan sa iyo ang litratista.',
-      errorEmpty: 'Mangyaring ilagay ang iyong pangalan bago mag-submit.',
-      errorFail: 'Nabigo ang pagpapadala. Subukan muli o makipag-ugnayan nang direkta.',
-    },
-  };
-
-  function openModal() {
-    const M = modalStrings[currentLang];
-    const { body } = buildQuoteText();
-
-    document.getElementById('modalTitle').textContent = M.title;
-    document.getElementById('modalSubtitle').textContent = M.subtitle;
-    document.getElementById('clientName').placeholder = M.namePlaceholder;
-    document.getElementById('clientContact').placeholder = M.contactPlaceholder;
-    document.getElementById('modalCancel').textContent = M.cancel;
-    document.getElementById('modalSubmit').textContent = M.send;
-    document.getElementById('modalQuotePreview').textContent = body;
-    document.getElementById('modalError').style.display = 'none';
-    document.getElementById('modalError').textContent = M.errorEmpty;
-    const overlay = document.getElementById('modal-overlay');
-    overlay.style.display = 'flex';
-    overlay.style.alignItems = 'center';
-    overlay.style.justifyContent = 'center';
-    document.getElementById('clientName').focus();
-  }
-
-  function closeModal() {
-    document.getElementById('modal-overlay').style.display = 'none';
-    document.getElementById('clientName').value = '';
-    document.getElementById('clientContact').value = '';
-  }
-
-  async function submitQuote() {
-    const M = modalStrings[currentLang];
-    const name = document.getElementById('clientName').value.trim();
-    const contact = document.getElementById('clientContact').value.trim();
-    const errEl = document.getElementById('modalError');
-
-    if (!name) {
-      errEl.textContent = M.errorEmpty;
-      errEl.style.display = 'block';
-      return;
-    }
-    errEl.style.display = 'none';
-
-    const { body } = buildQuoteText();
-    const submitBtn = document.getElementById('modalSubmit');
-    submitBtn.textContent = M.sending;
-    submitBtn.disabled = true;
-
-    const formData = new FormData();
-    formData.append('form-name', 'photography-quote');
-    formData.append('bot-field', '');
-    formData.append('client-name', name);
-    formData.append('client-contact', contact);
-    formData.append('language', currentLang);
-    formData.append('quote', body);
-
-    try {
-      const res = await fetch('/', { method: 'POST', body: formData });
-      if (res.ok) {
-        document.getElementById('modalTitle').textContent = M.successTitle;
-        document.getElementById('modalSubtitle').textContent = M.successMsg;
-        document.getElementById('modalQuotePreview').style.display = 'none';
-        submitBtn.style.display = 'none';
-        document.getElementById('modalCancel').textContent = '✕ Close';
-      } else {
-        throw new Error('non-ok');
-      }
-    } catch (_) {
-      // Fallback: open mailto
-      const subject = currentLang === 'zh' ? '摄影报价单' : 'Photography Quote';
-      const mailto = `mailto:tinklezhang@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nContact: ${contact}\n\n${body}`)}`;
-      window.open(mailto);
-      errEl.textContent = M.errorFail;
-      errEl.style.display = 'block';
-      submitBtn.textContent = M.send;
-      submitBtn.disabled = false;
     }
   }
 
