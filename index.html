@@ -469,6 +469,12 @@
       .header { padding: 28px 20px 22px; }
       .shoot-types { grid-template-columns: repeat(4, 1fr); gap: 6px; }
       .type-btn .t-label { font-size: 10px; }
+      .select-field,
+      .info-field input,
+      .info-field select,
+      .btn {
+        font-size: 16px;
+      }
     }
 
     @media print {
@@ -580,7 +586,7 @@
       </div>
       <div class="info-field">
         <label data-i18n="sessionDate">Preferred Shoot Date</label>
-        <input type="date" id="sessionDateField" lang="en" onchange="recalc(); clearFieldError('sessionDateField')">
+        <input type="date" id="sessionDateField" lang="en" onchange="validateDateField(); recalc();">
         <div class="field-error" id="sessionDateFieldError"></div>
       </div>
       <div class="info-field">
@@ -622,7 +628,7 @@
     </div>
 
     <div class="actions">
-      <button class="btn btn-friend" id="friendBtn" onclick="openReviewModal()" data-i18n="requestDiscount">Review & Submit</button>
+      <button class="btn btn-friend" id="friendBtn" onclick="openReviewModal()" data-i18n="requestDiscount">Review Quote</button>
     </div>
 
     <div class="link-row">
@@ -662,7 +668,7 @@
       <!-- Buttons -->
       <div style="display:flex; gap:10px;">
         <button onclick="closeReviewModal()" id="reviewEditBtn" style="flex:1; padding:13px; border-radius:12px; border:1.5px solid #E0D4C8; background:#fff; color:#7A6252; font-size:13px; font-weight:600; cursor:pointer;">✏️ Edit</button>
-        <button onclick="submitQuoteFromReview()" id="reviewCopyBtn" style="flex:2; padding:13px; border-radius:12px; border:none; background:#6B4F35; color:#fff; font-size:13px; font-weight:600; cursor:pointer;">Submit Quote</button>
+        <button onclick="submitQuoteFromReview()" id="reviewCopyBtn" style="flex:2; padding:13px; border-radius:12px; border:none; background:#6B4F35; color:#fff; font-size:13px; font-weight:600; cursor:pointer;">Send Quote</button>
       </div>
       <div id="reviewCopyHint" style="text-align:center; font-size:12px; color:#6B4F35; font-weight:600; margin-top:10px; min-height:18px;"></div>
     </div>
@@ -673,8 +679,7 @@
   const SHOOT_RATE = 200;
   const FINE_RATE = 40;
   const TRANSPORT_PRICES = [200, 300, 400];
-  const FORM_ENDPOINT = 'https://formsubmit.co/ajax/70addcc7599561751d550ce9a948b3c1';
-
+  const QUOTE_API_ENDPOINT = '';
   let currentMode = 'self';
   let currentDuration = 1;
   let currentLang = 'en';
@@ -736,7 +741,7 @@
       estimatedTotal: 'ESTIMATED TOTAL BEFORE TAX',
       print: '🖨 Print',
       copyQuote: '📋 Copy Quote',
-      requestDiscount: 'Review & Submit',
+      requestDiscount: 'Review Quote',
       footer: 'Estimated quote before tax. Final pricing subject to mutual agreement.',
       websiteLink: 'Website',
       facebookLink: 'Facebook',
@@ -766,14 +771,14 @@
       errorName: 'Please enter your name.',
       errorEmail: 'Please enter a valid email address.',
       errorDate: 'Please choose today or a future date.',
-      welcomeMessage: 'I am truly honored that you are considering Weichen as your event photographer. Here is your quote summary. A copy will also be sent to photographer Weichen, and she will reply within 24 hours.',
-      emailIntro: 'I am truly honored that you are considering Weichen as your event photographer. Here is your quote summary. A copy has also been sent to photographer Weichen, and she will reply within 24 hours.',
+      welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
+      emailIntro: 'Thank you for choosing Weichen as your photographer. Your quote has been sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
       emailSectionClient: 'Client Information',
       emailSectionQuote: 'Quote Details',
       emailSectionTotal: 'Estimated Total Before Tax',
       emailClosing: 'Thank you again for your trust. This quote is an estimate before tax, and the final booking details will be confirmed with Weichen.',
-      submitSuccess: 'Quote sent. A copy has been sent to your email.',
-      submitFail: 'Submission failed. Please try again or send email directly.',
+      submitSuccess: 'Quote sent. A copy has also been sent to Weichen.',
+      submitFail: 'Email service is not connected yet. The quote has been copied instead.',
     },
     zh: {
       title: '活动摄影报价单',
@@ -822,7 +827,7 @@
       estimatedTotal: '税前预估总额',
       print: '🖨 打印',
       copyQuote: '📋 复制报价',
-      requestDiscount: '确认并提交',
+      requestDiscount: '确认报价',
       footer: '此为税前预估报价，最终费用以双方确认为准。',
       websiteLink: '作品网站',
       facebookLink: 'Facebook',
@@ -852,14 +857,14 @@
       errorName: '请填写您的姓名。',
       errorEmail: '请填写有效邮箱。',
       errorDate: '请选择今天或未来日期。',
-      welcomeMessage: '非常荣幸您可以考虑选择 Weichen 作为您的活动摄影师。这是您的报价单摘要。我们也会同步发送给摄影师 Weichen，她会在 24 小时内回复您。',
-      emailIntro: '非常荣幸您可以考虑选择 Weichen 作为您的活动摄影师。这是您的报价单摘要。我们也已同步发送给摄影师 Weichen，她会在 24 小时内回复您。',
+      welcomeMessage: '感谢您选择 Weichen 作为您的摄影师。这份报价单将发送给您，并同步抄送给 Weichen。她会在收到邮件后的 24 小时内回复您。',
+      emailIntro: '感谢您选择 Weichen 作为您的摄影师。这份报价单已经发送给您，并同步抄送给 Weichen。她会在收到邮件后的 24 小时内回复您。',
       emailSectionClient: '客户信息',
       emailSectionQuote: '报价明细',
       emailSectionTotal: '税前预估总额',
       emailClosing: '再次感谢您的信任。此报价为税前预估，最终拍摄安排与费用以和 Weichen 确认为准。',
-      submitSuccess: '报价已发送，同时已抄送到您的邮箱。',
-      submitFail: '发送失败，请重试或直接给摄影师发邮件。',
+      submitSuccess: '报价已发送，并已同步抄送给 Weichen。',
+      submitFail: '邮件服务尚未连接，报价内容已先复制。',
     }
     ,
     fil: {
@@ -905,7 +910,7 @@
       estimatedTotal: 'TINATAYANG KABUUAN BAGO ANG BUWIS',
       print: '🖨 I-print',
       copyQuote: '📋 Kopyahin',
-      requestDiscount: 'Review & Submit',
+      requestDiscount: 'Review Quote',
       footer: 'Tinatayang quote bago ang buwis. Ang huling presyo ay ayon sa napagkasunduan.',
       websiteLink: 'Website',
       facebookLink: 'Facebook',
@@ -934,14 +939,14 @@
       errorName: 'Pakilagay ang iyong pangalan.',
       errorEmail: 'Pakilagay ang valid na email address.',
       errorDate: 'Pumili ng petsa ngayon o sa hinaharap.',
-      welcomeMessage: 'Ikinagagalak namin na kinokonsidera mo si Weichen bilang iyong event photographer. Narito ang iyong quote summary. Ipapadala rin ang kopya kay photographer Weichen, at sasagot siya sa loob ng 24 oras.',
-      emailIntro: 'Ikinagagalak namin na kinokonsidera mo si Weichen bilang iyong event photographer. Narito ang iyong quote summary. Naipadala rin ang kopya kay photographer Weichen, at sasagot siya sa loob ng 24 oras.',
+      welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
+      emailIntro: 'Thank you for choosing Weichen as your photographer. Your quote has been sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
       emailSectionClient: 'Client Information',
       emailSectionQuote: 'Quote Details',
       emailSectionTotal: 'Estimated Total Before Tax',
       emailClosing: 'Maraming salamat sa iyong tiwala. Tinatayang quote ito bago ang buwis; ang final booking details ay kukumpirmahin kay Weichen.',
-      submitSuccess: 'Naipadala ang quote. May kopya ring ipinadala sa iyong email.',
-      submitFail: 'Hindi naipadala. Subukan muli o mag-email nang direkta.',
+      submitSuccess: 'Quote sent. A copy has also been sent to Weichen.',
+      submitFail: 'Email service is not connected yet. The quote has been copied instead.',
     }
   };
 
@@ -986,6 +991,10 @@
   function getEventLabel() {
     const field = document.getElementById('eventTypeField');
     return field.options[field.selectedIndex].textContent.trim();
+  }
+
+  function getEventKey() {
+    return document.getElementById('eventTypeField').value;
   }
 
   function isEveningEvent() {
@@ -1125,42 +1134,59 @@
     };
   }
 
+  function buildQuotePayload() {
+    const { hours } = quoteMath();
+    return {
+      clientName: document.getElementById('clientNameField').value.trim(),
+      clientEmail: document.getElementById('clientEmailField').value.trim(),
+      eventTypeKey: getEventKey(),
+      eventType: getEventLabel(),
+      date: document.getElementById('sessionDateField').value,
+      startTime: document.getElementById('startTimeField').value,
+      hours,
+      transportEnabled,
+      transportMode: currentMode,
+      durationIndex: currentDuration,
+      language: currentLang,
+    };
+  }
+
   const reviewStrings = {
     en: {
       title: 'Review Your Quote',
-      subtitle: 'Please confirm the details before Weichen receives your quote.',
+      subtitle: 'Please confirm the details before sending your quote.',
       nameLabel: '👤',
       emailLabel: '✉️',
       dateLabel: '📅',
       editBtn: '✏️ Edit',
-      copyBtn: 'Submit Quote',
+      copyBtn: 'Send Quote',
       sending: 'Sending...',
       totalLabel: 'Total before tax',
-      requestDiscount: 'Review & Submit',
+      requestDiscount: 'Review Quote',
     },
     zh: {
       title: '确认您的报价',
-      subtitle: '提交前请最后确认信息，Weichen 会收到这份报价。',
+      subtitle: '发送前请最后确认信息。',
       nameLabel: '👤',
       emailLabel: '✉️',
       dateLabel: '📅',
       editBtn: '✏️ 返回修改',
-      copyBtn: '提交报价',
+      copyBtn: '发送报价',
       sending: '发送中...',
       totalLabel: '税前总计',
-      requestDiscount: '确认并提交',
+      requestDiscount: '确认报价',
     },
     fil: {
       title: 'Suriin ang Iyong Quote',
-      subtitle: 'Pakikumpirma ang detalye bago matanggap ni Weichen ang quote.',
+      subtitle: 'Pakikumpirma ang detalye bago ipadala ang quote.',
       nameLabel: '👤',
       emailLabel: '✉️',
       dateLabel: '📅',
       editBtn: '✏️ I-edit',
-      copyBtn: 'Submit Quote',
+      copyBtn: 'Send Quote',
       sending: 'Sending...',
       totalLabel: 'Kabuuan bago ang buwis',
-      requestDiscount: 'Review & Submit',
+      requestDiscount: 'Review Quote',
     },
   };
 
@@ -1188,6 +1214,21 @@
 
   function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validateDateField() {
+    const field = document.getElementById('sessionDateField');
+    const L = strings[currentLang];
+    if (!field.min) field.min = localToday;
+
+    if (field.value && field.value < field.min) {
+      field.value = '';
+      setFieldError('sessionDateField', L.errorDate);
+      return false;
+    }
+
+    clearFieldError('sessionDateField');
+    return true;
   }
 
   function openReviewModal() {
@@ -1218,6 +1259,9 @@
     }
     if (dateVal && dateVal < today) {
       setFieldError('sessionDateField', L.errorDate);
+      valid = false;
+    }
+    if (!validateDateField()) {
       valid = false;
     }
     if (!valid) return;
@@ -1267,52 +1311,63 @@
     document.getElementById('review-overlay').style.display = 'none';
   }
 
+  async function copyQuoteToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+
+    const temp = document.createElement('textarea');
+    temp.value = text;
+    temp.setAttribute('readonly', '');
+    temp.style.position = 'fixed';
+    temp.style.left = '-9999px';
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+  }
+
   async function submitQuoteFromReview() {
     const L = strings[currentLang];
     const R = reviewStrings[currentLang];
     const btn = document.getElementById('reviewCopyBtn');
     const hint = document.getElementById('reviewCopyHint');
-    const quote = buildQuoteText();
-    const { hours, shoot, late, transport, includedMin, includedMax } = quoteMath();
-    const { total, name, email, eventType, dateStr, startTime, modeLabel, dur } = quote;
-    const dateTime = `${dateStr || 'Not selected'}${startTime ? ' · ' + startTime : ''}`;
-    const payload = {
-      _subject: `Photography Quote - ${name} - $${total}`,
-      _cc: email,
-      _replyto: email,
-      _template: 'box',
-      _captcha: 'false',
-      Welcome: L.emailIntro,
-      [L.emailSectionClient]: `${name} · ${email}`,
-      [L.eventType]: eventType,
-      [L.sessionDate]: dateTime,
-      [L.shooting]: `${hours}h × $200 = $${fmt(shoot)}`,
-      [L.editing]: `${includedMin} - ${includedMax} ${L.photo}`,
-      [L.emailSectionTotal]: `$${total}`,
-      Note: L.emailClosing,
-    };
-
-    if (late > 0) payload[L.lateSurcharge] = `$${fmt(late)}`;
-    if (transportEnabled) payload[`${modeLabel} · ${dur}`] = `$${fmt(transport)}`;
+    const { body } = buildQuoteText();
 
     btn.disabled = true;
     btn.textContent = R.sending;
     hint.textContent = '';
 
     try {
-      const res = await fetch(FORM_ENDPOINT, {
+      if (!QUOTE_API_ENDPOINT) {
+        throw new Error('Quote email endpoint is not configured.');
+      }
+
+      const response = await fetch(QUOTE_API_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildQuotePayload()),
       });
 
-      if (!res.ok) throw new Error('FormSubmit request failed');
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || 'Quote email could not be sent.');
+      }
 
       hint.textContent = L.submitSuccess;
-      btn.textContent = 'Sent';
-      setTimeout(() => closeReviewModal(), 1800);
+      btn.textContent = '✓';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = R.copyBtn;
+      }, 1600);
     } catch (_) {
-      hint.textContent = L.submitFail;
+      try {
+        await copyQuoteToClipboard(body);
+        hint.textContent = L.submitFail;
+      } catch {
+        hint.textContent = L.submitFail;
+      }
       btn.disabled = false;
       btn.textContent = R.copyBtn;
     }
@@ -1321,7 +1376,11 @@
   // Set date minimum to today using local time.
   const now = new Date();
   const localToday = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
-  document.getElementById('sessionDateField').min = localToday;
+  const sessionDateField = document.getElementById('sessionDateField');
+  sessionDateField.min = localToday;
+  sessionDateField.addEventListener('focus', () => {
+    sessionDateField.min = localToday;
+  });
 
   setLang(currentLang);
 </script>
