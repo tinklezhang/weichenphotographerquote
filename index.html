@@ -68,24 +68,20 @@
     .header h1 { font-size: 22px; font-weight: 600; letter-spacing: 1px; }
     .header p { font-size: 13px; opacity: 0.85; margin-top: 6px; }
 
-    .category-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-bottom: 28px;
-    }
-
-    .category-pill {
+    .select-field {
+      width: 100%;
       border: 1.5px solid #E0D4C8;
       border-radius: 12px;
-      background: #FAF8F5;
-      padding: 12px 10px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #4A3624;
-      text-align: center;
-      line-height: 1.35;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+      background: #fff;
+      color: #2C1F14;
+      transition: border-color 0.2s;
     }
+
+    .select-field:focus { border-color: #6B4F35; }
 
     .body { padding: 32px 36px; }
 
@@ -423,7 +419,8 @@
     /* Info fields (name + date) */
     .info-fields { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
     .info-field label { font-size: 12px; font-weight: 600; color: #7A6252; display: block; margin-bottom: 6px; }
-    .info-field input {
+    .info-field input,
+    .info-field select {
       width: 100%;
       border: 1.5px solid #E0D4C8;
       border-radius: 10px;
@@ -435,8 +432,26 @@
       color: #2C1F14;
       transition: border-color 0.2s;
     }
-    .info-field input:focus { border-color: #6B4F35; }
+    .info-field input:focus,
+    .info-field select:focus { border-color: #6B4F35; }
     .info-field input[type="date"] { color: #7A6252; }
+
+    .link-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .link-row a {
+      color: #6B4F35;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(107,79,53,0.35);
+      padding-bottom: 2px;
+    }
 
     /* Validation error */
     .field-error {
@@ -485,17 +500,19 @@
     </div>
     <div class="icon">📷</div>
     <h1 data-i18n="title">Event Photography</h1>
-    <p data-i18n="subtitle">Not applicable for weddings</p>
+    <p data-i18n="subtitle">Photography Quote</p>
   </div>
 
   <div class="body">
 
-    <div class="section-label" data-i18n="eventCategories">Event Categories</div>
-    <div class="category-grid">
-      <div class="category-pill" data-i18n="catCelebration">Festivals & Fairs</div>
-      <div class="category-pill" data-i18n="catCorporate">Corporate Events</div>
-      <div class="category-pill" data-i18n="catPerformance">Performances & Concerts</div>
-      <div class="category-pill" data-i18n="catPrivate">Private Parties</div>
+    <div class="section-label" data-i18n="eventCategories">Event Type</div>
+    <div class="field" style="margin-bottom:28px;">
+      <select class="select-field" id="eventTypeField" onchange="recalc()">
+        <option value="festivals" data-i18n="catCelebration">Festivals & Fairs</option>
+        <option value="corporate" data-i18n="catCorporate">Corporate Events</option>
+        <option value="performance" data-i18n="catPerformance">Performances & Concerts</option>
+        <option value="private" data-i18n="catPrivate">Private Parties</option>
+      </select>
     </div>
 
     <div class="section-label" data-i18n="shootingEditing">Rate & Includes</div>
@@ -514,32 +531,7 @@
         </div>
         <div class="field-error" id="hoursError"></div>
         <div class="field-hint" data-i18n="editingHint">Includes 50 - 80 standard edited photos per hour.</div>
-      </div>
-
-      <div class="field">
-        <div class="out-of-city-row">
-          <div>
-            <div class="main" data-i18n="retouching">Need additional portrait/body retouching?</div>
-            <div class="field-hint" data-i18n="retouchingHint">Optional natural skin, face, body, or blemish retouching. Details can be discussed after photo selection.</div>
-          </div>
-          <div class="yes-no-toggle">
-            <button class="yn-btn active" id="retouchNo" onclick="setRetouching(false)" data-i18n="no">No</button>
-            <button class="yn-btn" id="retouchYes" onclick="setRetouching(true)" data-i18n="yes">Yes</button>
-          </div>
-        </div>
-        <div class="retouch-details" id="retouchDetails">
-          <label>
-            <span data-i18n="retouchingPhotos">Detail retouching photos</span>
-            <span class="rate">$40 / <span data-i18n="photo">photo</span></span>
-          </label>
-          <div class="input-row">
-            <button onclick="adjust('retouchPhotos', -1)">−</button>
-            <div class="input-spacer"></div>
-            <input type="number" id="retouchPhotos" value="0" min="0" max="500" oninput="recalc()">
-            <span class="input-unit" data-i18n="photo">photo</span>
-            <button onclick="adjust('retouchPhotos', 1)">+</button>
-          </div>
-        </div>
+        <div class="field-hint" data-i18n="weekendHint">Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.</div>
       </div>
     </div>
 
@@ -558,7 +550,7 @@
         <div class="transport-modes">
           <div class="transport-btn active" data-mode="self" onclick="selectMode(this)">
             <div class="t-icon">🚗</div>
-            <div class="t-name" data-i18n="selfDrive">Self-Drive</div>
+            <div class="t-name" data-i18n="selfDrive">Personal Transportation</div>
             <div class="t-desc" data-i18n="selfDriveDesc">Round-trip travel included</div>
           </div>
           <div class="transport-btn" data-mode="charter" onclick="selectMode(this)">
@@ -588,16 +580,31 @@
 
     <div class="info-fields">
       <div class="info-field">
-        <label data-i18n="yourName">Your Name (optional)</label>
-        <input type="text" id="clientNameField" data-i18n-placeholder="namePlaceholder" placeholder="e.g. Weichen">
+        <label data-i18n="yourName">Your Name</label>
+        <input type="text" id="clientNameField" data-i18n-placeholder="namePlaceholder" placeholder="e.g. Weichen" oninput="clearFieldError('clientNameField')">
+        <div class="field-error" id="clientNameFieldError"></div>
+      </div>
+      <div class="info-field">
+        <label data-i18n="yourEmail">Your Email</label>
+        <input type="email" id="clientEmailField" data-i18n-placeholder="emailPlaceholder" placeholder="e.g. hello@email.com" oninput="clearFieldError('clientEmailField')">
+        <div class="field-error" id="clientEmailFieldError"></div>
       </div>
       <div class="info-field">
         <label data-i18n="sessionDate">Preferred Shoot Date</label>
-        <input type="date" id="sessionDateField" lang="en">
+        <input type="date" id="sessionDateField" lang="en" onchange="recalc(); clearFieldError('sessionDateField')">
+        <div class="field-error" id="sessionDateFieldError"></div>
+      </div>
+      <div class="info-field">
+        <label data-i18n="startTime">Start Time</label>
+        <input type="time" id="startTimeField" value="14:00" onchange="recalc()">
       </div>
     </div>
 
     <div class="breakdown">
+      <div class="breakdown-row">
+        <span id="bEventLabel">Event type</span>
+        <span id="bEvent">Festivals & Fairs</span>
+      </div>
       <div class="breakdown-row">
         <span id="bShootLabel">Shooting</span>
         <span>$<span id="bShoot">600</span></span>
@@ -606,12 +613,12 @@
         <span id="bEditLabel">Standard edited photos</span>
         <span id="bRetouch">Included</span>
       </div>
-      <div class="breakdown-row" id="retouchLine" style="display:none;">
-        <span id="bRetouchLabel">Detail edits (0 × $40)</span>
-        <span>$<span id="bRetouchCost">0</span></span>
+      <div class="breakdown-row" id="lateRow" style="display:none;">
+        <span id="lateLabel">Evening surcharge</span>
+        <span>$<span id="bLate">0</span></span>
       </div>
       <div class="breakdown-row" id="transportRow" style="display:none;">
-        <span id="transportLabel">Travel fee (Self-drive · 3–4 hrs)</span>
+        <span id="transportLabel">Travel fee (Personal transportation · 3–4 hrs)</span>
         <span>$<span id="bTransport">0</span></span>
       </div>
       <div class="breakdown-row subtotal">
@@ -626,7 +633,13 @@
     </div>
 
     <div class="actions">
-      <button class="btn btn-friend" id="friendBtn" onclick="openReviewModal()" data-i18n="requestDiscount">📋 Review & Send</button>
+      <button class="btn btn-friend" id="friendBtn" onclick="openReviewModal()" data-i18n="requestDiscount">Review & Submit</button>
+    </div>
+
+    <div class="link-row">
+      <a href="https://www.weichenzhang.ca" target="_blank" rel="noopener" data-i18n="websiteLink">Website</a>
+      <a href="https://www.facebook.com/weichen.zhang.7" target="_blank" rel="noopener" data-i18n="facebookLink">Facebook</a>
+      <a href="mailto:tinklezhang@gmail.com" data-i18n="emailLink">Send email to me</a>
     </div>
 
   </div>
@@ -659,50 +672,10 @@
       <!-- Buttons -->
       <div style="display:flex; gap:10px;">
         <button onclick="closeReviewModal()" id="reviewEditBtn" style="flex:1; padding:13px; border-radius:12px; border:1.5px solid #E0D4C8; background:#fff; color:#7A6252; font-size:13px; font-weight:600; cursor:pointer;">✏️ Edit</button>
-        <button onclick="copySendQuote()" id="reviewCopyBtn" style="flex:2; padding:13px; border-radius:12px; border:none; background:#6B4F35; color:#fff; font-size:13px; font-weight:600; cursor:pointer;">📋 Copy & Send</button>
+        <button onclick="submitQuoteFromReview()" id="reviewCopyBtn" style="flex:2; padding:13px; border-radius:12px; border:none; background:#6B4F35; color:#fff; font-size:13px; font-weight:600; cursor:pointer;">Submit Quote</button>
       </div>
       <div id="reviewCopyHint" style="text-align:center; font-size:12px; color:#6B4F35; font-weight:600; margin-top:10px; min-height:18px;"></div>
     </div>
-  </div>
-</div>
-
-<!-- Hidden Netlify form -->
-<form name="photography-quote" netlify netlify-honeypot="bot-field" hidden>
-  <input name="bot-field">
-  <input name="client-name">
-  <input name="client-contact">
-  <input name="language">
-  <textarea name="quote"></textarea>
-</form>
-
-<!-- Modal -->
-<div id="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:999; align-items:center; justify-content:center; padding:20px;" onclick="if(event.target===this)closeModal()">
-  <div style="background:#fff; border-radius:20px; padding:32px; width:100%; max-width:400px; box-shadow:0 8px 40px rgba(0,0,0,0.2);">
-    <h2 id="modalTitle" style="font-size:17px; font-weight:700; color:#2C1F14; margin-bottom:6px;">Send Quote to Photographer</h2>
-    <p id="modalSubtitle" style="font-size:12px; color:#A89888; margin-bottom:24px;">Leave your name and how to reach you — the photographer will get back to you shortly.</p>
-
-    <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:24px;">
-      <div>
-        <label id="modalNameLabel" style="font-size:12px; font-weight:600; color:#7A6252; display:block; margin-bottom:6px;">Your Name</label>
-        <input id="clientName" type="text" placeholder="e.g. Maria Santos"
-          style="width:100%; border:1.5px solid #E0D4C8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:inherit;"
-          onfocus="this.style.borderColor='#6B4F35'" onblur="this.style.borderColor='#E0D4C8'">
-      </div>
-      <div>
-        <label id="modalContactLabel" style="font-size:12px; font-weight:600; color:#7A6252; display:block; margin-bottom:6px;">Phone / Email / WeChat</label>
-        <input id="clientContact" type="text" placeholder="e.g. +1 204 000 0000"
-          style="width:100%; border:1.5px solid #E0D4C8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:inherit;"
-          onfocus="this.style.borderColor='#6B4F35'" onblur="this.style.borderColor='#E0D4C8'">
-      </div>
-    </div>
-
-    <div id="modalQuotePreview" style="background:#FAF8F5; border-radius:12px; padding:14px 16px; font-size:12px; color:#7A6252; white-space:pre-wrap; line-height:1.6; margin-bottom:20px; max-height:160px; overflow-y:auto;"></div>
-
-    <div style="display:flex; gap:10px;">
-      <button onclick="closeModal()" style="flex:1; padding:12px; border-radius:12px; border:none; background:#EDE5DC; color:#7A6252; font-size:13px; font-weight:600; cursor:pointer;" id="modalCancel">Cancel</button>
-      <button onclick="submitQuote()" id="modalSubmit" style="flex:2; padding:12px; border-radius:12px; border:none; background:#6B4F35; color:#fff; font-size:13px; font-weight:600; cursor:pointer;">📧 Send Now</button>
-    </div>
-    <p id="modalError" style="color:#e07060; font-size:12px; text-align:center; margin-top:10px; display:none;">Please enter your name before submitting.</p>
   </div>
 </div>
 
@@ -715,7 +688,6 @@
   let currentDuration = 1;
   let currentLang = 'en';
   let transportEnabled = false;
-  let retouchingEnabled = false;
 
   function setOutOfCity(enabled) {
     transportEnabled = enabled;
@@ -725,22 +697,11 @@
     recalc();
   }
 
-  function setRetouching(enabled) {
-    retouchingEnabled = enabled;
-    document.getElementById('retouchNo').classList.toggle('active', !enabled);
-    document.getElementById('retouchYes').classList.toggle('active', enabled);
-    document.getElementById('retouchDetails').classList.toggle('open', enabled);
-    const retouchInput = document.getElementById('retouchPhotos');
-    if (enabled && (parseInt(retouchInput.value) || 0) === 0) retouchInput.value = 1;
-    if (!enabled) retouchInput.value = 0;
-    recalc();
-  }
-
   const strings = {
     en: {
       title: 'Event Photography',
-      subtitle: 'Not applicable for weddings',
-      eventCategories: 'Event Categories',
+      subtitle: 'Photography Quote',
+      eventCategories: 'Event Type',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Corporate Events',
       catPerformance: 'Performances & Concerts',
@@ -756,9 +717,12 @@
       typeFamily: 'Family',
       typeGrad: 'Graduation',
       typeEvent: 'Event',
-      yourName: 'Your Name (optional)',
+      yourName: 'Your Name',
       namePlaceholder: 'e.g. Weichen',
+      yourEmail: 'Your Email',
+      emailPlaceholder: 'e.g. hello@email.com',
       sessionDate: 'Preferred Shoot Date',
+      startTime: 'Start Time',
       datePlaceholder: 'e.g. June 15',
       copyHint: '✅ Copied! Now send it to your photographer 📩',
       shootingEditing: 'Rate & Includes',
@@ -767,6 +731,7 @@
       included: 'Included',
       photo: 'photo',
       editingHint: 'Includes 50 - 80 standard edited photos per hour.',
+      weekendHint: 'Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.',
       retouching: 'Need additional portrait/body retouching?',
       retouchingPhotos: 'Detail retouching photos',
       retouchingHint: 'Optional natural skin, face, body, or blemish retouching. Details can be discussed after photo selection.',
@@ -774,7 +739,7 @@
       no: 'No',
       yes: 'Yes',
       transportation: 'Transportation',
-      selfDrive: 'Self-Drive',
+      selfDrive: 'Personal Transportation',
       selfDriveDesc: 'Round-trip travel included',
       charter: 'Chartered Car',
       charterDesc: 'Rate halved',
@@ -783,31 +748,43 @@
       estimatedTotal: 'ESTIMATED TOTAL BEFORE TAX',
       print: '🖨 Print',
       copyQuote: '📋 Copy Quote',
-      requestDiscount: '📋 Review & Send',
+      requestDiscount: 'Review & Submit',
       footer: 'Estimated quote before tax. Final pricing subject to mutual agreement.',
+      websiteLink: 'Website',
+      facebookLink: 'Facebook',
+      emailLink: 'Send email to me',
       // dynamic
+      eventType: 'Event type',
       shooting: 'Shooting',
-      travelSelf: 'Travel fee (Self-drive · {dur})',
+      lateSurcharge: 'Evening surcharge after 18:00 (20%)',
+      travelSelf: 'Travel fee (Personal transportation · {dur})',
       travelCharter: 'Travel fee (Chartered · {dur})',
       dur: ['1–2 hrs', '3–4 hrs', '5–6 hrs'],
-      copyMsg: (total, body, name, date) => `${name ? 'Hi, I\'m ' + name + '! ' : ''}Weichen! I'm in 🎉 Just set up my session — $${total} total.${date ? ' Hoping for ' + date + '.' : ''} So excited, let's make it happen!\n\n${body}`,
       quoteHeader: '📷 Event Photography Quote',
-      shootLine: (h, cost) => `Hourly package: ${h}h × $200 = $${cost}`,
+      clientLine: (name, email) => `Client: ${name}\nEmail: ${email}`,
+      eventLine: (eventType) => `Event type: ${eventType}`,
+      dateLine: (date, time) => `Preferred time: ${date || 'Not selected'}${time ? ' at ' + time : ''}`,
+      shootLine: (h, cost) => `Shooting: ${h}h × $200 = $${cost}`,
       editLine: (min, max) => `Included: ${min} - ${max} standard edited photos`,
-      retouchLine: (n, cost) => `Detail edits: ${n} photos × $40 = $${cost}`,
+      lateLine: (cost) => `Evening surcharge after 18:00: $${cost}`,
       travelLine: (mode, dur, cost) => `Travel (${mode} · ${dur}): $${cost}`,
-      selfDriveLabel: 'Self-drive',
+      selfDriveLabel: 'Personal transportation',
       charterLabel: 'Chartered car',
       totalLine: (total) => `💰 Total before tax: $${total}`,
       footerNote: 'Estimated quote before tax. Final pricing subject to mutual agreement.',
       copied: '✓ Copied!',
       copiedFriend: '✓ Copied — send it over!',
       errorHours: '⚠️ Shooting duration must be at least 1 hour.',
+      errorName: 'Please enter your name.',
+      errorEmail: 'Please enter a valid email address.',
+      errorDate: 'Please choose today or a future date.',
+      submitSuccess: 'Quote sent. A copy has been sent to your email.',
+      submitFail: 'Submission failed. Please try again or send email directly.',
     },
     zh: {
       title: '活动摄影报价单',
-      subtitle: '不适用于婚礼拍摄',
-      eventCategories: '适用活动类型',
+      subtitle: '摄影报价单',
+      eventCategories: '活动类型',
       catCelebration: '节庆 / 市集活动',
       catCorporate: '企业活动',
       catPerformance: '演出 / 音乐会',
@@ -823,9 +800,12 @@
       typeFamily: '家庭合照',
       typeGrad: '毕业照',
       typeEvent: '活动拍摄',
-      yourName: '您的姓名（选填）',
+      yourName: '您的姓名',
       namePlaceholder: '例如：小明',
+      yourEmail: '您的邮箱',
+      emailPlaceholder: '例如：hello@email.com',
       sessionDate: '希望拍摄日期',
+      startTime: '开始时间',
       datePlaceholder: '例如：6月15日',
       copyHint: '✅ 内容已复制，发给你的摄影师吧 📩',
       shootingEditing: '价格与包含内容',
@@ -834,6 +814,7 @@
       included: '已包含',
       photo: '张',
       editingHint: '每小时包含 50 - 80 张标准修片照片。',
+      weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
       retouching: '是否需要进一步人像/身材精修？',
       retouchingPhotos: '精修照片数量',
       retouchingHint: '可选自然皮肤、面部、身材或瑕疵精修，具体需求可在选片后沟通。',
@@ -841,7 +822,7 @@
       no: '否',
       yes: '是',
       transportation: '交通方式',
-      selfDrive: '自驾前往',
+      selfDrive: '自行交通',
       selfDriveDesc: '含来回交通费',
       charter: '包车接送',
       charterDesc: '费用减半',
@@ -850,32 +831,44 @@
       estimatedTotal: '税前预估总额',
       print: '🖨 打印',
       copyQuote: '📋 复制报价',
-      requestDiscount: '📋 确认并发送',
+      requestDiscount: '确认并提交',
       footer: '此为税前预估报价，最终费用以双方确认为准。',
+      websiteLink: '作品网站',
+      facebookLink: 'Facebook',
+      emailLink: '给我发邮件',
       // dynamic
+      eventType: '活动类型',
       shooting: '小时包价',
-      travelSelf: '交通费（自驾 · {dur}）',
+      lateSurcharge: '18:00 后晚间费用（20%）',
+      travelSelf: '交通费（自行交通 · {dur}）',
       travelCharter: '出城费（包车 · {dur}）',
       dur: ['1–2 小时', '3–4 小时', '5–6 小时'],
-      copyMsg: (total, body, name, date) => `${name ? '你好，我是' + name + '！' : ''}Weichen！我选好啦 🎉 总共 $${total}，好期待拍摄！${date ? '希望在' + date + '拍。' : ''}我们约起来？\n\n${body}`,
       quoteHeader: '📷 活动摄影报价单',
+      clientLine: (name, email) => `客户：${name}\n邮箱：${email}`,
+      eventLine: (eventType) => `活动类型：${eventType}`,
+      dateLine: (date, time) => `希望时间：${date || '未选择'}${time ? ' ' + time : ''}`,
       shootLine: (h, cost) => `小时包价：${h}h × $200 = $${cost}`,
       editLine: (min, max) => `已包含：${min} - ${max} 张标准修片照片`,
-      retouchLine: (n, cost) => `精修照片：${n}张 × $40 = $${cost}`,
+      lateLine: (cost) => `18:00 后晚间费用：$${cost}`,
       travelLine: (mode, dur, cost) => `交通费（${mode} · ${dur}）：$${cost}`,
-      selfDriveLabel: '自驾',
+      selfDriveLabel: '自行交通',
       charterLabel: '包车',
       totalLine: (total) => `💰 税前总额：$${total}`,
       footerNote: '此为税前预估报价，最终费用以双方确认为准。',
       copied: '✓ 已复制！',
       copiedFriend: '✓ 已复制，发给摄影师吧！',
       errorHours: '⚠️ 拍摄时长至少需要 1 小时。',
+      errorName: '请填写您的姓名。',
+      errorEmail: '请填写有效邮箱。',
+      errorDate: '请选择今天或未来日期。',
+      submitSuccess: '报价已发送，同时已抄送到您的邮箱。',
+      submitFail: '发送失败，请重试或直接给摄影师发邮件。',
     }
     ,
     fil: {
       title: 'Event Photography',
-      subtitle: 'Hindi para sa weddings',
-      eventCategories: 'Mga Uri ng Event',
+      subtitle: 'Photography Quote',
+      eventCategories: 'Uri ng Event',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Corporate Events',
       catPerformance: 'Performances & Concerts',
@@ -885,9 +878,12 @@
       typeFamily: 'Pamilya',
       typeGrad: 'Graduation',
       typeEvent: 'Event',
-      yourName: 'Iyong Pangalan (opsyonal)',
+      yourName: 'Iyong Pangalan',
       namePlaceholder: 'hal. Maria',
+      yourEmail: 'Iyong Email',
+      emailPlaceholder: 'hal. hello@email.com',
       sessionDate: 'Gustong Petsa ng Pagkuha',
+      startTime: 'Oras ng Simula',
       datePlaceholder: 'hal. Hunyo 15',
       copyHint: '✅ Nakopya na! Ipadala na sa iyong litratista 📩',
       shootingEditing: 'Rate at Kasama',
@@ -898,6 +894,7 @@
       included: 'Kasama',
       photo: 'larawan',
       editingHint: 'Kasama ang 50 - 80 standard edited photos kada oras.',
+      weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
       retouching: 'Kailangan ng dagdag na portrait/body retouching?',
       retouchingPhotos: 'Detail retouching photos',
       retouchingHint: 'Optional natural skin, face, body, o blemish retouching. Pag-usapan matapos pumili ng photos.',
@@ -905,7 +902,7 @@
       no: 'Hindi',
       yes: 'Oo',
       transportation: 'Transportasyon',
-      selfDrive: 'Sariling Sasakyan',
+      selfDrive: 'Personal Transportation',
       selfDriveDesc: 'Kasama ang pabalik-balik na biyahe',
       charter: 'Charter na Sasakyan',
       charterDesc: 'Kalahating presyo',
@@ -914,25 +911,37 @@
       estimatedTotal: 'TINATAYANG KABUUAN BAGO ANG BUWIS',
       print: '🖨 I-print',
       copyQuote: '📋 Kopyahin',
-      requestDiscount: '📋 Suriin at Ipadala',
+      requestDiscount: 'Review & Submit',
       footer: 'Tinatayang quote bago ang buwis. Ang huling presyo ay ayon sa napagkasunduan.',
+      websiteLink: 'Website',
+      facebookLink: 'Facebook',
+      emailLink: 'Mag-email sa akin',
+      eventType: 'Uri ng event',
       shooting: 'Pagkuha',
-      travelSelf: 'Bayad sa biyahe (Sariling sasakyan · {dur})',
+      lateSurcharge: 'Evening surcharge after 18:00 (20%)',
+      travelSelf: 'Bayad sa biyahe (Personal transportation · {dur})',
       travelCharter: 'Bayad sa biyahe (Charter · {dur})',
       dur: ['1–2 oras', '3–4 oras', '5–6 oras'],
-      copyMsg: (total, body, name, date) => `${name ? 'Hi, ' + name + ' ito! ' : ''}Weichen! Pumili na ako 🎉 $${total} ang session ko!${date ? ' Sana sa ' + date + '.' : ''} Sobrang excited! Mag-usap na tayo!\n\n${body}`,
       quoteHeader: '📷 Event Photography Quote',
+      clientLine: (name, email) => `Client: ${name}\nEmail: ${email}`,
+      eventLine: (eventType) => `Uri ng event: ${eventType}`,
+      dateLine: (date, time) => `Preferred time: ${date || 'Hindi napili'}${time ? ' at ' + time : ''}`,
       shootLine: (h, cost) => `Hourly package: ${h}h × $200 = $${cost}`,
       editLine: (min, max) => `Kasama: ${min} - ${max} standard edited photos`,
-      retouchLine: (n, cost) => `Detail edits: ${n} larawan × $40 = $${cost}`,
+      lateLine: (cost) => `Evening surcharge after 18:00: $${cost}`,
       travelLine: (mode, dur, cost) => `Bayad sa biyahe (${mode} · ${dur}): $${cost}`,
-      selfDriveLabel: 'Sariling sasakyan',
+      selfDriveLabel: 'Personal transportation',
       charterLabel: 'Charter',
       totalLine: (total) => `💰 Kabuuan bago ang buwis: $${total}`,
       footerNote: 'Tinatayang quote bago ang buwis. Ang huling presyo ay ayon sa napagkasunduan.',
       copied: '✓ Nakopya!',
       copiedFriend: '✓ Nakopya na — ipadala na!',
       errorHours: '⚠️ Ang tagal ng pagkuha ay dapat hindi bababa sa 1 oras.',
+      errorName: 'Pakilagay ang iyong pangalan.',
+      errorEmail: 'Pakilagay ang valid na email address.',
+      errorDate: 'Pumili ng petsa ngayon o sa hinaharap.',
+      submitSuccess: 'Naipadala ang quote. May kopya ring ipinadala sa iyong email.',
+      submitFail: 'Hindi naipadala. Subukan muli o mag-email nang direkta.',
     }
   };
 
@@ -970,6 +979,36 @@
     return currentMode === 'charter' ? base / 2 : base;
   }
 
+  function getHours() {
+    return Math.max(0, parseFloat(document.getElementById('hours').value) || 0);
+  }
+
+  function getEventLabel() {
+    const field = document.getElementById('eventTypeField');
+    return field.options[field.selectedIndex].textContent.trim();
+  }
+
+  function isEveningEvent() {
+    const time = document.getElementById('startTimeField').value;
+    return !!time && time >= '18:00';
+  }
+
+  function quoteMath() {
+    const hours = getHours();
+    const shoot = hours * SHOOT_RATE;
+    const late = isEveningEvent() ? shoot * 0.2 : 0;
+    const transport = transportCost();
+    return {
+      hours,
+      shoot,
+      late,
+      transport,
+      total: shoot + late + transport,
+      includedMin: Math.round(hours * 50),
+      includedMax: Math.round(hours * 80),
+    };
+  }
+
   function updateDurationPrices() {
     TRANSPORT_PRICES.forEach((base, i) => {
       const price = currentMode === 'charter' ? base / 2 : base;
@@ -993,26 +1032,20 @@
   }
 
   function recalc() {
-    const hours = Math.max(0, parseFloat(document.getElementById('hours').value) || 0);
-    const retouchPhotos = retouchingEnabled ? Math.max(0, parseInt(document.getElementById('retouchPhotos').value) || 0) : 0;
-
-    const shoot = hours * SHOOT_RATE;
-    const fine = retouchPhotos * FINE_RATE;
-    const transport = transportCost();
-    const total = shoot + fine + transport;
+    const { hours, shoot, late, transport, total, includedMin, includedMax } = quoteMath();
     const L = strings[currentLang];
     const dur = L.dur[currentDuration];
     const photoWord = L.photo;
-    const includedMin = Math.round(hours * 50);
-    const includedMax = Math.round(hours * 80);
 
+    document.getElementById('bEventLabel').textContent = L.eventType;
+    document.getElementById('bEvent').textContent = getEventLabel();
     document.getElementById('bShootLabel').textContent = `${L.shooting} (${hours}h × $200)`;
     document.getElementById('bEditLabel').textContent = `${L.editing} (${includedMin} - ${includedMax} ${photoWord})`;
-    document.getElementById('bRetouchLabel').textContent = `${L.retouchingPhotos} (${retouchPhotos} ${photoWord} × $40)`;
     document.getElementById('bShoot').textContent = fmt(shoot);
     document.getElementById('bRetouch').textContent = L.included;
-    document.getElementById('bRetouchCost').textContent = fmt(fine);
-    document.getElementById('retouchLine').style.display = retouchPhotos > 0 ? '' : 'none';
+    document.getElementById('lateLabel').textContent = L.lateSurcharge;
+    document.getElementById('bLate').textContent = fmt(late);
+    document.getElementById('lateRow').style.display = late > 0 ? '' : 'none';
     document.getElementById('bTransport').textContent = fmt(transport);
     document.getElementById('transportRow').style.display = transportEnabled ? '' : 'none';
 
@@ -1025,7 +1058,8 @@
 
   function adjust(field, delta) {
     const el = document.getElementById(field);
-    el.value = Math.max(0, (parseFloat(el.value) || 0) + delta);
+    const min = field === 'hours' ? 1 : 0;
+    el.value = Math.max(min, (parseFloat(el.value) || 0) + delta);
     recalc();
     if (field === 'hours') clearPresets();
   }
@@ -1042,31 +1076,31 @@
   }
 
   function buildQuoteText() {
-    const hours = document.getElementById('hours').value;
-    const retouchPhotos = retouchingEnabled ? parseInt(document.getElementById('retouchPhotos').value) || 0 : 0;
-    const shoot = parseFloat(hours) * SHOOT_RATE;
-    const fine = retouchPhotos * FINE_RATE;
-    const transport = transportCost();
-    const total = shoot + fine + transport;
+    const { hours, shoot, late, transport, total, includedMin, includedMax } = quoteMath();
     const L = strings[currentLang];
     const dur = L.dur[currentDuration];
     const modeLabel = currentMode === 'self' ? L.selfDriveLabel : L.charterLabel;
-    const includedMin = Math.round(parseFloat(hours) * 50);
-    const includedMax = Math.round(parseFloat(hours) * 80);
+    const name = document.getElementById('clientNameField').value.trim();
+    const email = document.getElementById('clientEmailField').value.trim();
+    const eventType = getEventLabel();
+    const startTime = document.getElementById('startTimeField').value;
 
     const dateVal = document.getElementById('sessionDateField').value;
     const dateStr = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
 
     let body = L.quoteHeader + '\n' + '─'.repeat(28) + '\n';
-    if (dateStr) body += '📅 ' + dateStr + '\n' + '─'.repeat(28) + '\n';
+    body += L.clientLine(name, email) + '\n';
+    body += L.eventLine(eventType) + '\n';
+    body += L.dateLine(dateStr, startTime) + '\n';
+    body += '─'.repeat(28) + '\n';
     body += L.shootLine(hours, fmt(shoot)) + '\n';
     body += L.editLine(includedMin, includedMax) + '\n';
-    if (retouchPhotos > 0) body += L.retouchLine(retouchPhotos, fmt(fine)) + '\n';
+    if (late > 0) body += L.lateLine(fmt(late)) + '\n';
     if (transportEnabled) body += L.travelLine(modeLabel, dur, fmt(transport)) + '\n';
     body += '─'.repeat(28) + '\n';
     body += L.totalLine(fmt(total)) + '\n';
     body += '\n' + L.footerNote;
-    return { body, total: fmt(total), dateStr };
+    return { body, total: fmt(total), dateStr, email, name };
   }
 
   function copyQuote() {
@@ -1099,33 +1133,39 @@
   const reviewStrings = {
     en: {
       title: 'Review Your Quote',
-      subtitle: 'Make sure everything looks right before sending.',
+      subtitle: 'Please confirm the details before submitting.',
       nameLabel: '👤',
+      emailLabel: '✉️',
       dateLabel: '📅',
       editBtn: '✏️ Edit',
-      copyBtn: '📋 Copy & Send to Photographer',
+      copyBtn: 'Submit Quote',
+      sending: 'Sending...',
       totalLabel: 'Total before tax',
-      requestDiscount: '📋 Review & Send',
+      requestDiscount: 'Review & Submit',
     },
     zh: {
       title: '确认您的报价',
-      subtitle: '发送前请核对一下所有信息。',
+      subtitle: '提交前请最后确认信息。',
       nameLabel: '👤',
+      emailLabel: '✉️',
       dateLabel: '📅',
       editBtn: '✏️ 返回修改',
-      copyBtn: '📋 复制并发送给摄影师',
+      copyBtn: '提交报价',
+      sending: '发送中...',
       totalLabel: '税前总计',
-      requestDiscount: '📋 确认并发送',
+      requestDiscount: '确认并提交',
     },
     fil: {
       title: 'Suriin ang Iyong Quote',
-      subtitle: 'Tiyaking tama ang lahat bago ipadala.',
+      subtitle: 'Pakikumpirma ang detalye bago mag-submit.',
       nameLabel: '👤',
+      emailLabel: '✉️',
       dateLabel: '📅',
       editBtn: '✏️ I-edit',
-      copyBtn: '📋 Kopyahin at Ipadala sa Litratista',
+      copyBtn: 'Submit Quote',
+      sending: 'Sending...',
       totalLabel: 'Kabuuan bago ang buwis',
-      requestDiscount: '📋 Suriin at Ipadala',
+      requestDiscount: 'Review & Submit',
     },
   };
 
@@ -1134,11 +1174,35 @@
     document.getElementById(errorId).style.display = 'none';
   }
 
+  function clearFieldError(fieldId) {
+    const field = document.getElementById(fieldId);
+    const error = document.getElementById(fieldId + 'Error');
+    if (field) field.style.borderColor = '#E0D4C8';
+    if (error) error.style.display = 'none';
+  }
+
+  function setFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const error = document.getElementById(fieldId + 'Error');
+    if (field) field.style.borderColor = '#c0392b';
+    if (error) {
+      error.textContent = message;
+      error.style.display = 'block';
+    }
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
   function openReviewModal() {
     const L = strings[currentLang];
     const R = reviewStrings[currentLang];
-    const hoursVal = parseFloat(document.getElementById('hours').value) || 0;
-    const retouchPhotos = retouchingEnabled ? parseInt(document.getElementById('retouchPhotos').value) || 0 : 0;
+    const hoursVal = getHours();
+    const name = document.getElementById('clientNameField').value.trim();
+    const email = document.getElementById('clientEmailField').value.trim();
+    const dateVal = document.getElementById('sessionDateField').value;
+    const today = document.getElementById('sessionDateField').min;
     let valid = true;
 
     if (hoursVal < 1) {
@@ -1149,20 +1213,25 @@
       document.getElementById('hoursRow').scrollIntoView({ behavior: 'smooth', block: 'center' });
       valid = false;
     }
+    if (!name) {
+      setFieldError('clientNameField', L.errorName);
+      valid = false;
+    }
+    if (!isValidEmail(email)) {
+      setFieldError('clientEmailField', L.errorEmail);
+      valid = false;
+    }
+    if (dateVal && dateVal < today) {
+      setFieldError('sessionDateField', L.errorDate);
+      valid = false;
+    }
     if (!valid) return;
 
-    const hours = document.getElementById('hours').value;
-    const shoot = parseFloat(hours) * SHOOT_RATE;
-    const fine = retouchPhotos * FINE_RATE;
-    const transport = transportCost();
-    const total = shoot + fine + transport;
-    const name = document.getElementById('clientNameField').value.trim();
-    const dateVal = document.getElementById('sessionDateField').value;
+    const { hours, shoot, late, transport, total, includedMin, includedMax } = quoteMath();
     const dateStr = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+    const startTime = document.getElementById('startTimeField').value;
     const dur = L.dur[currentDuration];
     const modeLabel = currentMode === 'self' ? L.selfDriveLabel : L.charterLabel;
-    const includedMin = Math.round(parseFloat(hours) * 50);
-    const includedMax = Math.round(parseFloat(hours) * 80);
 
     // Populate header
     document.getElementById('reviewTitle').textContent = R.title;
@@ -1170,20 +1239,17 @@
 
     // Client info
     const infoRow = document.getElementById('reviewInfoRow');
-    if (name || dateStr) {
-      infoRow.style.display = 'block';
-      document.getElementById('reviewName').textContent = name ? R.nameLabel + ' ' + name : '';
-      document.getElementById('reviewName').style.display = name ? 'block' : 'none';
-      document.getElementById('reviewDate').textContent = dateStr ? R.dateLabel + ' ' + dateStr : '';
-      document.getElementById('reviewDate').style.display = dateStr ? 'block' : 'none';
-    } else {
-      infoRow.style.display = 'none';
-    }
+    infoRow.style.display = 'block';
+    document.getElementById('reviewName').textContent = R.nameLabel + ' ' + name + '  ' + R.emailLabel + ' ' + email;
+    document.getElementById('reviewName').style.display = 'block';
+    document.getElementById('reviewDate').textContent = dateStr ? R.dateLabel + ' ' + dateStr + (startTime ? ' ' + startTime : '') : '';
+    document.getElementById('reviewDate').style.display = dateStr || startTime ? 'block' : 'none';
 
     // Breakdown rows
-    let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.shooting} (${hours}h × $200)</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
+    let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.eventType}</span><span style="font-weight:600;text-align:right">${getEventLabel()}</span></div>`;
+    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.shooting} (${hours}h × $200)</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${includedMin} - ${includedMax} ${L.photo})</span><span style="font-weight:600">${L.included}</span></div>`;
-    if (retouchPhotos > 0) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.retouchingPhotos} (${retouchPhotos} × $40)</span><span style="font-weight:600">$${fmt(fine)}</span></div>`;
+    if (late > 0) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.lateSurcharge}</span><span style="font-weight:600">$${fmt(late)}</span></div>`;
     if (transportEnabled) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${modeLabel} · ${dur}</span><span style="font-weight:600">$${fmt(transport)}</span></div>`;
     document.getElementById('reviewBreakdown').innerHTML = rows;
 
@@ -1203,6 +1269,46 @@
 
   function closeReviewModal() {
     document.getElementById('review-overlay').style.display = 'none';
+  }
+
+  async function submitQuoteFromReview() {
+    const L = strings[currentLang];
+    const R = reviewStrings[currentLang];
+    const btn = document.getElementById('reviewCopyBtn');
+    const hint = document.getElementById('reviewCopyHint');
+    const { body, total, name, email } = buildQuoteText();
+
+    btn.disabled = true;
+    btn.textContent = R.sending;
+    hint.textContent = '';
+
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/tinklezhang@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          _subject: `Photography Quote - ${name} - $${total}`,
+          _cc: email,
+          _replyto: email,
+          _template: 'table',
+          _captcha: 'false',
+          client_name: name,
+          client_email: email,
+          quote_total_before_tax: `$${total}`,
+          quote_details: body,
+        }),
+      });
+
+      if (!res.ok) throw new Error('FormSubmit request failed');
+
+      hint.textContent = L.submitSuccess;
+      btn.textContent = 'Sent';
+      setTimeout(() => closeReviewModal(), 1800);
+    } catch (_) {
+      hint.textContent = L.submitFail;
+      btn.disabled = false;
+      btn.textContent = R.copyBtn;
+    }
   }
 
   const modalStrings = {
@@ -1322,8 +1428,10 @@
     }
   }
 
-  // Set date minimum to today
-  document.getElementById('sessionDateField').min = new Date().toISOString().split('T')[0];
+  // Set date minimum to today using local time.
+  const now = new Date();
+  const localToday = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+  document.getElementById('sessionDateField').min = localToday;
 
   setLang(currentLang);
 </script>
