@@ -457,12 +457,26 @@
     .type-btn .t-label { font-size: 11px; font-weight: 600; color: #4A3525; }
 
     /* Info fields (name + date) */
-    .info-fields { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+    .info-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 28px;
+      min-width: 0;
+      max-width: 100%;
+    }
+    .info-field {
+      min-width: 0;
+      max-width: 100%;
+    }
     .info-field label { font-size: 12px; font-weight: 600; color: #7A6252; display: block; margin-bottom: 6px; }
     .info-field input,
     .info-field select,
     .info-field textarea {
+      display: block;
       width: 100%;
+      min-width: 0;
+      max-width: 100%;
       border: 1.5px solid #E0D4C8;
       border-radius: 10px;
       padding: 10px 14px;
@@ -481,7 +495,12 @@
     .info-field input:focus,
     .info-field select:focus,
     .info-field textarea:focus { border-color: #6B4F35; }
-    .info-field input[type="date"] { color: #7A6252; }
+    .info-field input[type="date"],
+    .info-field input[type="time"] {
+      color: #7A6252;
+      -webkit-appearance: none;
+      appearance: none;
+    }
 
     .link-row {
       display: flex;
@@ -555,6 +574,18 @@
       .info-field textarea,
       .btn {
         font-size: 16px;
+      }
+      .info-fields,
+      .info-field,
+      .info-field input,
+      .info-field textarea {
+        width: 100%;
+        max-width: 100%;
+      }
+      .info-field input[type="date"],
+      .info-field input[type="time"] {
+        height: 52px;
+        line-height: 52px;
       }
     }
 
@@ -668,12 +699,13 @@
       </div>
       <div class="info-field">
         <label data-i18n="sessionDate">Preferred Shoot Date</label>
-        <input type="date" id="sessionDateField" lang="en" oninput="validateDateField(); recalc();" onchange="validateDateField(); recalc();">
+        <input type="date" id="sessionDateField" lang="en" oninput="validateScheduleFields(); recalc();" onchange="validateScheduleFields(); recalc();">
         <div class="field-error" id="sessionDateFieldError"></div>
       </div>
       <div class="info-field">
         <label data-i18n="startTime">Start Time</label>
-        <input type="time" id="startTimeField" value="14:00" onchange="recalc()">
+        <input type="time" id="startTimeField" value="14:00" oninput="validateScheduleFields(); recalc();" onchange="validateScheduleFields(); recalc();">
+        <div class="field-error" id="startTimeFieldError"></div>
       </div>
       <div class="info-field">
         <label data-i18n="noteToWeichen">Note to Weichen (Optional)</label>
@@ -859,6 +891,8 @@
       errorName: 'Please enter your name.',
       errorEmail: 'Please enter a valid email address.',
       errorDate: 'Please choose today or a future date.',
+      errorTime: 'Please choose a future time for today.',
+      scheduleNotice: 'Preferred date and time are not guaranteed. Final availability will be confirmed with Weichen.',
       welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
       emailIntro: 'Thank you for choosing Weichen as your photographer. Your quote has been sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
       emailSectionClient: 'Client Information',
@@ -950,6 +984,8 @@
       errorName: '请填写您的姓名。',
       errorEmail: '请填写有效邮箱。',
       errorDate: '请选择今天或未来日期。',
+      errorTime: '如果选择今天，请选择尚未过去的时间。',
+      scheduleNotice: '您填写的是希望拍摄时间，不代表档期已锁定。最终拍摄时间以您和 Weichen 双方确认为准。',
       welcomeMessage: '感谢您选择 Weichen 作为您的摄影师。这份报价单将发送给您，并同步抄送给 Weichen。她会在收到邮件后的 24 小时内回复您。',
       emailIntro: '感谢您选择 Weichen 作为您的摄影师。这份报价单已经发送给您，并同步抄送给 Weichen。她会在收到邮件后的 24 小时内回复您。',
       emailSectionClient: '客户信息',
@@ -1037,6 +1073,8 @@
       errorName: 'Pakilagay ang iyong pangalan.',
       errorEmail: 'Pakilagay ang valid na email address.',
       errorDate: 'Pumili ng petsa ngayon o sa hinaharap.',
+      errorTime: 'Please choose a future time for today.',
+      scheduleNotice: 'Preferred date and time are not guaranteed. Final availability will be confirmed with Weichen.',
       welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
       emailIntro: 'Thank you for choosing Weichen as your photographer. Your quote has been sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
       emailSectionClient: 'Client Information',
@@ -1232,6 +1270,7 @@
       L.clientLine(name, email),
       L.eventLine(eventType),
       L.dateLine(dateStr, startTime),
+      L.scheduleNotice,
     ];
     if (note) details.push(L.noteLine(note));
     details.push('', L.shootLine(hours, fmt(shoot)), L.editLine(includedMin, includedMax));
@@ -1364,6 +1403,47 @@
     return true;
   }
 
+  function getLocalTimeMinutes() {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
+  }
+
+  function parseTimeMinutes(value) {
+    const match = /^(\d{2}):(\d{2})$/.exec(value || '');
+    if (!match) return null;
+    return Number(match[1]) * 60 + Number(match[2]);
+  }
+
+  function validateStartTimeField() {
+    const L = strings[currentLang];
+    const dateVal = document.getElementById('sessionDateField').value;
+    const timeField = document.getElementById('startTimeField');
+    const timeMinutes = parseTimeMinutes(timeField.value);
+
+    timeField.removeAttribute('min');
+
+    if (dateVal === getLocalToday()) {
+      const nowMinutes = getLocalTimeMinutes();
+      const minHours = String(Math.floor(nowMinutes / 60)).padStart(2, '0');
+      const minMinutes = String(nowMinutes % 60).padStart(2, '0');
+      timeField.min = `${minHours}:${minMinutes}`;
+
+      if (timeMinutes !== null && timeMinutes <= nowMinutes) {
+        setFieldError('startTimeField', L.errorTime);
+        return false;
+      }
+    }
+
+    clearFieldError('startTimeField');
+    return true;
+  }
+
+  function validateScheduleFields() {
+    const validDate = validateDateField();
+    const validTime = validateStartTimeField();
+    return validDate && validTime;
+  }
+
   function openReviewModal() {
     const L = strings[currentLang];
     const R = reviewStrings[currentLang];
@@ -1396,7 +1476,7 @@
       setFieldError('sessionDateField', L.errorDate);
       valid = false;
     }
-    if (!validateDateField()) {
+    if (!validateScheduleFields()) {
       valid = false;
     }
     if (!valid) return;
@@ -1423,6 +1503,7 @@
     // Breakdown rows
     let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.eventType}</span><span style="font-weight:600;text-align:right">${getEventLabel()}</span></div>`;
     if (note) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;margin-bottom:3px">${L.noteToWeichen}</div><div style="font-weight:600;line-height:1.5">${escapeHtml(note)}</div></div>`;
+    rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;line-height:1.5">${escapeHtml(L.scheduleNotice)}</div></div>`;
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.shooting} (${hours}h × $200)</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${includedMin} - ${includedMax} ${L.photo})</span><span style="font-weight:600">${L.included}</span></div>`;
     if (late > 0) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.lateSurcharge}</span><span style="font-weight:600">$${fmt(late)}</span></div>`;
@@ -1519,11 +1600,14 @@
   sessionDateField.min = getLocalToday();
   sessionDateField.addEventListener('focus', () => {
     sessionDateField.min = getLocalToday();
+    validateStartTimeField();
   });
   sessionDateField.addEventListener('click', () => {
     sessionDateField.min = getLocalToday();
+    validateStartTimeField();
   });
-  sessionDateField.addEventListener('blur', validateDateField);
+  sessionDateField.addEventListener('blur', validateScheduleFields);
+  document.getElementById('startTimeField').addEventListener('blur', validateStartTimeField);
 
   setLang(currentLang);
 </script>
