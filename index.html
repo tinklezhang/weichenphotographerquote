@@ -495,11 +495,157 @@
     .info-field input:focus,
     .info-field select:focus,
     .info-field textarea:focus { border-color: #6B4F35; }
-    .info-field input[type="date"],
-    .info-field input[type="time"] {
-      color: #7A6252;
+    .date-picker-button,
+    .time-select {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 52px;
+      border: 1.5px solid #E0D4C8;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 16px;
+      font-family: inherit;
+      background: #fff;
+      color: #2C1F14;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .date-picker-button {
+      cursor: pointer;
+    }
+
+    .date-picker-button.placeholder {
+      color: #B8A898;
+    }
+
+    .time-select {
+      display: block;
+      height: 52px;
+      line-height: 52px;
       -webkit-appearance: none;
       appearance: none;
+      text-align-last: center;
+      text-align: center;
+      padding: 0 42px;
+      background-image: linear-gradient(45deg, transparent 50%, #7A6252 50%), linear-gradient(135deg, #7A6252 50%, transparent 50%);
+      background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .date-picker-button:focus,
+    .time-select:focus {
+      border-color: #6B4F35;
+      outline: none;
+    }
+
+    .date-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(44,31,20,0.45);
+    }
+
+    .date-modal-overlay.open {
+      display: flex;
+    }
+
+    .date-modal {
+      width: 100%;
+      max-width: 360px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 18px 50px rgba(44,31,20,0.24);
+      padding: 18px;
+    }
+
+    .calendar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .calendar-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2C1F14;
+      text-align: center;
+      flex: 1;
+    }
+
+    .calendar-nav,
+    .calendar-close {
+      width: 38px;
+      height: 38px;
+      border: none;
+      border-radius: 50%;
+      background: #F0EBE4;
+      color: #6B4F35;
+      font-size: 22px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .calendar-weekday {
+      font-size: 11px;
+      font-weight: 700;
+      color: #A89888;
+      text-align: center;
+      padding: 4px 0 8px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      border: none;
+      border-radius: 50%;
+      background: #FAF8F5;
+      color: #2C1F14;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .calendar-day.outside {
+      visibility: hidden;
+    }
+
+    .calendar-day.disabled {
+      color: #C8BDB1;
+      background: #F3EEE8;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    .calendar-day.today:not(.selected):not(.disabled) {
+      box-shadow: inset 0 0 0 2px #D6C6B8;
+    }
+
+    .calendar-day.selected {
+      background: #6B4F35;
+      color: #fff;
+    }
+
+    .calendar-note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #7A6252;
+      line-height: 1.5;
+      text-align: center;
     }
 
     .link-row {
@@ -578,14 +724,22 @@
       .info-fields,
       .info-field,
       .info-field input,
+      .date-picker-button,
+      .time-select,
       .info-field textarea {
         width: 100%;
         max-width: 100%;
       }
-      .info-field input[type="date"],
-      .info-field input[type="time"] {
-        height: 52px;
-        line-height: 52px;
+      .date-modal-overlay {
+        align-items: flex-end;
+        padding: 14px;
+      }
+      .date-modal {
+        max-width: 100%;
+        border-radius: 18px;
+      }
+      .calendar-day {
+        font-size: 13px;
       }
     }
 
@@ -699,12 +853,13 @@
       </div>
       <div class="info-field">
         <label data-i18n="sessionDate">Preferred Shoot Date</label>
-        <input type="date" id="sessionDateField" lang="en" oninput="validateScheduleFields(); recalc();" onchange="validateScheduleFields(); recalc();">
+        <input type="hidden" id="sessionDateField">
+        <button type="button" class="date-picker-button placeholder" id="sessionDateButton" onclick="openDatePicker()" data-i18n="dateButtonPlaceholder">Select a date</button>
         <div class="field-error" id="sessionDateFieldError"></div>
       </div>
       <div class="info-field">
         <label data-i18n="startTime">Start Time</label>
-        <input type="time" id="startTimeField" value="14:00" oninput="validateScheduleFields(); recalc();" onchange="validateScheduleFields(); recalc();">
+        <select class="time-select" id="startTimeField" onchange="validateScheduleFields(); recalc();"></select>
         <div class="field-error" id="startTimeFieldError"></div>
       </div>
       <div class="info-field">
@@ -757,6 +912,19 @@
   <div class="footer" data-i18n="footer">Prices are for reference only. Final pricing subject to mutual agreement.</div>
 </div>
 
+<!-- Custom Date Picker -->
+<div class="date-modal-overlay" id="date-picker-overlay" onclick="if(event.target===this)closeDatePicker()">
+  <div class="date-modal">
+    <div class="calendar-head">
+      <button type="button" class="calendar-nav" onclick="shiftCalendarMonth(-1)" aria-label="Previous month">‹</button>
+      <div class="calendar-title" id="calendarTitle"></div>
+      <button type="button" class="calendar-nav" onclick="shiftCalendarMonth(1)" aria-label="Next month">›</button>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+    <div class="calendar-note" data-i18n="calendarNote">Past dates are unavailable.</div>
+  </div>
+</div>
+
 <!-- Review Modal -->
 <div id="review-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; padding:20px;" onclick="if(event.target===this)closeReviewModal()">
   <div style="background:#fff; border-radius:20px; width:100%; max-width:400px; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.2);">
@@ -799,6 +967,7 @@
   let currentDuration = 1;
   let currentLang = 'en';
   let transportEnabled = false;
+  let calendarCursor = new Date();
 
   function setOutOfCity(enabled) {
     transportEnabled = enabled;
@@ -834,6 +1003,7 @@
       yourEmail: 'Your Email',
       emailPlaceholder: 'e.g. hello@email.com',
       sessionDate: 'Preferred Shoot Date',
+      dateButtonPlaceholder: 'Select a date',
       startTime: 'Start Time',
       noteToWeichen: 'Note to Weichen (Optional)',
       notePlaceholder: 'Optional: location, guest count, style, or special requests',
@@ -892,6 +1062,7 @@
       errorEmail: 'Please enter a valid email address.',
       errorDate: 'Please choose today or a future date.',
       errorTime: 'Please choose a future time for today.',
+      calendarNote: 'Past dates are unavailable.',
       scheduleNotice: 'Preferred date and time are not guaranteed. Final availability will be confirmed with Weichen.',
       welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
       emailIntro: 'Thank you for choosing Weichen as your photographer. Your quote has been sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
@@ -927,6 +1098,7 @@
       yourEmail: '您的邮箱',
       emailPlaceholder: '例如：hello@email.com',
       sessionDate: '希望拍摄日期',
+      dateButtonPlaceholder: '请选择日期',
       startTime: '开始时间',
       noteToWeichen: '给 Weichen 的留言（选填）',
       notePlaceholder: '选填：地点、人数、拍摄风格或特殊需求',
@@ -985,6 +1157,7 @@
       errorEmail: '请填写有效邮箱。',
       errorDate: '请选择今天或未来日期。',
       errorTime: '如果选择今天，请选择尚未过去的时间。',
+      calendarNote: '过去的日期不可选择。',
       scheduleNotice: '您填写的是希望拍摄时间，不代表档期已锁定。最终拍摄时间以您和 Weichen 双方确认为准。',
       welcomeMessage: '感谢您选择 Weichen 作为您的摄影师。这份报价单将发送给您，并同步抄送给 Weichen。她会在收到邮件后的 24 小时内回复您。',
       emailIntro: '感谢您选择 Weichen 作为您的摄影师。这份报价单已经发送给您，并同步抄送给 Weichen。她会在收到邮件后的 24 小时内回复您。',
@@ -1015,6 +1188,7 @@
       yourEmail: 'Iyong Email',
       emailPlaceholder: 'hal. hello@email.com',
       sessionDate: 'Gustong Petsa ng Pagkuha',
+      dateButtonPlaceholder: 'Select a date',
       startTime: 'Oras ng Simula',
       noteToWeichen: 'Note to Weichen (Optional)',
       notePlaceholder: 'Optional: location, guest count, style, or special requests',
@@ -1074,6 +1248,7 @@
       errorEmail: 'Pakilagay ang valid na email address.',
       errorDate: 'Pumili ng petsa ngayon o sa hinaharap.',
       errorTime: 'Please choose a future time for today.',
+      calendarNote: 'Past dates are unavailable.',
       scheduleNotice: 'Preferred date and time are not guaranteed. Final availability will be confirmed with Weichen.',
       welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
       emailIntro: 'Thank you for choosing Weichen as your photographer. Your quote has been sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
@@ -1098,6 +1273,26 @@
     }[char]));
   }
 
+  function dateLocale() {
+    return currentLang === 'zh' ? 'zh-CN' : 'en-CA';
+  }
+
+  function formatDateForButton(value) {
+    if (!value) return strings[currentLang].dateButtonPlaceholder;
+    return new Date(value + 'T12:00:00').toLocaleDateString(dateLocale(), {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  function updateDateButton() {
+    const dateValue = document.getElementById('sessionDateField').value;
+    const button = document.getElementById('sessionDateButton');
+    button.textContent = formatDateForButton(dateValue);
+    button.classList.toggle('placeholder', !dateValue);
+  }
+
   function setLang(lang) {
     currentLang = lang;
     document.querySelectorAll('.lang-btn').forEach(b => {
@@ -1120,6 +1315,8 @@
       if (strings[lang][key]) el.placeholder = strings[lang][key];
     });
     // Re-render dynamic labels
+    updateDateButton();
+    renderCalendar();
     applyEventRules();
     recalc();
   }
@@ -1368,15 +1565,17 @@
 
   function clearFieldError(fieldId) {
     const field = document.getElementById(fieldId);
+    const visualField = fieldId === 'sessionDateField' ? document.getElementById('sessionDateButton') : field;
     const error = document.getElementById(fieldId + 'Error');
-    if (field) field.style.borderColor = '#E0D4C8';
+    if (visualField) visualField.style.borderColor = '#E0D4C8';
     if (error) error.style.display = 'none';
   }
 
   function setFieldError(fieldId, message) {
     const field = document.getElementById(fieldId);
+    const visualField = fieldId === 'sessionDateField' ? document.getElementById('sessionDateButton') : field;
     const error = document.getElementById(fieldId + 'Error');
-    if (field) field.style.borderColor = '#c0392b';
+    if (visualField) visualField.style.borderColor = '#c0392b';
     if (error) {
       error.textContent = message;
       error.style.display = 'block';
@@ -1391,16 +1590,103 @@
     const field = document.getElementById('sessionDateField');
     const L = strings[currentLang];
     const today = getLocalToday();
-    field.min = today;
 
     if (field.value && field.value < today) {
       field.value = '';
+      updateDateButton();
       setFieldError('sessionDateField', L.errorDate);
       return false;
     }
 
     clearFieldError('sessionDateField');
     return true;
+  }
+
+  function isoDate(year, monthIndex, day) {
+    return [
+      year,
+      String(monthIndex + 1).padStart(2, '0'),
+      String(day).padStart(2, '0'),
+    ].join('-');
+  }
+
+  function openDatePicker() {
+    const selected = document.getElementById('sessionDateField').value;
+    const base = selected ? new Date(selected + 'T12:00:00') : new Date();
+    calendarCursor = new Date(base.getFullYear(), base.getMonth(), 1);
+    renderCalendar();
+    document.getElementById('date-picker-overlay').classList.add('open');
+  }
+
+  function closeDatePicker() {
+    document.getElementById('date-picker-overlay').classList.remove('open');
+  }
+
+  function shiftCalendarMonth(delta) {
+    calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() + delta, 1);
+    renderCalendar();
+  }
+
+  function chooseDate(value) {
+    if (value < getLocalToday()) return;
+    document.getElementById('sessionDateField').value = value;
+    updateDateButton();
+    closeDatePicker();
+    updateTimeOptionAvailability();
+    validateScheduleFields();
+    recalc();
+  }
+
+  function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    const title = document.getElementById('calendarTitle');
+    if (!grid || !title) return;
+
+    const year = calendarCursor.getFullYear();
+    const month = calendarCursor.getMonth();
+    const today = getLocalToday();
+    const selected = document.getElementById('sessionDateField').value;
+    const firstDay = new Date(year, month, 1);
+    const leading = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const weekdays = currentLang === 'zh'
+      ? ['一', '二', '三', '四', '五', '六', '日']
+      : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    title.textContent = firstDay.toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long' });
+    grid.innerHTML = '';
+
+    weekdays.forEach((weekday) => {
+      const el = document.createElement('div');
+      el.className = 'calendar-weekday';
+      el.textContent = weekday;
+      grid.appendChild(el);
+    });
+
+    for (let i = 0; i < leading; i++) {
+      const empty = document.createElement('button');
+      empty.type = 'button';
+      empty.className = 'calendar-day outside';
+      empty.tabIndex = -1;
+      grid.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const value = isoDate(year, month, day);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'calendar-day';
+      button.textContent = String(day);
+
+      if (value < today) {
+        button.classList.add('disabled');
+        button.disabled = true;
+      }
+      if (value === today) button.classList.add('today');
+      if (value === selected) button.classList.add('selected');
+      button.addEventListener('click', () => chooseDate(value));
+      grid.appendChild(button);
+    }
   }
 
   function getLocalTimeMinutes() {
@@ -1414,19 +1700,48 @@
     return Number(match[1]) * 60 + Number(match[2]);
   }
 
+  function populateTimeOptions() {
+    const timeField = document.getElementById('startTimeField');
+    const currentValue = timeField.value || '14:00';
+    timeField.innerHTML = '';
+
+    for (let minutes = 0; minutes < 24 * 60; minutes += 30) {
+      const hours = String(Math.floor(minutes / 60)).padStart(2, '0');
+      const mins = String(minutes % 60).padStart(2, '0');
+      const value = `${hours}:${mins}`;
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      timeField.appendChild(option);
+    }
+
+    timeField.value = currentValue;
+    if (!timeField.value) timeField.value = '14:00';
+    updateTimeOptionAvailability();
+  }
+
+  function updateTimeOptionAvailability() {
+    const dateVal = document.getElementById('sessionDateField').value;
+    const timeField = document.getElementById('startTimeField');
+    const nowMinutes = getLocalTimeMinutes();
+    const shouldDisablePast = dateVal === getLocalToday();
+
+    Array.from(timeField.options).forEach((option) => {
+      const optionMinutes = parseTimeMinutes(option.value);
+      option.disabled = shouldDisablePast && optionMinutes !== null && optionMinutes <= nowMinutes;
+    });
+  }
+
   function validateStartTimeField() {
     const L = strings[currentLang];
     const dateVal = document.getElementById('sessionDateField').value;
     const timeField = document.getElementById('startTimeField');
     const timeMinutes = parseTimeMinutes(timeField.value);
 
-    timeField.removeAttribute('min');
+    updateTimeOptionAvailability();
 
     if (dateVal === getLocalToday()) {
       const nowMinutes = getLocalTimeMinutes();
-      const minHours = String(Math.floor(nowMinutes / 60)).padStart(2, '0');
-      const minMinutes = String(nowMinutes % 60).padStart(2, '0');
-      timeField.min = `${minHours}:${minMinutes}`;
 
       if (timeMinutes !== null && timeMinutes <= nowMinutes) {
         setFieldError('startTimeField', L.errorTime);
@@ -1452,7 +1767,6 @@
     const email = document.getElementById('clientEmailField').value.trim();
     const dateVal = document.getElementById('sessionDateField').value;
     const today = getLocalToday();
-    document.getElementById('sessionDateField').min = today;
     const note = document.getElementById('clientNoteField').value.trim();
     let valid = true;
 
@@ -1595,18 +1909,7 @@
     return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
   }
 
-  // Set date minimum to today using local time.
-  const sessionDateField = document.getElementById('sessionDateField');
-  sessionDateField.min = getLocalToday();
-  sessionDateField.addEventListener('focus', () => {
-    sessionDateField.min = getLocalToday();
-    validateStartTimeField();
-  });
-  sessionDateField.addEventListener('click', () => {
-    sessionDateField.min = getLocalToday();
-    validateStartTimeField();
-  });
-  sessionDateField.addEventListener('blur', validateScheduleFields);
+  populateTimeOptions();
   document.getElementById('startTimeField').addEventListener('blur', validateStartTimeField);
 
   setLang(currentLang);
