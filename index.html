@@ -782,7 +782,7 @@
       <div class="field">
         <label>
           <span data-i18n="shootingDuration">Shooting Duration</span>
-          <span class="rate">$200 / <span data-i18n="hr">hr</span></span>
+          <span class="rate">$300 / <span data-i18n="hr">hr</span></span>
         </label>
         <div class="input-row" id="hoursRow">
           <button id="hoursMinus" onclick="adjust('hours', -1)">−</button>
@@ -959,7 +959,7 @@
 </div>
 
 <script>
-  const SHOOT_RATE = 200;
+  const SHOOT_RATE = 300;
   const FINE_RATE = 40;
   const TRANSPORT_PRICES = [200, 300, 400];
   const QUOTE_API_ENDPOINT = 'https://weichen-quote-email.tinklezhang.workers.dev';
@@ -1016,7 +1016,7 @@
       photo: 'photos',
       editingHint: 'Includes 50 - 80 standard edited photos per hour.',
       familyEditingHint: 'Family & milestone photos include 20 - 30 standard edited photos per hour.',
-      weekendHint: 'Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.',
+      weekendHint: 'Same rate on weekends. Hours after 18:00 include a 20% evening surcharge.',
       outOfCity: 'Out-of-City Shoot?',
       no: 'No',
       yes: 'Yes',
@@ -1047,9 +1047,9 @@
       eventLine: (eventType) => `Photography type: ${eventType}`,
       dateLine: (date, time) => `Preferred time: ${date || 'Not selected'}${time ? ' at ' + time : ''}`,
       noteLine: (note) => `Note to Weichen: ${note}`,
-      shootLine: (h, cost) => `Shooting: ${h}h × $200 = $${cost}`,
+      shootLine: (h, cost) => `Shooting: ${h}h × $300 = $${cost}`,
       editLine: (min, max) => `Included: ${min} - ${max} standard edited photos`,
-      lateLine: (cost) => `Evening surcharge after 18:00: $${cost}`,
+      lateLine: (lateHrs, cost) => `Evening surcharge (${lateHrs}h after 18:00, 20%): $${cost}`,
       travelLine: (mode, dur, cost) => `Travel (${mode} · ${dur}): $${cost}`,
       selfDriveLabel: 'Personal transportation',
       charterLabel: 'Chartered car',
@@ -1142,9 +1142,9 @@
       eventLine: (eventType) => `拍摄类型：${eventType}`,
       dateLine: (date, time) => `希望时间：${date || '未选择'}${time ? ' ' + time : ''}`,
       noteLine: (note) => `给 Weichen 的留言：${note}`,
-      shootLine: (h, cost) => `小时包价：${h}h × $200 = $${cost}`,
+      shootLine: (h, cost) => `拍摄费：${h}h × $300 = $${cost}`,
       editLine: (min, max) => `已包含：${min} - ${max} 张标准修片照片`,
-      lateLine: (cost) => `18:00 后晚间费用：$${cost}`,
+      lateLine: (lateHrs, cost) => `晚间费用（18:00 后 ${lateHrs}h，加收 20%）：$${cost}`,
       travelLine: (mode, dur, cost) => `交通费（${mode} · ${dur}）：$${cost}`,
       selfDriveLabel: '自行交通',
       charterLabel: '包车',
@@ -1233,9 +1233,9 @@
       eventLine: (eventType) => `Uri ng photography: ${eventType}`,
       dateLine: (date, time) => `Preferred time: ${date || 'Hindi napili'}${time ? ' at ' + time : ''}`,
       noteLine: (note) => `Note to Weichen: ${note}`,
-      shootLine: (h, cost) => `Hourly package: ${h}h × $200 = $${cost}`,
+      shootLine: (h, cost) => `Shooting: ${h}h × $300 = $${cost}`,
       editLine: (min, max) => `Kasama: ${min} - ${max} standard edited photos`,
-      lateLine: (cost) => `Evening surcharge after 18:00: $${cost}`,
+      lateLine: (lateHrs, cost) => `Evening surcharge (${lateHrs}h after 18:00, 20%): $${cost}`,
       travelLine: (mode, dur, cost) => `Bayad sa biyahe (${mode} · ${dur}): $${cost}`,
       selfDriveLabel: 'Personal transportation',
       charterLabel: 'Charter',
@@ -1359,21 +1359,29 @@
     hoursPlus.disabled = false;
   }
 
-  function isEveningEvent() {
-    const time = document.getElementById('startTimeField').value;
-    return !!time && time >= '18:00';
+  function eveningHours(startTime, totalHours) {
+    if (!startTime) return 0;
+    const [h, m] = startTime.split(':').map(Number);
+    const startMin = h * 60 + m;
+    const endMin = startMin + totalHours * 60;
+    const cutoffMin = 18 * 60;
+    if (endMin <= cutoffMin) return 0;
+    return (endMin - Math.max(startMin, cutoffMin)) / 60;
   }
 
   function quoteMath() {
     const hours = getHours();
     const shoot = hours * SHOOT_RATE;
-    const late = isEveningEvent() ? shoot * 0.2 : 0;
+    const startTime = document.getElementById('startTimeField').value;
+    const lateHrs = eveningHours(startTime, hours);
+    const late = lateHrs * SHOOT_RATE * 0.2;
     const transport = transportCost();
     const family = isFamilySession();
     return {
       hours,
       shoot,
       late,
+      lateHrs,
       transport,
       total: shoot + late + transport,
       includedMin: family ? Math.round(hours * 20) : Math.round(hours * 50),
@@ -1405,19 +1413,19 @@
 
   function recalc() {
     applyEventRules();
-    const { hours, shoot, late, transport, total, includedMin, includedMax } = quoteMath();
+    const { hours, shoot, late, lateHrs, transport, total, includedMin, includedMax } = quoteMath();
     const L = strings[currentLang];
     const dur = L.dur[currentDuration];
     const photoWord = L.photo;
 
     document.getElementById('bEventLabel').textContent = L.eventType;
     document.getElementById('bEvent').textContent = getEventLabel();
-    document.getElementById('bShootLabel').textContent = `${L.shooting} (${hours}h × $200)`;
+    document.getElementById('bShootLabel').textContent = `${L.shooting} (${hours}h × $300/h)`;
     document.getElementById('bEditLabel').textContent = `${L.editing} (${includedMin} - ${includedMax} ${photoWord})`;
     document.getElementById('bShoot').textContent = fmt(shoot);
     document.getElementById('bIncluded').textContent = L.included;
     document.querySelector('[data-i18n="editingHint"]').textContent = isFamilySession() ? L.familyEditingHint : L.editingHint;
-    document.getElementById('lateLabel').textContent = L.lateSurcharge;
+    document.getElementById('lateLabel').textContent = `${L.lateSurcharge} (${fmt(lateHrs)}h)`;
     document.getElementById('bLate').textContent = fmt(late);
     document.getElementById('lateRow').style.display = late > 0 ? '' : 'none';
     document.getElementById('bTransport').textContent = fmt(transport);
@@ -1450,7 +1458,7 @@
   }
 
   function buildQuoteText() {
-    const { hours, shoot, late, transport, total, includedMin, includedMax } = quoteMath();
+    const { hours, shoot, late, lateHrs, transport, total, includedMin, includedMax } = quoteMath();
     const L = strings[currentLang];
     const dur = L.dur[currentDuration];
     const modeLabel = currentMode === 'self' ? L.selfDriveLabel : L.charterLabel;
@@ -1472,7 +1480,7 @@
     if (note) details.push(L.noteLine(note));
     details.push('', L.shootLine(hours, fmt(shoot)), L.editLine(includedMin, includedMax));
 
-    if (late > 0) details.push(L.lateLine(fmt(late)));
+    if (late > 0) details.push(L.lateLine(fmt(lateHrs), fmt(late)));
     if (transportEnabled) details.push(L.travelLine(modeLabel, dur, fmt(transport)));
 
     let body = L.quoteHeader + '\n' + '─'.repeat(28) + '\n';
@@ -1795,7 +1803,7 @@
     }
     if (!valid) return;
 
-    const { hours, shoot, late, transport, total, includedMin, includedMax } = quoteMath();
+    const { hours, shoot, late, lateHrs, transport, total, includedMin, includedMax } = quoteMath();
     const dateStr = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
     const startTime = document.getElementById('startTimeField').value;
     const dur = L.dur[currentDuration];
@@ -1818,9 +1826,9 @@
     let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.eventType}</span><span style="font-weight:600;text-align:right">${getEventLabel()}</span></div>`;
     if (note) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;margin-bottom:3px">${L.noteToWeichen}</div><div style="font-weight:600;line-height:1.5">${escapeHtml(note)}</div></div>`;
     rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;line-height:1.5">${escapeHtml(L.scheduleNotice)}</div></div>`;
-    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.shooting} (${hours}h × $200)</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
+    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.shooting} (${hours}h × $300/h)</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${includedMin} - ${includedMax} ${L.photo})</span><span style="font-weight:600">${L.included}</span></div>`;
-    if (late > 0) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.lateSurcharge}</span><span style="font-weight:600">$${fmt(late)}</span></div>`;
+    if (late > 0) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.lateSurcharge} (${fmt(lateHrs)}h)</span><span style="font-weight:600">$${fmt(late)}</span></div>`;
     if (transportEnabled) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${modeLabel} · ${dur}</span><span style="font-weight:600">$${fmt(transport)}</span></div>`;
     document.getElementById('reviewBreakdown').innerHTML = rows;
 
