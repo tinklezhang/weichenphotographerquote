@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Photography</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      background: #FAF8F5;
+      color: #2C1F14;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px 60px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 40px rgba(100,60,20,0.08);
+      width: 100%;
+      max-width: 520px;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #6B4F35 0%, #9B7550 100%);
+      padding: 36px 36px 28px;
+      color: #fff;
+      text-align: center;
+      position: relative;
+    }
+
+    .lang-toggle {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .lang-btn {
+      padding: 4px 10px;
+      border-radius: 16px;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: rgba(255,255,255,0.75);
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+
+    .lang-btn.active {
+      background: rgba(255,255,255,0.95);
+      color: #2C1F14;
+    }
+
+    .header .icon { font-size: 36px; margin-bottom: 10px; }
+    .header h1 { font-size: 22px; font-weight: 600; letter-spacing: 1px; }
+    .header p { font-size: 13px; opacity: 0.85; margin-top: 6px; }
+
+    .select-field {
+      width: 100%;
+      border: 1.5px solid #E0D4C8;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+      background: #fff;
+      color: #2C1F14;
+      transition: border-color 0.2s;
+    }
+
+    .select-field:focus { border-color: #6B4F35; }
+
+    .body { padding: 32px 36px; }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #6B4F35;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .presets {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .preset-btn {
+      border: 1.5px solid #E0D4C8;
+      border-radius: 12px;
+      padding: 12px 8px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .preset-btn:hover { border-color: #6B4F35; background: #F0EBE4; }
+    .preset-btn.active { border-color: #6B4F35; background: #F0EBE4; box-shadow: 0 0 0 3px rgba(100,60,20,0.12); }
+    .preset-btn .name { font-size: 13px; font-weight: 600; color: #2C1F14; }
+    .preset-btn .detail { font-size: 11px; color: #9A8070; margin-top: 3px; }
+
+    .fields { display: flex; flex-direction: column; gap: 20px; margin-bottom: 28px; }
+
+    .field label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 500;
+      color: #4A3525;
+      margin-bottom: 8px;
+    }
+
+    .field label .rate { font-size: 12px; color: #A89888; font-weight: 400; }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      border: 1.5px solid #E0D4C8;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .input-row:focus-within { border-color: #6B4F35; }
+
+    .input-row button {
+      width: 44px;
+      height: 44px;
+      background: #F0EBE4;
+      border: none;
+      font-size: 20px;
+      color: #6B4F35;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .input-row button:hover { background: #EDE0D4; }
+
+    .input-row button:disabled {
+      color: #C1B3A6;
+      background: #F6F1EB;
+      cursor: not-allowed;
+    }
+
+    .input-row input {
+      flex: 1;
+      border: none;
+      outline: none;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #2C1F14;
+      background: transparent;
+      padding: 0 8px;
+      height: 44px;
+    }
+
+    .input-row input:disabled {
+      color: #6B4F35;
+      -webkit-text-fill-color: #6B4F35;
+    }
+
+    .input-row input::-webkit-inner-spin-button,
+    .input-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .input-unit {
+      font-size: 13px;
+      color: #A89888;
+      font-weight: 500;
+      width: 52px;
+      padding-left: 4px;
+      flex-shrink: 0;
+    }
+    .input-spacer {
+      width: 52px;
+      flex-shrink: 0;
+    }
+
+    .field-hint { font-size: 11px; color: #A89888; margin-top: 7px; line-height: 1.5; }
+
+    .divider { height: 1px; background: #EDE5DC; margin-bottom: 24px; }
+
+    .transport-section { margin-bottom: 28px; }
+
+    .transport-modes {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .transport-btn {
+      border: 1.5px solid #E0D4C8;
+      border-radius: 12px;
+      padding: 12px 8px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .transport-btn:hover { border-color: #6B4F35; background: #F0EBE4; }
+    .transport-btn.active { border-color: #6B4F35; background: #F0EBE4; box-shadow: 0 0 0 3px rgba(100,60,20,0.12); }
+    .transport-btn .t-icon { font-size: 20px; margin-bottom: 4px; }
+    .transport-btn .t-name { font-size: 12px; font-weight: 600; color: #2C1F14; }
+    .transport-btn .t-desc { font-size: 11px; color: #A89888; margin-top: 2px; }
+
+    .duration-label { font-size: 12px; color: #8a7070; margin-bottom: 8px; }
+
+    .duration-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .duration-btn {
+      border: 1.5px solid #E0D4C8;
+      border-radius: 10px;
+      padding: 9px 6px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .duration-btn:hover { border-color: #6B4F35; background: #F0EBE4; }
+    .duration-btn.active { border-color: #6B4F35; background: #F0EBE4; box-shadow: 0 0 0 3px rgba(100,60,20,0.12); }
+    .duration-btn .d-time { font-size: 12px; font-weight: 600; color: #2C1F14; }
+    .duration-btn .d-price { font-size: 11px; color: #6B4F35; margin-top: 2px; font-weight: 600; }
+
+    /* Out-of-city toggle row */
+    .out-of-city-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .out-of-city-row .main { font-size: 14px; font-weight: 600; color: #4A3525; }
+
+    .yes-no-toggle {
+      display: flex;
+      background: #EDE5DC;
+      border-radius: 20px;
+      padding: 3px;
+      gap: 2px;
+    }
+
+    .yn-btn {
+      padding: 5px 16px;
+      border-radius: 16px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: #A89888;
+      transition: all 0.2s;
+    }
+
+    .yn-btn.active {
+      background: #fff;
+      color: #6B4F35;
+      box-shadow: 0 1px 4px rgba(100,60,20,0.12);
+    }
+
+    .toggle { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #DDD0C4;
+      border-radius: 26px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .slider::before {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+    .toggle input:checked + .slider { background: #6B4F35; }
+    .toggle input:checked + .slider::before { transform: translateX(20px); }
+
+    .transport-details {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.2s ease;
+    }
+    .transport-details.open { max-height: 300px; opacity: 1; }
+
+    .breakdown {
+      background: #FAF8F5;
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #7A6252;
+      padding: 5px 0;
+      gap: 12px;
+    }
+
+    .breakdown-row span:first-child {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      line-height: 1.4;
+    }
+
+    .breakdown-row span:last-child {
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .breakdown-row.subtotal {
+      border-top: 1px solid #E5D8CC;
+      margin-top: 6px;
+      padding-top: 12px;
+      font-size: 14px;
+      color: #4A3525;
+      font-weight: 500;
+    }
+
+    .total-box {
+      background: linear-gradient(135deg, #6B4F35 0%, #9B7550 100%);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      color: #fff;
+      margin-bottom: 20px;
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      font-family: inherit;
+      display: block;
+      transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+    }
+
+    .total-box:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 26px rgba(100,60,20,0.18);
+      filter: brightness(1.02);
+    }
+
+    .total-box:focus-visible {
+      outline: 3px solid rgba(107,79,53,0.25);
+      outline-offset: 3px;
+    }
+
+    .total-box .label { font-size: 13px; opacity: 0.85; letter-spacing: 1px; }
+
+    .total-box .amount {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin: 6px 0 2px;
+    }
+
+    .total-box .amount span { font-size: 22px; font-weight: 500; vertical-align: middle; margin-right: 2px; }
+
+    .total-box .cta {
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 10px;
+      opacity: 0.95;
+    }
+
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 13px 10px;
+      border-radius: 12px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary { background: #2C1F14; color: #fff; }
+    .btn-primary:hover { background: #2a1e1e; }
+    .btn-secondary { background: #EDE5DC; color: #7A6252; }
+    .btn-secondary:hover { background: #E5D8CC; }
+
+    .btn-friend {
+      background: #F0EBE4;
+      color: #6B4F35;
+      border: 1.5px solid #E0D4C8;
+      flex-basis: 100%;
+    }
+
+    .btn-friend:hover { background: #EDE0D4; border-color: #6B4F35; }
+
+    .footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 11px;
+      color: #B8A898;
+      border-top: 1px solid #EDE5DC;
+    }
+
+    /* Shoot type pills */
+    .shoot-types {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .type-btn {
+      border: 1.5px solid #E0D4C8;
+      border-radius: 12px;
+      padding: 10px 4px;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .type-btn:hover { border-color: #6B4F35; background: #F0EBE4; }
+    .type-btn.active { border-color: #6B4F35; background: #F0EBE4; box-shadow: 0 0 0 3px rgba(100,60,20,0.12); }
+    .type-btn .t-emoji { font-size: 20px; margin-bottom: 4px; }
+    .type-btn .t-label { font-size: 11px; font-weight: 600; color: #4A3525; }
+
+    /* Info fields (name + date) */
+    .info-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 28px;
+      min-width: 0;
+      max-width: 100%;
+    }
+    .info-field {
+      min-width: 0;
+      max-width: 100%;
+    }
+    .info-field label { font-size: 12px; font-weight: 600; color: #7A6252; display: block; margin-bottom: 6px; }
+    .info-field input,
+    .info-field select,
+    .info-field textarea {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      border: 1.5px solid #E0D4C8;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+      background: #fff;
+      color: #2C1F14;
+      transition: border-color 0.2s;
+    }
+    .info-field textarea {
+      min-height: 86px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    .info-field input:focus,
+    .info-field select:focus,
+    .info-field textarea:focus { border-color: #6B4F35; }
+    .date-picker-button,
+    .time-select {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 52px;
+      border: 1.5px solid #E0D4C8;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 16px;
+      font-family: inherit;
+      background: #fff;
+      color: #2C1F14;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .date-picker-button {
+      cursor: pointer;
+    }
+
+    .date-picker-button.placeholder {
+      color: #B8A898;
+    }
+
+    .time-select {
+      display: block;
+      height: 52px;
+      line-height: 52px;
+      -webkit-appearance: none;
+      appearance: none;
+      text-align-last: center;
+      text-align: center;
+      padding: 0 42px;
+      background-image: linear-gradient(45deg, transparent 50%, #7A6252 50%), linear-gradient(135deg, #7A6252 50%, transparent 50%);
+      background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .date-picker-button:focus,
+    .time-select:focus {
+      border-color: #6B4F35;
+      outline: none;
+    }
+
+    .date-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(44,31,20,0.45);
+    }
+
+    .date-modal-overlay.open {
+      display: flex;
+    }
+
+    .date-modal {
+      width: 100%;
+      max-width: 360px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 18px 50px rgba(44,31,20,0.24);
+      padding: 18px;
+    }
+
+    .calendar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .calendar-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2C1F14;
+      text-align: center;
+      flex: 1;
+    }
+
+    .calendar-nav,
+    .calendar-close {
+      width: 38px;
+      height: 38px;
+      border: none;
+      border-radius: 50%;
+      background: #F0EBE4;
+      color: #6B4F35;
+      font-size: 22px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+
+    .calendar-weekday {
+      font-size: 11px;
+      font-weight: 700;
+      color: #A89888;
+      text-align: center;
+      padding: 4px 0 8px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      border: none;
+      border-radius: 50%;
+      background: #FAF8F5;
+      color: #2C1F14;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .calendar-day.outside {
+      visibility: hidden;
+    }
+
+    .calendar-day.disabled {
+      color: #C8BDB1;
+      background: #F3EEE8;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    .calendar-day.today:not(.selected):not(.disabled) {
+      box-shadow: inset 0 0 0 2px #D6C6B8;
+    }
+
+    .calendar-day.selected {
+      background: #6B4F35;
+      color: #fff;
+    }
+
+    .calendar-note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #7A6252;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .link-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .link-row a {
+      color: #6B4F35;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(107,79,53,0.35);
+      padding-bottom: 2px;
+      overflow-wrap: anywhere;
+    }
+
+    /* Validation error */
+    .field-error {
+      font-size: 12px;
+      color: #c0392b;
+      margin-top: 6px;
+      display: none;
+      font-weight: 500;
+    }
+    .input-row.invalid { border-color: #c0392b !important; }
+
+    /* Post-copy hint */
+    .copy-hint {
+      text-align: center;
+      font-size: 12px;
+      color: #6B4F35;
+      font-weight: 600;
+      margin-top: 10px;
+      min-height: 18px;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 0 0 40px; }
+      .card { border-radius: 0; }
+      .body { padding: 24px 20px; }
+      .header { padding: 28px 20px 22px; }
+      .lang-toggle { top: 10px; right: 10px; }
+      .header h1 { font-size: 20px; padding: 0 54px; line-height: 1.25; }
+      .shoot-types { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+      .type-btn .t-label { font-size: 10px; }
+      .transport-modes { grid-template-columns: 1fr; }
+      .duration-options { gap: 6px; }
+      .transport-btn .t-name,
+      .duration-btn .d-time,
+      .duration-btn .d-price { overflow-wrap: anywhere; }
+      .breakdown { padding: 16px; }
+      .breakdown-row {
+        align-items: flex-start;
+      }
+      .breakdown-row:not(.subtotal) {
+        flex-direction: column;
+        gap: 3px;
+      }
+      .breakdown-row span:last-child {
+        align-self: flex-end;
+      }
+      .link-row {
+        gap: 10px;
+      }
+      .select-field,
+      .info-field input,
+      .info-field select,
+      .info-field textarea,
+      .btn {
+        font-size: 16px;
+      }
+      .info-fields,
+      .info-field,
+      .info-field input,
+      .date-picker-button,
+      .time-select,
+      .info-field textarea {
+        width: 100%;
+        max-width: 100%;
+      }
+      .date-modal-overlay {
+        align-items: flex-end;
+        padding: 14px;
+      }
+      .date-modal {
+        max-width: 100%;
+        border-radius: 18px;
+      }
+      .calendar-day {
+        font-size: 13px;
+      }
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .card { box-shadow: none; max-width: 100%; }
+      .actions { display: none; }
+      .lang-toggle { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn" onclick="setLang('fil')">FIL</button>
+    </div>
+    <div class="icon">📷</div>
+    <h1 data-i18n="title">Event Photography</h1>
+    <p data-i18n="subtitle">Photography Quote</p>
+  </div>
+
+  <div class="body">
+
+    <div class="section-label" data-i18n="eventCategories">Photography Type</div>
+    <div class="field" style="margin-bottom:28px;">
+      <select class="select-field" id="eventTypeField" onchange="handleEventTypeChange()">
+        <option value="festivals" data-i18n="catCelebration">Festivals & Fairs</option>
+        <option value="business" data-i18n="catCorporate">Annual Galas & Celebrations</option>
+        <option value="performance" data-i18n="catPerformance">Performances & Concerts</option>
+        <option value="private" data-i18n="catPrivate">Private Parties</option>
+        <option value="family" data-i18n="catFamily">Family & Milestone Photos</option>
+      </select>
+    </div>
+
+    <div class="section-label" data-i18n="shootingEditing">Rate & Includes</div>
+    <div class="fields">
+      <div class="field">
+        <label>
+          <span data-i18n="shootingDuration">Shooting Duration</span>
+          <span class="rate">$300 / <span data-i18n="hr">hr</span></span>
+        </label>
+        <div class="input-row" id="hoursRow">
+          <button id="hoursMinus" onclick="adjust('hours', -1)">−</button>
+          <div class="input-spacer"></div>
+          <input type="number" id="hours" value="1" min="1" max="24" oninput="recalc(); clearError('hoursRow','hoursError')">
+          <span class="input-unit" data-i18n="hr">hr</span>
+          <button id="hoursPlus" onclick="adjust('hours', 1)">+</button>
+        </div>
+        <div class="field-error" id="hoursError"></div>
+        <div class="field-hint" data-i18n="editingHint">Includes 50 - 80 standard edited photos per hour.</div>
+        <div class="field-hint" data-i18n="weekendHint">Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="transport-section">
+      <div class="out-of-city-row">
+        <div class="main" data-i18n="outOfCity">Out-of-City Shoot?</div>
+        <div class="yes-no-toggle">
+          <button class="yn-btn active" id="ynNo" onclick="setOutOfCity(false)" data-i18n="no">No</button>
+          <button class="yn-btn" id="ynYes" onclick="setOutOfCity(true)" data-i18n="yes">Yes</button>
+        </div>
+      </div>
+
+      <div class="transport-details" id="transportDetails">
+        <div class="transport-modes">
+          <div class="transport-btn active" data-mode="self" onclick="selectMode(this)">
+            <div class="t-icon">🚗</div>
+            <div class="t-name" data-i18n="selfDrive">Personal Transportation</div>
+            <div class="t-desc" data-i18n="selfDriveDesc">Round-trip travel included</div>
+          </div>
+          <div class="transport-btn" data-mode="charter" onclick="selectMode(this)">
+            <div class="t-icon">🚙</div>
+            <div class="t-name" data-i18n="charter">Chartered Car</div>
+            <div class="t-desc" data-i18n="charterDesc">Rate halved</div>
+          </div>
+        </div>
+
+        <div class="duration-label" data-i18n="roundTrip">Round-trip travel time</div>
+        <div class="duration-options">
+          <div class="duration-btn" data-hours="1-2" onclick="selectDuration(this)">
+            <div class="d-time">1–2 <span data-i18n="hrs">hrs</span></div>
+            <div class="d-price" id="dp0">$200</div>
+          </div>
+          <div class="duration-btn active" data-hours="3-4" onclick="selectDuration(this)">
+            <div class="d-time">3–4 <span data-i18n="hrs">hrs</span></div>
+            <div class="d-price" id="dp1">$300</div>
+          </div>
+          <div class="duration-btn" data-hours="5-6" onclick="selectDuration(this)">
+            <div class="d-time">5–6 <span data-i18n="hrs">hrs</span></div>
+            <div class="d-price" id="dp2">$400</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-fields">
+      <div class="info-field">
+        <label data-i18n="yourName">Your Name</label>
+        <input type="text" id="clientNameField" data-i18n-placeholder="namePlaceholder" placeholder="e.g. Weichen" oninput="clearFieldError('clientNameField')">
+        <div class="field-error" id="clientNameFieldError"></div>
+      </div>
+      <div class="info-field">
+        <label data-i18n="yourEmail">Your Email</label>
+        <input type="email" id="clientEmailField" data-i18n-placeholder="emailPlaceholder" placeholder="e.g. hello@email.com" oninput="clearFieldError('clientEmailField')">
+        <div class="field-error" id="clientEmailFieldError"></div>
+      </div>
+      <div class="info-field">
+        <label data-i18n="sessionDate">Preferred Shoot Date</label>
+        <input type="hidden" id="sessionDateField">
+        <button type="button" class="date-picker-button placeholder" id="sessionDateButton" onclick="openDatePicker()" data-i18n="dateButtonPlaceholder">Select a date</button>
+        <div class="field-error" id="sessionDateFieldError"></div>
+      </div>
+      <div class="info-field">
+        <label data-i18n="startTime">Start Time</label>
+        <select class="time-select" id="startTimeField" onchange="validateScheduleFields(); recalc();"></select>
+        <div class="field-error" id="startTimeFieldError"></div>
+      </div>
+      <div class="info-field">
+        <label data-i18n="noteToWeichen">Note to Weichen (Optional)</label>
+        <textarea id="clientNoteField" data-i18n-placeholder="notePlaceholder" placeholder="Optional: location, guest count, style, or special requests"></textarea>
+      </div>
+    </div>
+
+    <div class="breakdown">
+      <div class="breakdown-row">
+        <span id="bEventLabel">Event type</span>
+        <span id="bEvent">Festivals & Fairs</span>
+      </div>
+      <div class="breakdown-row">
+        <span id="bShootLabel">Shooting</span>
+        <span>$<span id="bShoot">600</span></span>
+      </div>
+      <div class="breakdown-row">
+        <span id="bEditLabel">Standard edited photos</span>
+        <span id="bIncluded">Included</span>
+      </div>
+      <div class="breakdown-row" id="lateRow" style="display:none;">
+        <span id="lateLabel">Evening surcharge</span>
+        <span>$<span id="bLate">0</span></span>
+      </div>
+      <div class="breakdown-row" id="transportRow" style="display:none;">
+        <span id="transportLabel">Travel fee (Personal transportation · 3–4 hrs)</span>
+        <span>$<span id="bTransport">0</span></span>
+      </div>
+      <div class="breakdown-row subtotal">
+        <span data-i18n="total">Total</span>
+        <span>$<span id="bSubtotal">1,400</span></span>
+      </div>
+    </div>
+
+    <button class="total-box" onclick="openReviewModal()" type="button">
+      <div class="label" data-i18n="estimatedTotal">ESTIMATED TOTAL</div>
+      <div class="amount"><span>$</span><span id="totalAmount">1,400</span></div>
+      <div class="cta" data-i18n="requestDiscount">Review & Send Quote</div>
+    </button>
+
+    <div class="link-row">
+      <a href="https://www.weichenzhang.ca" target="_blank" rel="noopener" data-i18n="websiteLink">Website</a>
+      <a href="https://www.facebook.com/weichen.zhang.7" target="_blank" rel="noopener" data-i18n="facebookLink">Facebook</a>
+      <a href="https://www.instagram.com/weichenzhang_/" target="_blank" rel="noopener" data-i18n="instagramLink">Instagram</a>
+    </div>
+
+  </div>
+
+  <div class="footer" data-i18n="footer">Prices are for reference only. Final pricing subject to mutual agreement.</div>
+</div>
+
+<!-- Custom Date Picker -->
+<div class="date-modal-overlay" id="date-picker-overlay" onclick="if(event.target===this)closeDatePicker()">
+  <div class="date-modal">
+    <div class="calendar-head">
+      <button type="button" class="calendar-nav" onclick="shiftCalendarMonth(-1)" aria-label="Previous month">‹</button>
+      <div class="calendar-title" id="calendarTitle"></div>
+      <button type="button" class="calendar-nav" onclick="shiftCalendarMonth(1)" aria-label="Next month">›</button>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+    <div class="calendar-note" data-i18n="calendarNote">Past dates are unavailable.</div>
+  </div>
+</div>
+
+<!-- Review Modal -->
+<div id="review-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; padding:20px;" onclick="if(event.target===this)closeReviewModal()">
+  <div style="background:#fff; border-radius:20px; width:100%; max-width:400px; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.2);">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#6B4F35,#9B7550); border-radius:20px 20px 0 0; padding:24px 28px 20px;">
+      <div id="reviewTitle" style="font-size:16px; font-weight:700; color:#fff; margin-bottom:4px;">Review Your Quote</div>
+      <div id="reviewSubtitle" style="font-size:12px; color:#A89888;">Make sure everything looks right before sending.</div>
+    </div>
+    <!-- Body -->
+    <div style="padding:24px 28px;">
+      <!-- Client info row -->
+      <div id="reviewInfoRow" style="display:none; background:#FAF8F5; border-radius:12px; padding:14px 16px; margin-bottom:18px;">
+        <div id="reviewName" style="font-size:13px; font-weight:600; color:#2C1F14; margin-bottom:4px;"></div>
+        <div id="reviewDate" style="font-size:12px; color:#7A6252;"></div>
+      </div>
+      <div id="reviewWelcome" style="background:#FFF8F0; border:1px solid #EDE0D4; border-radius:12px; padding:13px 15px; font-size:12px; line-height:1.6; color:#6B4F35; margin-bottom:16px;"></div>
+      <!-- Quote breakdown -->
+      <div id="reviewBreakdown" style="font-size:13px; color:#4A3525; line-height:2; margin-bottom:18px;"></div>
+      <!-- Total -->
+      <div style="border-top:1.5px solid #E0D4C8; padding-top:14px; display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+        <span id="reviewTotalLabel" style="font-size:14px; font-weight:700; color:#2C1F14;">Total</span>
+        <span id="reviewTotal" style="font-size:22px; font-weight:700; color:#2C1F14;">$0</span>
+      </div>
+      <!-- Buttons -->
+      <div style="display:flex; gap:10px;">
+        <button onclick="closeReviewModal()" id="reviewEditBtn" style="flex:1; padding:13px; border-radius:12px; border:1.5px solid #E0D4C8; background:#fff; color:#7A6252; font-size:13px; font-weight:600; cursor:pointer;">✏️ Edit</button>
+        <button onclick="submitQuoteFromReview()" id="reviewCopyBtn" style="flex:2; padding:13px; border-radius:12px; border:none; background:#6B4F35; color:#fff; font-size:13px; font-weight:600; cursor:pointer;">Send Quote</button>
+      </div>
+      <div id="reviewCopyHint" style="text-align:center; font-size:12px; color:#6B4F35; font-weight:600; margin-top:10px; min-height:18px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SHOOT_RATE = 300;
+  const FINE_RATE = 40;
+  const TRANSPORT_PRICES = [200, 300, 400];
+  const QUOTE_API_ENDPOINT = 'https://weichen-quote-email.tinklezhang.workers.dev';
+  let currentMode = 'self';
+  let currentDuration = 1;
+  let currentLang = 'en';
+  let transportEnabled = false;
+  let calendarCursor = new Date();
+
+  function setOutOfCity(enabled) {
+    transportEnabled = enabled;
+    document.getElementById('ynNo').classList.toggle('active', !enabled);
+    document.getElementById('ynYes').classList.toggle('active', enabled);
+    document.getElementById('transportDetails').classList.toggle('open', enabled);
+    recalc();
+  }
+
+  const strings = {
+    en: {
+      title: 'Event Photography',
+      subtitle: 'Photography Quote',
+      eventCategories: 'Photography Type',
+      catFamily: 'Family & Milestone Photos',
+      catCelebration: 'Festivals & Fairs',
+      catCorporate: 'Annual Galas & Celebrations',
+      catPerformance: 'Performances & Concerts',
+      catPrivate: 'Private Parties',
+      packages: 'Quick Packages',
+      oneHour: '1 hr',
+      halfDay: 'Half Day',
+      fullDay: 'Full Day',
+      hrs: 'hrs',
+      hr: 'hr',
+      shootType: 'Shoot Type',
+      typePortrait: 'Portrait',
+      typeFamily: 'Family',
+      typeGrad: 'Graduation',
+      typeEvent: 'Event',
+      yourName: 'Your Name',
+      namePlaceholder: 'e.g. Weichen',
+      yourEmail: 'Your Email',
+      emailPlaceholder: 'e.g. hello@email.com',
+      sessionDate: 'Preferred Shoot Date',
+      dateButtonPlaceholder: 'Select a date',
+      startTime: 'Start Time',
+      noteToWeichen: 'Note to Weichen (Optional)',
+      notePlaceholder: 'Optional: location, guest count, style, or special requests',
+      datePlaceholder: 'e.g. June 15',
+      copyHint: '✅ Copied! Now send it to your photographer 📩',
+      shootingEditing: 'Rate & Includes',
+      shootingDuration: 'Shooting Duration',
+      editing: 'Standard edited photos included',
+      included: 'Included',
+      photo: 'photos',
+      editingHint: 'Includes 50 - 80 standard edited photos per hour.',
+      familyEditingHint: 'Family & milestone photos include 20 - 30 standard edited photos per hour.',
+      weekendHint: 'Same rate on weekends. Hours after 18:00 include a 20% evening surcharge.',
+      outOfCity: 'Out-of-City Shoot?',
+      no: 'No',
+      yes: 'Yes',
+      transportation: 'Transportation',
+      selfDrive: 'Personal Transportation',
+      selfDriveDesc: 'Round-trip travel included',
+      charter: 'Chartered Car',
+      charterDesc: 'Rate halved',
+      roundTrip: 'Round-trip travel time',
+      total: 'Total',
+      estimatedTotal: 'ESTIMATED TOTAL BEFORE TAX',
+      print: '🖨 Print',
+      copyQuote: '📋 Copy Quote',
+      requestDiscount: 'Review & Send Quote',
+      footer: 'Estimated quote before tax. Final pricing subject to mutual agreement.',
+      websiteLink: 'Website',
+      facebookLink: 'Facebook',
+      instagramLink: 'Instagram',
+      // dynamic
+      eventType: 'Photography type',
+      shooting: 'Shooting',
+      lateSurcharge: 'Evening surcharge after 18:00 (20%)',
+      travelSelf: 'Travel fee (Personal transportation · {dur})',
+      travelCharter: 'Travel fee (Chartered · {dur})',
+      dur: ['1–2 hrs', '3–4 hrs', '5–6 hrs'],
+      quoteHeader: '📷 Event Photography Quote',
+      clientLine: (name, email) => `Client: ${name}\nEmail: ${email}`,
+      eventLine: (eventType) => `Photography type: ${eventType}`,
+      dateLine: (date, time) => `Preferred time: ${date || 'Not selected'}${time ? ' at ' + time : ''}`,
+      noteLine: (note) => `Note to Weichen: ${note}`,
+      shootLine: (h, cost) => `Shooting: ${h}h × $300 = $${cost}`,
+      editLine: (min, max) => `Included: ${min} - ${max} standard edited photos`,
+      lateLine: (lateHrs, cost) => `Evening surcharge (${lateHrs}h after 18:00, 20%): $${cost}`,
+      travelLine: (mode, dur, cost) => `Travel (${mode} · ${dur}): $${cost}`,
+      selfDriveLabel: 'Personal transportation',
+      charterLabel: 'Chartered car',
+      totalLine: (total) => `💰 Total before tax: $${total}`,
+      footerNote: 'Estimated quote before tax. Final pricing subject to mutual agreement.',
+      copied: '✓ Copied!',
+      copiedFriend: '✓ Copied — send it over!',
+      errorHours: '⚠️ Shooting duration must be at least 1 hour.',
+      errorName: 'Please enter your name.',
+      errorEmail: 'Please enter a valid email address.',
+      errorDate: 'Please choose today or a future date.',
+      errorTime: 'Please choose a future time for today.',
+      calendarNote: 'Past dates are unavailable.',
+      scheduleNotice: 'Preferred date and time are not guaranteed. Final availability will be confirmed with Weichen.',
+      welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
+      emailIntro: 'Thank you for choosing Weichen as your photographer. Your quote has been sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
+      emailSectionClient: 'Client Information',
+      emailSectionQuote: 'Quote Details',
+      emailSectionTotal: 'Estimated Total Before Tax',
+      emailClosing: 'Thank you again for your trust. This quote is an estimate before tax, and the final booking details will be confirmed with Weichen.',
+      submitSuccess: 'Quote sent. A copy has also been sent to Weichen.',
+      submitFail: 'Email service is not connected yet. The quote has been copied instead.',
+    },
+    zh: {
+      title: '活动摄影报价单',
+      subtitle: '摄影报价单',
+      eventCategories: '拍摄类型',
+      catFamily: '家庭 / 纪念照',
+      catCelebration: '节庆 / 市集活动',
+      catCorporate: '年会 / 庆典',
+      catPerformance: '演出 / 音乐会',
+      catPrivate: '私人聚会',
+      packages: '快速套餐',
+      oneHour: '1小时',
+      halfDay: '半天',
+      fullDay: '全天',
+      hrs: '小时',
+      hr: '小时',
+      shootType: '拍摄类型',
+      typePortrait: '个人写真',
+      typeFamily: '家庭合照',
+      typeGrad: '毕业照',
+      typeEvent: '活动拍摄',
+      yourName: '您的姓名',
+      namePlaceholder: '例如：小明',
+      yourEmail: '您的邮箱',
+      emailPlaceholder: '例如：hello@email.com',
+      sessionDate: '希望拍摄日期',
+      dateButtonPlaceholder: '请选择日期',
+      startTime: '开始时间',
+      noteToWeichen: '给 Weichen 的留言（选填）',
+      notePlaceholder: '选填：地点、人数、拍摄风格或特殊需求',
+      datePlaceholder: '例如：6月15日',
+      copyHint: '✅ 内容已复制，发给你的摄影师吧 📩',
+      shootingEditing: '价格与包含内容',
+      shootingDuration: '拍摄时长',
+      editing: '已含标准修片照片',
+      included: '已包含',
+      photo: '张',
+      editingHint: '每小时包含 50 - 80 张标准修片照片。',
+      familyEditingHint: '家庭 / 纪念照每小时包含 20 - 30 张标准修片照片。',
+      weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
+      outOfCity: '是否出城拍摄？',
+      no: '否',
+      yes: '是',
+      transportation: '交通方式',
+      selfDrive: '自行交通',
+      selfDriveDesc: '含来回交通费',
+      charter: '包车接送',
+      charterDesc: '费用减半',
+      roundTrip: '来回行程时长',
+      total: '报价总额',
+      estimatedTotal: '税前预估总额',
+      print: '🖨 打印',
+      copyQuote: '📋 复制报价',
+      requestDiscount: '确认并发送报价',
+      footer: '此为税前预估报价，最终费用以双方确认为准。',
+      websiteLink: '作品网站',
+      facebookLink: 'Facebook',
+      instagramLink: 'Instagram',
+      // dynamic
+      eventType: '拍摄类型',
+      shooting: '小时包价',
+      lateSurcharge: '18:00 后晚间费用（20%）',
+      travelSelf: '交通费（自行交通 · {dur}）',
+      travelCharter: '出城费（包车 · {dur}）',
+      dur: ['1–2 小时', '3–4 小时', '5–6 小时'],
+      quoteHeader: '📷 活动摄影报价单',
+      clientLine: (name, email) => `客户：${name}\n邮箱：${email}`,
+      eventLine: (eventType) => `拍摄类型：${eventType}`,
+      dateLine: (date, time) => `希望时间：${date || '未选择'}${time ? ' ' + time : ''}`,
+      noteLine: (note) => `给 Weichen 的留言：${note}`,
+      shootLine: (h, cost) => `拍摄费：${h}h × $300 = $${cost}`,
+      editLine: (min, max) => `已包含：${min} - ${max} 张标准修片照片`,
+      lateLine: (lateHrs, cost) => `晚间费用（18:00 后 ${lateHrs}h，加收 20%）：$${cost}`,
+      travelLine: (mode, dur, cost) => `交通费（${mode} · ${dur}）：$${cost}`,
+      selfDriveLabel: '自行交通',
+      charterLabel: '包车',
+      totalLine: (total) => `💰 税前总额：$${total}`,
+      footerNote: '此为税前预估报价，最终费用以双方确认为准。',
+      copied: '✓ 已复制！',
+      copiedFriend: '✓ 已复制，发给摄影师吧！',
+      errorHours: '⚠️ 拍摄时长至少需要 1 小时。',
+      errorName: '请填写您的姓名。',
+      errorEmail: '请填写有效邮箱。',
+      errorDate: '请选择今天或未来日期。',
+      errorTime: '如果选择今天，请选择尚未过去的时间。',
+      calendarNote: '过去的日期不可选择。',
+      scheduleNotice: '您填写的是希望拍摄时间，不代表档期已锁定。最终拍摄时间以您和 Weichen 双方确认为准。',
+      welcomeMessage: '感谢您选择 Weichen 作为您的摄影师。这份报价单将发送给您，并同步抄送给 Weichen。她会在收到邮件后的 24 小时内回复您。',
+      emailIntro: '感谢您选择 Weichen 作为您的摄影师。这份报价单已经发送给您，并同步抄送给 Weichen。她会在收到邮件后的 24 小时内回复您。',
+      emailSectionClient: '客户信息',
+      emailSectionQuote: '报价明细',
+      emailSectionTotal: '税前预估总额',
+      emailClosing: '再次感谢您的信任。此报价为税前预估，最终拍摄安排与费用以和 Weichen 确认为准。',
+      submitSuccess: '报价已发送，并已同步抄送给 Weichen。',
+      submitFail: '邮件服务尚未连接，报价内容已先复制。',
+    }
+    ,
+    fil: {
+      title: 'Event Photography',
+      subtitle: 'Photography Quote',
+      eventCategories: 'Uri ng Photography',
+      catFamily: 'Family & Milestone Photos',
+      catCelebration: 'Festivals & Fairs',
+      catCorporate: 'Annual Galas & Celebrations',
+      catPerformance: 'Performances & Concerts',
+      catPrivate: 'Private Parties',
+      shootType: 'Uri ng Pagkuha',
+      typePortrait: 'Portrait',
+      typeFamily: 'Pamilya',
+      typeGrad: 'Graduation',
+      typeEvent: 'Event',
+      yourName: 'Iyong Pangalan',
+      namePlaceholder: 'hal. Maria',
+      yourEmail: 'Iyong Email',
+      emailPlaceholder: 'hal. hello@email.com',
+      sessionDate: 'Gustong Petsa ng Pagkuha',
+      dateButtonPlaceholder: 'Select a date',
+      startTime: 'Oras ng Simula',
+      noteToWeichen: 'Note to Weichen (Optional)',
+      notePlaceholder: 'Optional: location, guest count, style, or special requests',
+      datePlaceholder: 'hal. Hunyo 15',
+      copyHint: '✅ Nakopya na! Ipadala na sa iyong litratista 📩',
+      shootingEditing: 'Rate at Kasama',
+      shootingDuration: 'Tagal ng Pagkuha',
+      hr: 'oras',
+      hrs: 'oras',
+      editing: 'Kasamang standard edited photos',
+      included: 'Kasama',
+      photo: 'larawan',
+      editingHint: 'Kasama ang 50 - 80 standard edited photos kada oras.',
+      familyEditingHint: 'Family & milestone photos include 20 - 30 standard edited photos per hour.',
+      weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
+      outOfCity: 'Labas ng Lungsod?',
+      no: 'Hindi',
+      yes: 'Oo',
+      transportation: 'Transportasyon',
+      selfDrive: 'Personal Transportation',
+      selfDriveDesc: 'Kasama ang pabalik-balik na biyahe',
+      charter: 'Charter na Sasakyan',
+      charterDesc: 'Kalahating presyo',
+      roundTrip: 'Oras ng pabalik-balik na biyahe',
+      total: 'Kabuuan',
+      estimatedTotal: 'TINATAYANG KABUUAN BAGO ANG BUWIS',
+      print: '🖨 I-print',
+      copyQuote: '📋 Kopyahin',
+      requestDiscount: 'Review & Send Quote',
+      footer: 'Tinatayang quote bago ang buwis. Ang huling presyo ay ayon sa napagkasunduan.',
+      websiteLink: 'Website',
+      facebookLink: 'Facebook',
+      instagramLink: 'Instagram',
+      eventType: 'Uri ng photography',
+      shooting: 'Pagkuha',
+      lateSurcharge: 'Evening surcharge after 18:00 (20%)',
+      travelSelf: 'Bayad sa biyahe (Personal transportation · {dur})',
+      travelCharter: 'Bayad sa biyahe (Charter · {dur})',
+      dur: ['1–2 oras', '3–4 oras', '5–6 oras'],
+      quoteHeader: '📷 Event Photography Quote',
+      clientLine: (name, email) => `Client: ${name}\nEmail: ${email}`,
+      eventLine: (eventType) => `Uri ng photography: ${eventType}`,
+      dateLine: (date, time) => `Preferred time: ${date || 'Hindi napili'}${time ? ' at ' + time : ''}`,
+      noteLine: (note) => `Note to Weichen: ${note}`,
+      shootLine: (h, cost) => `Shooting: ${h}h × $300 = $${cost}`,
+      editLine: (min, max) => `Kasama: ${min} - ${max} standard edited photos`,
+      lateLine: (lateHrs, cost) => `Evening surcharge (${lateHrs}h after 18:00, 20%): $${cost}`,
+      travelLine: (mode, dur, cost) => `Bayad sa biyahe (${mode} · ${dur}): $${cost}`,
+      selfDriveLabel: 'Personal transportation',
+      charterLabel: 'Charter',
+      totalLine: (total) => `💰 Kabuuan bago ang buwis: $${total}`,
+      footerNote: 'Tinatayang quote bago ang buwis. Ang huling presyo ay ayon sa napagkasunduan.',
+      copied: '✓ Nakopya!',
+      copiedFriend: '✓ Nakopya na — ipadala na!',
+      errorHours: '⚠️ Ang tagal ng pagkuha ay dapat hindi bababa sa 1 oras.',
+      errorName: 'Pakilagay ang iyong pangalan.',
+      errorEmail: 'Pakilagay ang valid na email address.',
+      errorDate: 'Pumili ng petsa ngayon o sa hinaharap.',
+      errorTime: 'Please choose a future time for today.',
+      calendarNote: 'Past dates are unavailable.',
+      scheduleNotice: 'Preferred date and time are not guaranteed. Final availability will be confirmed with Weichen.',
+      welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
+      emailIntro: 'Thank you for choosing Weichen as your photographer. Your quote has been sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
+      emailSectionClient: 'Client Information',
+      emailSectionQuote: 'Quote Details',
+      emailSectionTotal: 'Estimated Total Before Tax',
+      emailClosing: 'Maraming salamat sa iyong tiwala. Tinatayang quote ito bago ang buwis; ang final booking details ay kukumpirmahin kay Weichen.',
+      submitSuccess: 'Quote sent. A copy has also been sent to Weichen.',
+      submitFail: 'Email service is not connected yet. The quote has been copied instead.',
+    }
+  };
+
+  function fmt(n) { return n.toLocaleString('en-CA'); }
+  function s(key) { return strings[currentLang][key]; }
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    }[char]));
+  }
+
+  function dateLocale() {
+    return currentLang === 'zh' ? 'zh-CN' : 'en-CA';
+  }
+
+  function formatDateForButton(value) {
+    if (!value) return strings[currentLang].dateButtonPlaceholder;
+    return new Date(value + 'T12:00:00').toLocaleDateString(dateLocale(), {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  function updateDateButton() {
+    const dateValue = document.getElementById('sessionDateField').value;
+    const button = document.getElementById('sessionDateButton');
+    button.textContent = formatDateForButton(dateValue);
+    button.classList.toggle('placeholder', !dateValue);
+  }
+
+  function setLang(lang) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active',
+        (b.textContent === 'EN' && lang === 'en') ||
+        (b.textContent === '中文' && lang === 'zh') ||
+        (b.textContent === 'FIL' && lang === 'fil')
+      );
+    });
+    // Update all static i18n elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (strings[lang][key] !== undefined && typeof strings[lang][key] === 'string') {
+        el.textContent = strings[lang][key];
+      }
+    });
+    // Update placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      if (strings[lang][key]) el.placeholder = strings[lang][key];
+    });
+    // Re-render dynamic labels
+    updateDateButton();
+    renderCalendar();
+    applyEventRules();
+    recalc();
+  }
+
+  function transportCost() {
+    if (!transportEnabled) return 0;
+    const base = TRANSPORT_PRICES[currentDuration];
+    return currentMode === 'charter' ? base / 2 : base;
+  }
+
+  function getHours() {
+    return Math.max(0, parseFloat(document.getElementById('hours').value) || 0);
+  }
+
+  function getEventLabel() {
+    const field = document.getElementById('eventTypeField');
+    return field.options[field.selectedIndex].textContent.trim();
+  }
+
+  function getEventKey() {
+    return document.getElementById('eventTypeField').value;
+  }
+
+  function isFamilySession() {
+    return getEventKey() === 'family';
+  }
+
+  function handleEventTypeChange() {
+    applyEventRules();
+    recalc();
+  }
+
+  function applyEventRules() {
+    const hoursInput = document.getElementById('hours');
+    const hoursMinus = document.getElementById('hoursMinus');
+    const hoursPlus = document.getElementById('hoursPlus');
+
+    hoursInput.disabled = false;
+    hoursMinus.disabled = false;
+    hoursPlus.disabled = false;
+  }
+
+  function eveningHours(startTime, totalHours) {
+    if (!startTime) return 0;
+    const [h, m] = startTime.split(':').map(Number);
+    const startMin = h * 60 + m;
+    const endMin = startMin + totalHours * 60;
+    const cutoffMin = 18 * 60;
+    if (endMin <= cutoffMin) return 0;
+    return (endMin - Math.max(startMin, cutoffMin)) / 60;
+  }
+
+  function quoteMath() {
+    const hours = getHours();
+    const shoot = hours * SHOOT_RATE;
+    const startTime = document.getElementById('startTimeField').value;
+    const lateHrs = eveningHours(startTime, hours);
+    const late = lateHrs * SHOOT_RATE * 0.2;
+    const transport = transportCost();
+    const family = isFamilySession();
+    return {
+      hours,
+      shoot,
+      late,
+      lateHrs,
+      transport,
+      total: shoot + late + transport,
+      includedMin: family ? Math.round(hours * 20) : Math.round(hours * 50),
+      includedMax: family ? Math.round(hours * 30) : Math.round(hours * 80),
+    };
+  }
+
+  function updateDurationPrices() {
+    TRANSPORT_PRICES.forEach((base, i) => {
+      const price = currentMode === 'charter' ? base / 2 : base;
+      document.getElementById('dp' + i).textContent = '$' + fmt(price);
+    });
+  }
+
+  function selectMode(btn) {
+    document.querySelectorAll('.transport-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMode = btn.dataset.mode;
+    updateDurationPrices();
+    recalc();
+  }
+
+  function selectDuration(btn) {
+    document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentDuration = ['1-2', '3-4', '5-6'].indexOf(btn.dataset.hours);
+    recalc();
+  }
+
+  function recalc() {
+    applyEventRules();
+    const { hours, shoot, late, lateHrs, transport, total, includedMin, includedMax } = quoteMath();
+    const L = strings[currentLang];
+    const dur = L.dur[currentDuration];
+    const photoWord = L.photo;
+
+    document.getElementById('bEventLabel').textContent = L.eventType;
+    document.getElementById('bEvent').textContent = getEventLabel();
+    document.getElementById('bShootLabel').textContent = `${L.shooting} (${hours}h × $300/h)`;
+    document.getElementById('bEditLabel').textContent = `${L.editing} (${includedMin} - ${includedMax} ${photoWord})`;
+    document.getElementById('bShoot').textContent = fmt(shoot);
+    document.getElementById('bIncluded').textContent = L.included;
+    document.querySelector('[data-i18n="editingHint"]').textContent = isFamilySession() ? L.familyEditingHint : L.editingHint;
+    document.getElementById('lateLabel').textContent = `${L.lateSurcharge} (${fmt(lateHrs)}h)`;
+    document.getElementById('bLate').textContent = fmt(late);
+    document.getElementById('lateRow').style.display = late > 0 ? '' : 'none';
+    document.getElementById('bTransport').textContent = fmt(transport);
+    document.getElementById('transportRow').style.display = transportEnabled ? '' : 'none';
+
+    const travelTemplate = currentMode === 'self' ? L.travelSelf : L.travelCharter;
+    document.getElementById('transportLabel').textContent = travelTemplate.replace('{dur}', dur);
+
+    document.getElementById('bSubtotal').textContent = fmt(total);
+    document.getElementById('totalAmount').textContent = fmt(total);
+  }
+
+  function adjust(field, delta) {
+    const el = document.getElementById(field);
+    const min = field === 'hours' ? 1 : 0;
+    el.value = Math.max(min, (parseFloat(el.value) || 0) + delta);
+    recalc();
+    if (field === 'hours') clearPresets();
+  }
+
+  function clearPresets() {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  }
+
+  function applyPreset(btn) {
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('hours').value = btn.dataset.hours;
+    recalc();
+  }
+
+  function buildQuoteText() {
+    const { hours, shoot, late, lateHrs, transport, total, includedMin, includedMax } = quoteMath();
+    const L = strings[currentLang];
+    const dur = L.dur[currentDuration];
+    const modeLabel = currentMode === 'self' ? L.selfDriveLabel : L.charterLabel;
+    const name = document.getElementById('clientNameField').value.trim();
+    const email = document.getElementById('clientEmailField').value.trim();
+    const eventType = getEventLabel();
+    const startTime = document.getElementById('startTimeField').value;
+    const note = document.getElementById('clientNoteField').value.trim();
+
+    const dateVal = document.getElementById('sessionDateField').value;
+    const dateStr = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+
+    const details = [
+      L.clientLine(name, email),
+      L.eventLine(eventType),
+      L.dateLine(dateStr, startTime),
+      L.scheduleNotice,
+    ];
+    if (note) details.push(L.noteLine(note));
+    details.push('', L.shootLine(hours, fmt(shoot)), L.editLine(includedMin, includedMax));
+
+    if (late > 0) details.push(L.lateLine(fmt(lateHrs), fmt(late)));
+    if (transportEnabled) details.push(L.travelLine(modeLabel, dur, fmt(transport)));
+
+    let body = L.quoteHeader + '\n' + '─'.repeat(28) + '\n';
+    body += L.emailIntro + '\n\n';
+    body += details.join('\n') + '\n';
+    body += '─'.repeat(28) + '\n';
+    body += L.totalLine(fmt(total)) + '\n';
+    body += '\n' + L.emailClosing;
+
+    return {
+      body,
+      total: fmt(total),
+      dateStr,
+      email,
+      name,
+      eventType,
+      startTime,
+      note,
+      shoot: fmt(shoot),
+      late: fmt(late),
+      transport: fmt(transport),
+      includedMin,
+      includedMax,
+      dur,
+      modeLabel,
+    };
+  }
+
+  function buildQuotePayload() {
+    const { hours } = quoteMath();
+    return {
+      clientName: document.getElementById('clientNameField').value.trim(),
+      clientEmail: document.getElementById('clientEmailField').value.trim(),
+      eventTypeKey: getEventKey(),
+      eventType: getEventLabel(),
+      date: document.getElementById('sessionDateField').value,
+      startTime: document.getElementById('startTimeField').value,
+      note: document.getElementById('clientNoteField').value.trim(),
+      hours,
+      transportEnabled,
+      transportMode: currentMode,
+      durationIndex: currentDuration,
+      language: currentLang,
+    };
+  }
+
+  const reviewStrings = {
+    en: {
+      title: 'Review Your Quote',
+      subtitle: 'Please confirm the details before sending your quote.',
+      nameLabel: '👤',
+      emailLabel: '✉️',
+      dateLabel: '📅',
+      editBtn: '✏️ Edit',
+      copyBtn: 'Send Quote',
+      sending: 'Sending...',
+      totalLabel: 'Total before tax',
+      requestDiscount: 'Review & Send Quote',
+    },
+    zh: {
+      title: '确认您的报价',
+      subtitle: '发送前请最后确认信息。',
+      nameLabel: '👤',
+      emailLabel: '✉️',
+      dateLabel: '📅',
+      editBtn: '✏️ 返回修改',
+      copyBtn: '发送报价',
+      sending: '发送中...',
+      totalLabel: '税前总计',
+      requestDiscount: '确认并发送报价',
+    },
+    fil: {
+      title: 'Suriin ang Iyong Quote',
+      subtitle: 'Pakikumpirma ang detalye bago ipadala ang quote.',
+      nameLabel: '👤',
+      emailLabel: '✉️',
+      dateLabel: '📅',
+      editBtn: '✏️ I-edit',
+      copyBtn: 'Send Quote',
+      sending: 'Sending...',
+      totalLabel: 'Kabuuan bago ang buwis',
+      requestDiscount: 'Review & Send Quote',
+    },
+  };
+
+  function clearError(rowId, errorId) {
+    document.getElementById(rowId).classList.remove('invalid');
+    document.getElementById(errorId).style.display = 'none';
+  }
+
+  function clearFieldError(fieldId) {
+    const field = document.getElementById(fieldId);
+    const visualField = fieldId === 'sessionDateField' ? document.getElementById('sessionDateButton') : field;
+    const error = document.getElementById(fieldId + 'Error');
+    if (visualField) visualField.style.borderColor = '#E0D4C8';
+    if (error) error.style.display = 'none';
+  }
+
+  function setFieldError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    const visualField = fieldId === 'sessionDateField' ? document.getElementById('sessionDateButton') : field;
+    const error = document.getElementById(fieldId + 'Error');
+    if (visualField) visualField.style.borderColor = '#c0392b';
+    if (error) {
+      error.textContent = message;
+      error.style.display = 'block';
+    }
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validateDateField() {
+    const field = document.getElementById('sessionDateField');
+    const L = strings[currentLang];
+    const today = getLocalToday();
+
+    if (field.value && field.value < today) {
+      field.value = '';
+      updateDateButton();
+      setFieldError('sessionDateField', L.errorDate);
+      return false;
+    }
+
+    clearFieldError('sessionDateField');
+    return true;
+  }
+
+  function isoDate(year, monthIndex, day) {
+    return [
+      year,
+      String(monthIndex + 1).padStart(2, '0'),
+      String(day).padStart(2, '0'),
+    ].join('-');
+  }
+
+  function openDatePicker() {
+    const selected = document.getElementById('sessionDateField').value;
+    const base = selected ? new Date(selected + 'T12:00:00') : new Date();
+    calendarCursor = new Date(base.getFullYear(), base.getMonth(), 1);
+    renderCalendar();
+    document.getElementById('date-picker-overlay').classList.add('open');
+  }
+
+  function closeDatePicker() {
+    document.getElementById('date-picker-overlay').classList.remove('open');
+  }
+
+  function shiftCalendarMonth(delta) {
+    calendarCursor = new Date(calendarCursor.getFullYear(), calendarCursor.getMonth() + delta, 1);
+    renderCalendar();
+  }
+
+  function chooseDate(value) {
+    if (value < getLocalToday()) return;
+    document.getElementById('sessionDateField').value = value;
+    updateDateButton();
+    closeDatePicker();
+    updateTimeOptionAvailability();
+    validateScheduleFields();
+    recalc();
+  }
+
+  function renderCalendar() {
+    const grid = document.getElementById('calendarGrid');
+    const title = document.getElementById('calendarTitle');
+    if (!grid || !title) return;
+
+    const year = calendarCursor.getFullYear();
+    const month = calendarCursor.getMonth();
+    const today = getLocalToday();
+    const selected = document.getElementById('sessionDateField').value;
+    const firstDay = new Date(year, month, 1);
+    const leading = (firstDay.getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const weekdays = currentLang === 'zh'
+      ? ['一', '二', '三', '四', '五', '六', '日']
+      : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    title.textContent = firstDay.toLocaleDateString(dateLocale(), { year: 'numeric', month: 'long' });
+    grid.innerHTML = '';
+
+    weekdays.forEach((weekday) => {
+      const el = document.createElement('div');
+      el.className = 'calendar-weekday';
+      el.textContent = weekday;
+      grid.appendChild(el);
+    });
+
+    for (let i = 0; i < leading; i++) {
+      const empty = document.createElement('button');
+      empty.type = 'button';
+      empty.className = 'calendar-day outside';
+      empty.tabIndex = -1;
+      grid.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const value = isoDate(year, month, day);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'calendar-day';
+      button.textContent = String(day);
+
+      if (value < today) {
+        button.classList.add('disabled');
+        button.disabled = true;
+      }
+      if (value === today) button.classList.add('today');
+      if (value === selected) button.classList.add('selected');
+      button.addEventListener('click', () => chooseDate(value));
+      grid.appendChild(button);
+    }
+  }
+
+  function getLocalTimeMinutes() {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
+  }
+
+  function parseTimeMinutes(value) {
+    const match = /^(\d{2}):(\d{2})$/.exec(value || '');
+    if (!match) return null;
+    return Number(match[1]) * 60 + Number(match[2]);
+  }
+
+  function populateTimeOptions() {
+    const timeField = document.getElementById('startTimeField');
+    const currentValue = timeField.value || '14:00';
+    timeField.innerHTML = '';
+
+    for (let minutes = 0; minutes < 24 * 60; minutes += 30) {
+      const hours = String(Math.floor(minutes / 60)).padStart(2, '0');
+      const mins = String(minutes % 60).padStart(2, '0');
+      const value = `${hours}:${mins}`;
+      const option = document.createElement('option');
+      option.value = value;
+      option.textContent = value;
+      timeField.appendChild(option);
+    }
+
+    timeField.value = currentValue;
+    if (!timeField.value) timeField.value = '14:00';
+    updateTimeOptionAvailability();
+  }
+
+  function updateTimeOptionAvailability() {
+    const dateVal = document.getElementById('sessionDateField').value;
+    const timeField = document.getElementById('startTimeField');
+    const nowMinutes = getLocalTimeMinutes();
+    const shouldDisablePast = dateVal === getLocalToday();
+
+    Array.from(timeField.options).forEach((option) => {
+      const optionMinutes = parseTimeMinutes(option.value);
+      option.disabled = shouldDisablePast && optionMinutes !== null && optionMinutes <= nowMinutes;
+    });
+  }
+
+  function validateStartTimeField() {
+    const L = strings[currentLang];
+    const dateVal = document.getElementById('sessionDateField').value;
+    const timeField = document.getElementById('startTimeField');
+    const timeMinutes = parseTimeMinutes(timeField.value);
+
+    updateTimeOptionAvailability();
+
+    if (dateVal === getLocalToday()) {
+      const nowMinutes = getLocalTimeMinutes();
+
+      if (timeMinutes !== null && timeMinutes <= nowMinutes) {
+        setFieldError('startTimeField', L.errorTime);
+        return false;
+      }
+    }
+
+    clearFieldError('startTimeField');
+    return true;
+  }
+
+  function validateScheduleFields() {
+    const validDate = validateDateField();
+    const validTime = validateStartTimeField();
+    return validDate && validTime;
+  }
+
+  function openReviewModal() {
+    const L = strings[currentLang];
+    const R = reviewStrings[currentLang];
+    const hoursVal = getHours();
+    const name = document.getElementById('clientNameField').value.trim();
+    const email = document.getElementById('clientEmailField').value.trim();
+    const dateVal = document.getElementById('sessionDateField').value;
+    const today = getLocalToday();
+    const note = document.getElementById('clientNoteField').value.trim();
+    let valid = true;
+
+    if (hoursVal < 1) {
+      const el = document.getElementById('hoursError');
+      el.textContent = L.errorHours;
+      el.style.display = 'block';
+      document.getElementById('hoursRow').classList.add('invalid');
+      document.getElementById('hoursRow').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      valid = false;
+    }
+    if (!name) {
+      setFieldError('clientNameField', L.errorName);
+      valid = false;
+    }
+    if (!isValidEmail(email)) {
+      setFieldError('clientEmailField', L.errorEmail);
+      valid = false;
+    }
+    if (dateVal && dateVal < today) {
+      setFieldError('sessionDateField', L.errorDate);
+      valid = false;
+    }
+    if (!validateScheduleFields()) {
+      valid = false;
+    }
+    if (!valid) return;
+
+    const { hours, shoot, late, lateHrs, transport, total, includedMin, includedMax } = quoteMath();
+    const dateStr = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
+    const startTime = document.getElementById('startTimeField').value;
+    const dur = L.dur[currentDuration];
+    const modeLabel = currentMode === 'self' ? L.selfDriveLabel : L.charterLabel;
+
+    // Populate header
+    document.getElementById('reviewTitle').textContent = R.title;
+    document.getElementById('reviewSubtitle').textContent = R.subtitle;
+
+    // Client info
+    const infoRow = document.getElementById('reviewInfoRow');
+    infoRow.style.display = 'block';
+    document.getElementById('reviewName').textContent = R.nameLabel + ' ' + name + '  ' + R.emailLabel + ' ' + email;
+    document.getElementById('reviewName').style.display = 'block';
+    document.getElementById('reviewDate').textContent = dateStr ? R.dateLabel + ' ' + dateStr + (startTime ? ' ' + startTime : '') : '';
+    document.getElementById('reviewDate').style.display = dateStr || startTime ? 'block' : 'none';
+    document.getElementById('reviewWelcome').textContent = L.welcomeMessage;
+
+    // Breakdown rows
+    let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.eventType}</span><span style="font-weight:600;text-align:right">${getEventLabel()}</span></div>`;
+    if (note) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;margin-bottom:3px">${L.noteToWeichen}</div><div style="font-weight:600;line-height:1.5">${escapeHtml(note)}</div></div>`;
+    rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;line-height:1.5">${escapeHtml(L.scheduleNotice)}</div></div>`;
+    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.shooting} (${hours}h × $300/h)</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
+    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${includedMin} - ${includedMax} ${L.photo})</span><span style="font-weight:600">${L.included}</span></div>`;
+    if (late > 0) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.lateSurcharge} (${fmt(lateHrs)}h)</span><span style="font-weight:600">$${fmt(late)}</span></div>`;
+    if (transportEnabled) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${modeLabel} · ${dur}</span><span style="font-weight:600">$${fmt(transport)}</span></div>`;
+    document.getElementById('reviewBreakdown').innerHTML = rows;
+
+    // Total
+    document.getElementById('reviewTotalLabel').textContent = R.totalLabel;
+    document.getElementById('reviewTotal').textContent = '$' + fmt(total);
+
+    // Buttons
+    document.getElementById('reviewEditBtn').textContent = R.editBtn;
+    document.getElementById('reviewCopyBtn').textContent = R.copyBtn;
+    document.getElementById('reviewCopyHint').textContent = '';
+
+    // Show
+    const overlay = document.getElementById('review-overlay');
+    overlay.style.display = 'flex';
+  }
+
+  function closeReviewModal() {
+    document.getElementById('review-overlay').style.display = 'none';
+  }
+
+  async function copyQuoteToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return;
+    }
+
+    const temp = document.createElement('textarea');
+    temp.value = text;
+    temp.setAttribute('readonly', '');
+    temp.style.position = 'fixed';
+    temp.style.left = '-9999px';
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+  }
+
+  async function submitQuoteFromReview() {
+    const L = strings[currentLang];
+    const R = reviewStrings[currentLang];
+    const btn = document.getElementById('reviewCopyBtn');
+    const hint = document.getElementById('reviewCopyHint');
+    const { body } = buildQuoteText();
+
+    btn.disabled = true;
+    btn.textContent = R.sending;
+    hint.textContent = '';
+
+    try {
+      if (!QUOTE_API_ENDPOINT) {
+        throw new Error('Quote email endpoint is not configured.');
+      }
+
+      const response = await fetch(QUOTE_API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildQuotePayload()),
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || 'Quote email could not be sent.');
+      }
+
+      hint.textContent = L.submitSuccess;
+      btn.textContent = '✓';
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = R.copyBtn;
+      }, 1600);
+    } catch (_) {
+      try {
+        await copyQuoteToClipboard(body);
+        hint.textContent = L.submitFail;
+      } catch {
+        hint.textContent = L.submitFail;
+      }
+      btn.disabled = false;
+      btn.textContent = R.copyBtn;
+    }
+  }
+
+  function getLocalToday() {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+  }
+
+  populateTimeOptions();
+  document.getElementById('startTimeField').addEventListener('blur', validateStartTimeField);
+
+  setLang(currentLang);
+</script>
+</body>
+</html>
