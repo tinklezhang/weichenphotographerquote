@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Photography</title>
+  <title>Photography Quote Calculator</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -760,7 +760,7 @@
       <button class="lang-btn" onclick="setLang('fil')">FIL</button>
     </div>
     <div class="icon">📷</div>
-    <h1 data-i18n="title">Event Photography</h1>
+    <h1 data-i18n="title">Photography Quote Calculator</h1>
     <p data-i18n="subtitle">Photography Quote</p>
   </div>
 
@@ -792,7 +792,7 @@
           <button id="hoursPlus" onclick="adjust('hours', 1)">+</button>
         </div>
         <div class="field-error" id="hoursError"></div>
-        <div class="field-hint" data-i18n="editingHint">Includes 50 - 80 standard edited photos per hour.</div>
+        <div class="field-hint" data-i18n="editingHint">Includes 50–60 standard edited photos per hour.</div>
         <div class="field-hint" data-i18n="weekendHint">Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.</div>
       </div>
     </div>
@@ -801,7 +801,7 @@
 
     <div class="transport-section">
       <div class="out-of-city-row">
-        <div class="main" data-i18n="outOfCity">Out-of-City Shoot?</div>
+        <div class="main" data-i18n="outOfCity">Shoot Outside Brandon?</div>
         <div class="yes-no-toggle">
           <button class="yn-btn active" id="ynNo" onclick="setOutOfCity(false)" data-i18n="no">No</button>
           <button class="yn-btn" id="ynYes" onclick="setOutOfCity(true)" data-i18n="yes">Yes</button>
@@ -979,7 +979,7 @@
 
   const strings = {
     en: {
-      title: 'Event Photography',
+      title: 'Photography Quote Calculator',
       subtitle: 'Photography Quote',
       eventCategories: 'Photography Type',
       catFamily: 'Family & Milestone Photos',
@@ -1014,10 +1014,10 @@
       editing: 'Standard edited photos included',
       included: 'Included',
       photo: 'photos',
-      editingHint: 'Includes 50 - 80 standard edited photos per hour.',
-      familyEditingHint: 'Family & milestone photos include 20 - 30 standard edited photos per hour.',
+      editingHint: 'Includes 50–60 standard edited photos per hour.',
+      familyEditingHint: 'Includes 50–60 standard edited photos per hour.',
       weekendHint: 'Same rate on weekends. Hours after 18:00 include a 20% evening surcharge.',
-      outOfCity: 'Out-of-City Shoot?',
+      outOfCity: 'Shoot Outside Brandon?',
       no: 'No',
       yes: 'Yes',
       transportation: 'Transportation',
@@ -1042,7 +1042,7 @@
       travelSelf: 'Travel fee (Personal transportation · {dur})',
       travelCharter: 'Travel fee (Chartered · {dur})',
       dur: ['1–2 hrs', '3–4 hrs', '5–6 hrs'],
-      quoteHeader: '📷 Event Photography Quote',
+      quoteHeader: '📷 Photography Quote',
       clientLine: (name, email) => `Client: ${name}\nEmail: ${email}`,
       eventLine: (eventType) => `Photography type: ${eventType}`,
       dateLine: (date, time) => `Preferred time: ${date || 'Not selected'}${time ? ' at ' + time : ''}`,
@@ -1074,7 +1074,7 @@
       submitFail: 'Email service is not connected yet. The quote has been copied instead.',
     },
     zh: {
-      title: '活动摄影报价单',
+      title: '摄影报价计算器',
       subtitle: '摄影报价单',
       eventCategories: '拍摄类型',
       catFamily: '家庭 / 纪念照',
@@ -1109,10 +1109,10 @@
       editing: '已含标准修片照片',
       included: '已包含',
       photo: '张',
-      editingHint: '每小时包含 50 - 80 张标准修片照片。',
-      familyEditingHint: '家庭 / 纪念照每小时包含 20 - 30 张标准修片照片。',
+      editingHint: '每小时包含 50–60 张标准修片照片。',
+      familyEditingHint: '每小时包含 50–60 张标准修片照片。',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
-      outOfCity: '是否出城拍摄？',
+      outOfCity: '是否在 Brandon 市外拍摄？',
       no: '否',
       yes: '是',
       transportation: '交通方式',
@@ -1137,7 +1137,7 @@
       travelSelf: '交通费（自行交通 · {dur}）',
       travelCharter: '出城费（包车 · {dur}）',
       dur: ['1–2 小时', '3–4 小时', '5–6 小时'],
-      quoteHeader: '📷 活动摄影报价单',
+      quoteHeader: '📷 摄影报价单',
       clientLine: (name, email) => `客户：${name}\n邮箱：${email}`,
       eventLine: (eventType) => `拍摄类型：${eventType}`,
       dateLine: (date, time) => `希望时间：${date || '未选择'}${time ? ' ' + time : ''}`,
@@ -1170,7 +1170,7 @@
     }
     ,
     fil: {
-      title: 'Event Photography',
+      title: 'Photography Quote Calculator',
       subtitle: 'Photography Quote',
       eventCategories: 'Uri ng Photography',
       catFamily: 'Family & Milestone Photos',
@@ -1201,10 +1201,10 @@
       editing: 'Kasamang standard edited photos',
       included: 'Kasama',
       photo: 'larawan',
-      editingHint: 'Kasama ang 50 - 80 standard edited photos kada oras.',
-      familyEditingHint: 'Family & milestone photos include 20 - 30 standard edited photos per hour.',
+      editingHint: 'Kasama ang 50–60 standard edited photos kada oras.',
+      familyEditingHint: 'Kasama ang 50–60 standard edited photos kada oras.',
       weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
-      outOfCity: 'Labas ng Lungsod?',
+      outOfCity: 'Shoot sa Labas ng Brandon?',
       no: 'Hindi',
       yes: 'Oo',
       transportation: 'Transportasyon',
@@ -1228,7 +1228,7 @@
       travelSelf: 'Bayad sa biyahe (Personal transportation · {dur})',
       travelCharter: 'Bayad sa biyahe (Charter · {dur})',
       dur: ['1–2 oras', '3–4 oras', '5–6 oras'],
-      quoteHeader: '📷 Event Photography Quote',
+      quoteHeader: '📷 Photography Quote',
       clientLine: (name, email) => `Client: ${name}\nEmail: ${email}`,
       eventLine: (eventType) => `Uri ng photography: ${eventType}`,
       dateLine: (date, time) => `Preferred time: ${date || 'Hindi napili'}${time ? ' at ' + time : ''}`,
@@ -1384,8 +1384,8 @@
       lateHrs,
       transport,
       total: shoot + late + transport,
-      includedMin: family ? Math.round(hours * 20) : Math.round(hours * 50),
-      includedMax: family ? Math.round(hours * 30) : Math.round(hours * 80),
+      includedMin: Math.round(hours * 50),
+      includedMax: Math.round(hours * 60),
     };
   }
 
