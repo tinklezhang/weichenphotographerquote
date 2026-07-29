@@ -773,7 +773,6 @@
         <option value="commercial" data-i18n="catCommercial">Commercial Photography</option>
         <option value="family" data-i18n="catFamily">Family Photography</option>
         <option value="portrait" data-i18n="catPortrait">Portrait Photography</option>
-        <option value="documentary" data-i18n="catDocumentary">Documentary Photography</option>
       </select>
     </div>
 
@@ -992,7 +991,6 @@
       catCommercial: 'Commercial Photography',
       catFamily: 'Family Photography',
       catPortrait: 'Portrait Photography',
-      catDocumentary: 'Documentary Photography',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Annual Galas & Celebrations',
       catPerformance: 'Performances & Concerts',
@@ -1027,9 +1025,7 @@
       editingHint: 'Includes 40–50 standard edited photos per hour.',
       familyEditingHint: 'Includes 20+ standard edited photos per hour.',
       portraitEditingHint: 'Photo delivery is based on the selected portrait package.',
-      documentaryEditingHint: 'Photo delivery varies depending on the scope of the assignment.',
       portraitDelivery: 'Based on the selected portrait package',
-      documentaryDelivery: 'Based on the scope of the assignment',
       weekendHint: 'Same rate on weekends. Hours after 18:00 include a 20% evening surcharge.',
       outOfCity: 'Out-of-City Shoot?',
       no: 'No',
@@ -1096,7 +1092,6 @@
       catCommercial: '商业摄影',
       catFamily: '家庭摄影',
       catPortrait: '肖像摄影',
-      catDocumentary: '纪实摄影',
       catCelebration: '节庆 / 市集活动',
       catCorporate: '年会 / 庆典',
       catPerformance: '演出 / 音乐会',
@@ -1131,9 +1126,7 @@
       editingHint: '每小时包含 40–50 张标准修片照片。',
       familyEditingHint: '每小时包含 20+ 张标准修片照片。',
       portraitEditingHint: '照片交付数量以所选肖像摄影方案为准。',
-      documentaryEditingHint: '照片交付数量根据项目范围确定。',
       portraitDelivery: '以所选肖像摄影方案为准',
-      documentaryDelivery: '根据项目范围确定',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
       outOfCity: '是否出城拍摄？',
       no: '否',
@@ -1201,7 +1194,6 @@
       catCommercial: 'Commercial Photography',
       catFamily: 'Family Photography',
       catPortrait: 'Portrait Photography',
-      catDocumentary: 'Documentary Photography',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Annual Galas & Celebrations',
       catPerformance: 'Performances & Concerts',
@@ -1232,9 +1224,7 @@
       editingHint: 'Kasama ang 40–50 standard edited photos kada oras.',
       familyEditingHint: 'Kasama ang 20+ standard edited photos kada oras.',
       portraitEditingHint: 'Ang bilang ng photos ay batay sa napiling portrait package.',
-      documentaryEditingHint: 'Ang bilang ng photos ay depende sa saklaw ng assignment.',
       portraitDelivery: 'Batay sa napiling portrait package',
-      documentaryDelivery: 'Batay sa saklaw ng assignment',
       weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
       outOfCity: 'Labas ng Lungsod?',
       no: 'Hindi',
@@ -1313,11 +1303,6 @@
       en: ['Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
       zh: ['职业头像', '环境肖像', '创意肖像', '个人品牌照'],
       fil: ['Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
-    },
-    documentary: {
-      en: ['Documentary Projects', 'Photojournalism', 'Community Stories'],
-      zh: ['纪实摄影项目', '新闻摄影', '社区故事'],
-      fil: ['Documentary Projects', 'Photojournalism', 'Community Stories'],
     },
   };
 
@@ -1435,8 +1420,6 @@
         return `${Math.round(hours * 20)}+ ${L.photo}`;
       case 'portrait':
         return L.portraitDelivery;
-      case 'documentary':
-        return L.documentaryDelivery;
       default:
         return '';
     }
@@ -1446,7 +1429,6 @@
     const L = strings[currentLang];
     if (getEventKey() === 'family') return L.familyEditingHint;
     if (getEventKey() === 'portrait') return L.portraitEditingHint;
-    if (getEventKey() === 'documentary') return L.documentaryEditingHint;
     return L.editingHint;
   }
 
