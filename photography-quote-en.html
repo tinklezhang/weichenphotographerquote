@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Event Photography</title>
+  <title>Weichen Studio Quote</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -760,20 +760,25 @@
       <button class="lang-btn" onclick="setLang('fil')">FIL</button>
     </div>
     <div class="icon">📷</div>
-    <h1 data-i18n="title">Event Photography</h1>
+    <h1 data-i18n="title">Weichen Studio Quote</h1>
     <p data-i18n="subtitle">Photography Quote</p>
   </div>
 
   <div class="body">
 
-    <div class="section-label" data-i18n="eventCategories">Photography Type</div>
+    <div class="section-label" data-i18n="serviceCategory">Service Category</div>
     <div class="field" style="margin-bottom:28px;">
-      <select class="select-field" id="eventTypeField" onchange="handleEventTypeChange()">
-        <option value="events" data-i18n="catEvents">Events</option>
-        <option value="performance" data-i18n="catPerformance">Performances & Concerts</option>
-        <option value="private" data-i18n="catPrivate">Private Parties</option>
-        <option value="family" data-i18n="catFamily">Family & Milestone Photos</option>
+      <select class="select-field" id="serviceCategoryField" onchange="handleServiceCategoryChange()">
+        <option value="events" data-i18n="catEvent">Event Photography</option>
+        <option value="commercial" data-i18n="catCommercial">Commercial Photography</option>
+        <option value="family" data-i18n="catFamily">Family Photography</option>
+        <option value="portrait" data-i18n="catPortrait">Portrait Photography</option>
       </select>
+    </div>
+
+    <div class="section-label" data-i18n="photographyType">Photography Type</div>
+    <div class="field" style="margin-bottom:28px;">
+      <select class="select-field" id="photographyTypeField" onchange="recalc()"></select>
     </div>
 
     <div class="section-label" data-i18n="shootingEditing">Rate & Includes</div>
@@ -791,7 +796,7 @@
           <button id="hoursPlus" onclick="adjust('hours', 1)">+</button>
         </div>
         <div class="field-error" id="hoursError"></div>
-        <div class="field-hint" data-i18n="editingHint">Includes 40 - 60 standard edited photos per hour.</div>
+        <div class="field-hint" data-i18n="editingHint">Includes 40–50 standard edited photos per hour.</div>
         <div class="field-hint" data-i18n="weekendHint">Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.</div>
       </div>
     </div>
@@ -978,11 +983,14 @@
 
   const strings = {
     en: {
-      title: 'Event Photography',
+      title: 'Weichen Studio Quote',
       subtitle: 'Photography Quote',
-      eventCategories: 'Photography Type',
-      catEvents: 'Events',
-      catFamily: 'Family & Milestone Photos',
+      serviceCategory: 'Service Category',
+      photographyType: 'Photography Type',
+      catEvent: 'Event Photography',
+      catCommercial: 'Commercial Photography',
+      catFamily: 'Family Photography',
+      catPortrait: 'Portrait Photography',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Annual Galas & Celebrations',
       catPerformance: 'Performances & Concerts',
@@ -1011,11 +1019,13 @@
       copyHint: '✅ Copied! Now send it to your photographer 📩',
       shootingEditing: 'Rate & Includes',
       shootingDuration: 'Shooting Duration',
-      editing: 'Standard edited photos included',
+      editing: 'Photo delivery',
       included: 'Included',
       photo: 'photos',
-      editingHint: 'Includes 40 - 60 standard edited photos per hour.',
-      familyEditingHint: 'Family & milestone photos include 20 - 30 standard edited photos per hour.',
+      editingHint: 'Includes 40–50 standard edited photos per hour.',
+      familyEditingHint: 'Includes 20+ standard edited photos per hour.',
+      portraitEditingHint: 'Photo delivery is based on the selected portrait package.',
+      portraitDelivery: 'Based on the selected portrait package',
       weekendHint: 'Same rate on weekends. Hours after 18:00 include a 20% evening surcharge.',
       outOfCity: 'Out-of-City Shoot?',
       no: 'No',
@@ -1042,13 +1052,13 @@
       travelSelf: 'Travel fee (Personal transportation · {dur})',
       travelCharter: 'Travel fee (Chartered · {dur})',
       dur: ['1–2 hrs', '3–4 hrs', '5–6 hrs'],
-      quoteHeader: '📷 Event Photography Quote',
+      quoteHeader: '📷 Weichen Studio Quote',
       clientLine: (name, email) => `Client: ${name}\nEmail: ${email}`,
       eventLine: (eventType) => `Photography type: ${eventType}`,
       dateLine: (date, time) => `Preferred time: ${date || 'Not selected'}${time ? ' at ' + time : ''}`,
       noteLine: (note) => `Note to Weichen: ${note}`,
       shootLine: (h, cost) => `Shooting: ${h}h × $300 = $${cost}`,
-      editLine: (min, max) => `Included: ${min} - ${max} standard edited photos`,
+      editLine: (delivery) => `Photo delivery: ${delivery}`,
       lateLine: (lateHrs, cost) => `Evening surcharge (${lateHrs}h after 18:00, 20%): $${cost}`,
       travelLine: (mode, dur, cost) => `Travel (${mode} · ${dur}): $${cost}`,
       selfDriveLabel: 'Personal transportation',
@@ -1074,11 +1084,14 @@
       submitFail: 'Email service is not connected yet. The quote has been copied instead.',
     },
     zh: {
-      title: '活动摄影报价单',
+      title: 'Weichen Studio Quote',
       subtitle: '摄影报价单',
-      eventCategories: '拍摄类型',
-      catEvents: '活动拍摄',
-      catFamily: '家庭 / 纪念照',
+      serviceCategory: '服务类别',
+      photographyType: '拍摄类型',
+      catEvent: '活动摄影',
+      catCommercial: '商业摄影',
+      catFamily: '家庭摄影',
+      catPortrait: '肖像摄影',
       catCelebration: '节庆 / 市集活动',
       catCorporate: '年会 / 庆典',
       catPerformance: '演出 / 音乐会',
@@ -1107,11 +1120,13 @@
       copyHint: '✅ 内容已复制，发给你的摄影师吧 📩',
       shootingEditing: '价格与包含内容',
       shootingDuration: '拍摄时长',
-      editing: '已含标准修片照片',
+      editing: '照片交付',
       included: '已包含',
       photo: '张',
-      editingHint: '每小时包含 40 - 60 张标准修片照片。',
-      familyEditingHint: '家庭 / 纪念照每小时包含 20 - 30 张标准修片照片。',
+      editingHint: '每小时包含 40–50 张标准修片照片。',
+      familyEditingHint: '每小时包含 20+ 张标准修片照片。',
+      portraitEditingHint: '照片交付数量以所选肖像摄影方案为准。',
+      portraitDelivery: '以所选肖像摄影方案为准',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
       outOfCity: '是否出城拍摄？',
       no: '否',
@@ -1138,13 +1153,13 @@
       travelSelf: '交通费（自行交通 · {dur}）',
       travelCharter: '出城费（包车 · {dur}）',
       dur: ['1–2 小时', '3–4 小时', '5–6 小时'],
-      quoteHeader: '📷 活动摄影报价单',
+      quoteHeader: '📷 Weichen Studio Quote',
       clientLine: (name, email) => `客户：${name}\n邮箱：${email}`,
       eventLine: (eventType) => `拍摄类型：${eventType}`,
       dateLine: (date, time) => `希望时间：${date || '未选择'}${time ? ' ' + time : ''}`,
       noteLine: (note) => `给 Weichen 的留言：${note}`,
       shootLine: (h, cost) => `拍摄费：${h}h × $300 = $${cost}`,
-      editLine: (min, max) => `已包含：${min} - ${max} 张标准修片照片`,
+      editLine: (delivery) => `照片交付：${delivery}`,
       lateLine: (lateHrs, cost) => `晚间费用（18:00 后 ${lateHrs}h，加收 20%）：$${cost}`,
       travelLine: (mode, dur, cost) => `交通费（${mode} · ${dur}）：$${cost}`,
       selfDriveLabel: '自行交通',
@@ -1171,11 +1186,14 @@
     }
     ,
     fil: {
-      title: 'Event Photography',
+      title: 'Weichen Studio Quote',
       subtitle: 'Photography Quote',
-      eventCategories: 'Uri ng Photography',
-      catEvents: 'Events',
-      catFamily: 'Family & Milestone Photos',
+      serviceCategory: 'Kategorya ng Serbisyo',
+      photographyType: 'Uri ng Photography',
+      catEvent: 'Event Photography',
+      catCommercial: 'Commercial Photography',
+      catFamily: 'Family Photography',
+      catPortrait: 'Portrait Photography',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Annual Galas & Celebrations',
       catPerformance: 'Performances & Concerts',
@@ -1200,11 +1218,13 @@
       shootingDuration: 'Tagal ng Pagkuha',
       hr: 'oras',
       hrs: 'oras',
-      editing: 'Kasamang standard edited photos',
+      editing: 'Photo delivery',
       included: 'Kasama',
       photo: 'larawan',
-      editingHint: 'Kasama ang 40 - 60 standard edited photos kada oras.',
-      familyEditingHint: 'Family & milestone photos include 20 - 30 standard edited photos per hour.',
+      editingHint: 'Kasama ang 40–50 standard edited photos kada oras.',
+      familyEditingHint: 'Kasama ang 20+ standard edited photos kada oras.',
+      portraitEditingHint: 'Ang bilang ng photos ay batay sa napiling portrait package.',
+      portraitDelivery: 'Batay sa napiling portrait package',
       weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
       outOfCity: 'Labas ng Lungsod?',
       no: 'Hindi',
@@ -1230,13 +1250,13 @@
       travelSelf: 'Bayad sa biyahe (Personal transportation · {dur})',
       travelCharter: 'Bayad sa biyahe (Charter · {dur})',
       dur: ['1–2 oras', '3–4 oras', '5–6 oras'],
-      quoteHeader: '📷 Event Photography Quote',
+      quoteHeader: '📷 Weichen Studio Quote',
       clientLine: (name, email) => `Client: ${name}\nEmail: ${email}`,
       eventLine: (eventType) => `Uri ng photography: ${eventType}`,
       dateLine: (date, time) => `Preferred time: ${date || 'Hindi napili'}${time ? ' at ' + time : ''}`,
       noteLine: (note) => `Note to Weichen: ${note}`,
       shootLine: (h, cost) => `Shooting: ${h}h × $300 = $${cost}`,
-      editLine: (min, max) => `Kasama: ${min} - ${max} standard edited photos`,
+      editLine: (delivery) => `Photo delivery: ${delivery}`,
       lateLine: (lateHrs, cost) => `Evening surcharge (${lateHrs}h after 18:00, 20%): $${cost}`,
       travelLine: (mode, dur, cost) => `Bayad sa biyahe (${mode} · ${dur}): $${cost}`,
       selfDriveLabel: 'Personal transportation',
@@ -1261,6 +1281,29 @@
       submitSuccess: 'Quote sent. A copy has also been sent to Weichen.',
       submitFail: 'Email service is not connected yet. The quote has been copied instead.',
     }
+  };
+
+  const serviceTypes = {
+    events: {
+      en: ['Concerts', 'Festivals', 'Community Events', 'Art Exhibitions'],
+      zh: ['音乐会', '节庆活动', '社区活动', '艺术展览'],
+      fil: ['Concerts', 'Festivals', 'Community Events', 'Art Exhibitions'],
+    },
+    commercial: {
+      en: ['Corporate Events', 'AGMs & Conferences', 'Opening Ceremonies', 'Company Celebrations'],
+      zh: ['企业活动', '年度会员大会与会议', '开业典礼', '公司庆典'],
+      fil: ['Corporate Events', 'AGMs & Conferences', 'Opening Ceremonies', 'Company Celebrations'],
+    },
+    family: {
+      en: ['Family Portraits', 'Birthday Parties', 'Anniversary Celebrations', 'Family Gatherings'],
+      zh: ['家庭合照', '生日聚会', '纪念日庆祝', '家庭聚会'],
+      fil: ['Family Portraits', 'Birthday Parties', 'Anniversary Celebrations', 'Family Gatherings'],
+    },
+    portrait: {
+      en: ['Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
+      zh: ['职业头像', '环境肖像', '创意肖像', '个人品牌照'],
+      fil: ['Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
+    },
   };
 
   function fmt(n) { return n.toLocaleString('en-CA'); }
@@ -1317,6 +1360,7 @@
       if (strings[lang][key]) el.placeholder = strings[lang][key];
     });
     // Re-render dynamic labels
+    renderPhotographyTypes();
     updateDateButton();
     renderCalendar();
     applyEventRules();
@@ -1334,21 +1378,58 @@
   }
 
   function getEventLabel() {
-    const field = document.getElementById('eventTypeField');
-    return field.options[field.selectedIndex].textContent.trim();
+    const categoryField = document.getElementById('serviceCategoryField');
+    const typeField = document.getElementById('photographyTypeField');
+    const category = categoryField.options[categoryField.selectedIndex].textContent.trim();
+    const type = typeField.options[typeField.selectedIndex]?.textContent.trim();
+    return type ? `${category} — ${type}` : category;
   }
 
   function getEventKey() {
-    return document.getElementById('eventTypeField').value;
+    return document.getElementById('serviceCategoryField').value;
   }
 
-  function isFamilySession() {
-    return getEventKey() === 'family';
+  function renderPhotographyTypes() {
+    const field = document.getElementById('photographyTypeField');
+    const previousIndex = field.selectedIndex;
+    const options = serviceTypes[getEventKey()][currentLang];
+    field.innerHTML = '';
+    options.forEach((label, index) => {
+      const option = document.createElement('option');
+      option.value = String(index);
+      option.textContent = label;
+      field.appendChild(option);
+    });
+    field.selectedIndex = Math.min(Math.max(previousIndex, 0), options.length - 1);
   }
 
-  function handleEventTypeChange() {
+  function handleServiceCategoryChange() {
+    document.getElementById('photographyTypeField').selectedIndex = -1;
+    renderPhotographyTypes();
     applyEventRules();
     recalc();
+  }
+
+  function includedDelivery(hours) {
+    const L = strings[currentLang];
+    switch (getEventKey()) {
+      case 'events':
+      case 'commercial':
+        return `${Math.round(hours * 40)} - ${Math.round(hours * 50)} ${L.photo}`;
+      case 'family':
+        return `${Math.round(hours * 20)}+ ${L.photo}`;
+      case 'portrait':
+        return L.portraitDelivery;
+      default:
+        return '';
+    }
+  }
+
+  function deliveryHint() {
+    const L = strings[currentLang];
+    if (getEventKey() === 'family') return L.familyEditingHint;
+    if (getEventKey() === 'portrait') return L.portraitEditingHint;
+    return L.editingHint;
   }
 
   function applyEventRules() {
@@ -1378,7 +1459,6 @@
     const lateHrs = eveningHours(startTime, hours);
     const late = lateHrs * SHOOT_RATE * 0.2;
     const transport = transportCost();
-    const family = isFamilySession();
     return {
       hours,
       shoot,
@@ -1386,8 +1466,8 @@
       lateHrs,
       transport,
       total: shoot + late + transport,
-      includedMin: family ? Math.round(hours * 20) : Math.round(hours * 40),
-      includedMax: family ? Math.round(hours * 30) : Math.round(hours * 60),
+      includedMin: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 40) : (getEventKey() === 'family' ? Math.round(hours * 20) : null),
+      includedMax: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 50) : null,
     };
   }
 
@@ -1423,10 +1503,10 @@
     document.getElementById('bEventLabel').textContent = L.eventType;
     document.getElementById('bEvent').textContent = getEventLabel();
     document.getElementById('bShootLabel').textContent = `${L.shooting} (${hours}h × $300/h)`;
-    document.getElementById('bEditLabel').textContent = `${L.editing} (${includedMin} - ${includedMax} ${photoWord})`;
+    document.getElementById('bEditLabel').textContent = `${L.editing} (${includedDelivery(hours)})`;
     document.getElementById('bShoot').textContent = fmt(shoot);
     document.getElementById('bIncluded').textContent = L.included;
-    document.querySelector('[data-i18n="editingHint"]').textContent = isFamilySession() ? L.familyEditingHint : L.editingHint;
+    document.querySelector('[data-i18n="editingHint"]').textContent = deliveryHint();
     document.getElementById('lateLabel').textContent = `${L.lateSurcharge} (${fmt(lateHrs)}h)`;
     document.getElementById('bLate').textContent = fmt(late);
     document.getElementById('lateRow').style.display = late > 0 ? '' : 'none';
@@ -1480,7 +1560,7 @@
       L.scheduleNotice,
     ];
     if (note) details.push(L.noteLine(note));
-    details.push('', L.shootLine(hours, fmt(shoot)), L.editLine(includedMin, includedMax));
+    details.push('', L.shootLine(hours, fmt(shoot)), L.editLine(includedDelivery(hours)));
 
     if (late > 0) details.push(L.lateLine(fmt(lateHrs), fmt(late)));
     if (transportEnabled) details.push(L.travelLine(modeLabel, dur, fmt(transport)));
@@ -1517,6 +1597,9 @@
       clientName: document.getElementById('clientNameField').value.trim(),
       clientEmail: document.getElementById('clientEmailField').value.trim(),
       eventTypeKey: getEventKey(),
+      serviceCategory: document.getElementById('serviceCategoryField').options[document.getElementById('serviceCategoryField').selectedIndex].textContent.trim(),
+      photographyType: document.getElementById('photographyTypeField').options[document.getElementById('photographyTypeField').selectedIndex].textContent.trim(),
+      includedDelivery: includedDelivery(hours),
       eventType: getEventLabel(),
       date: document.getElementById('sessionDateField').value,
       startTime: document.getElementById('startTimeField').value,
@@ -1829,7 +1912,7 @@
     if (note) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;margin-bottom:3px">${L.noteToWeichen}</div><div style="font-weight:600;line-height:1.5">${escapeHtml(note)}</div></div>`;
     rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;line-height:1.5">${escapeHtml(L.scheduleNotice)}</div></div>`;
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.shooting} (${hours}h × $300/h)</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
-    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${includedMin} - ${includedMax} ${L.photo})</span><span style="font-weight:600">${L.included}</span></div>`;
+    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${escapeHtml(includedDelivery(hours))})</span><span style="font-weight:600">${L.included}</span></div>`;
     if (late > 0) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.lateSurcharge} (${fmt(lateHrs)}h)</span><span style="font-weight:600">$${fmt(late)}</span></div>`;
     if (transportEnabled) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${modeLabel} · ${dur}</span><span style="font-weight:600">$${fmt(transport)}</span></div>`;
     document.getElementById('reviewBreakdown').innerHTML = rows;
