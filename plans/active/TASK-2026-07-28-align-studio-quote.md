@@ -1,6 +1,7 @@
 # Align Quote Page With Studio Services
 
-- State: review
+- State: blocked
+- Blocker: missing_capability — the local environment has no GitHub CLI, the HTTPS remote has no usable credentials, and the connected GitHub App can read the repository but is not permitted to update its contents.
 - Scope: Reorganize the quote page around the five current Weichen Studio service categories while preserving existing pricing, surcharge, travel, validation, email-delivery, and language-switching behavior.
 
 ## Acceptance Criteria
@@ -34,3 +35,4 @@
 - Browser checks confirmed all five category/type lists, category-specific delivery copy, English/Chinese switching, and a $1,020 calculation for 2 hours at 19:00 with the default $300 out-of-city travel fee ($600 shooting + $120 evening surcharge + $300 travel).
 - Browser console reported no warnings or errors.
 - `index.html` and `photography-quote-en.html` are synchronized, and `git diff --check` passed.
+- Local commit `a9f0759` contains the completed change. Publishing is pending GitHub CLI installation and authentication (`gh auth login`) or equivalent repository write credentials.
