@@ -1447,6 +1447,16 @@
     return document.getElementById('serviceCategoryField').value;
   }
 
+  function applyDeepLink() {
+    if (window.location.hash.toLowerCase() !== '#back-to-the-moment') return;
+
+    document.getElementById('serviceCategoryField').value = 'portrait';
+    renderPhotographyTypes();
+    document.getElementById('photographyTypeField').value = 'back-to-the-moment';
+    applyEventRules();
+    recalc();
+  }
+
   function isMomentPackage() {
     return getEventKey() === 'portrait' && document.getElementById('photographyTypeField').value === 'back-to-the-moment';
   }
@@ -2088,8 +2098,10 @@
 
   populateTimeOptions();
   document.getElementById('startTimeField').addEventListener('blur', validateStartTimeField);
+  window.addEventListener('hashchange', applyDeepLink);
 
   setLang(currentLang);
+  applyDeepLink();
 </script>
 </body>
 </html>
