@@ -1,6 +1,6 @@
 # Add Back to the Moment Deep Link
 
-- State: review
+- State: merged
 - Scope: Add a URL suffix that opens the existing quote page directly on Portrait Photography and the Back to the Moment package without changing the default main-page selection.
 
 ## Acceptance Criteria
@@ -29,3 +29,4 @@
 - The deep-linked package hides out-of-city controls and retains the Brandon local-only restriction.
 - Switching the deep-linked page to Chinese preserves the package and displays `回到那一刻`.
 - Browser console checks reported no errors.
+- Merged to `main` through pull request #2 for GitHub Pages deployment.
