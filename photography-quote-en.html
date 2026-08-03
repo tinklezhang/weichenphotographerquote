@@ -201,6 +201,22 @@
 
     .field-hint { font-size: 11px; color: #A89888; margin-top: 7px; line-height: 1.5; }
 
+    .package-card {
+      display: none;
+      background: #F7F3EE;
+      border: 1.5px solid #E0D4C8;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 28px;
+    }
+
+    .package-card.open { display: block; }
+    .package-card h2 { font-size: 17px; font-weight: 650; color: #2C1F14; margin-bottom: 7px; }
+    .package-card .tagline { font-size: 12px; line-height: 1.5; color: #6B4F35; font-style: italic; margin-bottom: 13px; }
+    .package-card ul { list-style: none; display: grid; gap: 7px; }
+    .package-card li { font-size: 13px; line-height: 1.45; color: #4A3525; }
+    .package-card li::before { content: '✓'; color: #6B4F35; font-weight: 700; margin-right: 8px; }
+
     .divider { height: 1px; background: #EDE5DC; margin-bottom: 24px; }
 
     .transport-section { margin-bottom: 28px; }
@@ -781,6 +797,19 @@
       <select class="select-field" id="photographyTypeField" onchange="recalc()"></select>
     </div>
 
+    <div class="package-card" id="portraitPackageCard">
+      <h2 data-i18n="momentName">Back to the Moment</h2>
+      <div class="tagline" data-i18n="momentTagline">More than photographs. Memories to return to.</div>
+      <ul>
+        <li data-i18n="momentPeople">For 1–2 people</li>
+        <li data-i18n="momentDigital">2 professionally finished black-and-white digital portraits</li>
+        <li data-i18n="momentPrints">2 matching professional 8×10 prints</li>
+        <li data-i18n="momentLocation">Brandon local sessions only · Out-of-city unavailable</li>
+        <li data-i18n="momentInvestment">Investment: CAD $288</li>
+      </ul>
+    </div>
+
+    <div id="hourlyRateSection">
     <div class="section-label" data-i18n="shootingEditing">Rate & Includes</div>
     <div class="fields">
       <div class="field">
@@ -800,10 +829,11 @@
         <div class="field-hint" data-i18n="weekendHint">Same rate on weekends. Events starting after 18:00 include a 20% evening surcharge.</div>
       </div>
     </div>
+    </div>
 
     <div class="divider"></div>
 
-    <div class="transport-section">
+    <div class="transport-section" id="transportSection">
       <div class="out-of-city-row">
         <div class="main" data-i18n="outOfCity">Out-of-City Shoot?</div>
         <div class="yes-no-toggle">
@@ -964,6 +994,7 @@
 
 <script>
   const SHOOT_RATE = 300;
+  const MOMENT_PACKAGE_PRICE = 288;
   const FINE_RATE = 40;
   const TRANSPORT_PRICES = [200, 300, 400];
   const QUOTE_API_ENDPOINT = 'https://weichen-quote-email.tinklezhang.workers.dev';
@@ -991,6 +1022,15 @@
       catCommercial: 'Commercial Photography',
       catFamily: 'Family Photography',
       catPortrait: 'Portrait Photography',
+      momentName: 'Back to the Moment',
+      momentTagline: 'More than photographs. Memories to return to.',
+      momentPeople: 'For 1–2 people',
+      momentDigital: '2 professionally finished black-and-white digital portraits',
+      momentPrints: '2 matching professional 8×10 prints',
+      momentLocation: 'Brandon local sessions only · Out-of-city unavailable',
+      momentInvestment: 'Investment: CAD $288',
+      momentDelivery: '2 digital portraits + 2 professional 8×10 prints',
+      momentPrice: 'Fixed portrait package',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Annual Galas & Celebrations',
       catPerformance: 'Performances & Concerts',
@@ -1092,6 +1132,15 @@
       catCommercial: '商业摄影',
       catFamily: '家庭摄影',
       catPortrait: '肖像摄影',
+      momentName: '回到那一刻',
+      momentTagline: '不只是一组照片，更是一段可以反复回看的回忆。',
+      momentPeople: '适合 1–2 人拍摄',
+      momentDigital: '2 张精修黑白数字肖像',
+      momentPrints: '2 张对应的专业 8×10 英寸打印照片',
+      momentLocation: '仅限 Brandon 本地拍摄 · 不提供出城拍摄',
+      momentInvestment: '价格：CAD $288',
+      momentDelivery: '2 张数字肖像 + 2 张专业 8×10 打印照片',
+      momentPrice: '黑白肖像固定套餐',
       catCelebration: '节庆 / 市集活动',
       catCorporate: '年会 / 庆典',
       catPerformance: '演出 / 音乐会',
@@ -1194,6 +1243,15 @@
       catCommercial: 'Commercial Photography',
       catFamily: 'Family Photography',
       catPortrait: 'Portrait Photography',
+      momentName: 'Back to the Moment',
+      momentTagline: 'More than photographs. Memories to return to.',
+      momentPeople: 'Para sa 1–2 tao',
+      momentDigital: '2 professionally finished black-and-white digital portraits',
+      momentPrints: '2 matching professional 8×10 prints',
+      momentLocation: 'Brandon local sessions only · Out-of-city unavailable',
+      momentInvestment: 'Investment: CAD $288',
+      momentDelivery: '2 digital portraits + 2 professional 8×10 prints',
+      momentPrice: 'Fixed portrait package',
       catCelebration: 'Festivals & Fairs',
       catCorporate: 'Annual Galas & Celebrations',
       catPerformance: 'Performances & Concerts',
@@ -1300,9 +1358,9 @@
       fil: ['Family Portraits', 'Birthday Parties', 'Anniversary Celebrations', 'Family Gatherings'],
     },
     portrait: {
-      en: ['Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
-      zh: ['职业头像', '环境肖像', '创意肖像', '个人品牌照'],
-      fil: ['Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
+      en: ['Back to the Moment', 'Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
+      zh: ['回到那一刻', '职业头像', '环境肖像', '创意肖像', '个人品牌照'],
+      fil: ['Back to the Moment', 'Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
     },
   };
 
@@ -1389,6 +1447,10 @@
     return document.getElementById('serviceCategoryField').value;
   }
 
+  function isMomentPackage() {
+    return getEventKey() === 'portrait' && document.getElementById('photographyTypeField').value === 'back-to-the-moment';
+  }
+
   function renderPhotographyTypes() {
     const field = document.getElementById('photographyTypeField');
     const previousIndex = field.selectedIndex;
@@ -1396,7 +1458,7 @@
     field.innerHTML = '';
     options.forEach((label, index) => {
       const option = document.createElement('option');
-      option.value = String(index);
+      option.value = getEventKey() === 'portrait' && index === 0 ? 'back-to-the-moment' : String(index);
       option.textContent = label;
       field.appendChild(option);
     });
@@ -1412,6 +1474,7 @@
 
   function includedDelivery(hours) {
     const L = strings[currentLang];
+    if (isMomentPackage()) return L.momentDelivery;
     switch (getEventKey()) {
       case 'events':
       case 'commercial':
@@ -1427,6 +1490,7 @@
 
   function deliveryHint() {
     const L = strings[currentLang];
+    if (isMomentPackage()) return L.momentTagline;
     if (getEventKey() === 'family') return L.familyEditingHint;
     if (getEventKey() === 'portrait') return L.portraitEditingHint;
     return L.editingHint;
@@ -1440,6 +1504,17 @@
     hoursInput.disabled = false;
     hoursMinus.disabled = false;
     hoursPlus.disabled = false;
+
+    const fixedPackage = isMomentPackage();
+    if (fixedPackage && transportEnabled) {
+      transportEnabled = false;
+      document.getElementById('ynNo').classList.add('active');
+      document.getElementById('ynYes').classList.remove('active');
+      document.getElementById('transportDetails').classList.remove('open');
+    }
+    document.getElementById('portraitPackageCard').classList.toggle('open', fixedPackage);
+    document.getElementById('hourlyRateSection').style.display = fixedPackage ? 'none' : '';
+    document.getElementById('transportSection').style.display = fixedPackage ? 'none' : '';
   }
 
   function eveningHours(startTime, totalHours) {
@@ -1454,6 +1529,9 @@
 
   function quoteMath() {
     const hours = getHours();
+    if (isMomentPackage()) {
+      return { hours, shoot: MOMENT_PACKAGE_PRICE, late: 0, lateHrs: 0, transport: 0, total: MOMENT_PACKAGE_PRICE, includedMin: 2, includedMax: 2 };
+    }
     const shoot = hours * SHOOT_RATE;
     const startTime = document.getElementById('startTimeField').value;
     const lateHrs = eveningHours(startTime, hours);
@@ -1502,7 +1580,7 @@
 
     document.getElementById('bEventLabel').textContent = L.eventType;
     document.getElementById('bEvent').textContent = getEventLabel();
-    document.getElementById('bShootLabel').textContent = `${L.shooting} (${hours}h × $300/h)`;
+    document.getElementById('bShootLabel').textContent = isMomentPackage() ? L.momentPrice : `${L.shooting} (${hours}h × $300/h)`;
     document.getElementById('bEditLabel').textContent = `${L.editing} (${includedDelivery(hours)})`;
     document.getElementById('bShoot').textContent = fmt(shoot);
     document.getElementById('bIncluded').textContent = L.included;
@@ -1511,7 +1589,7 @@
     document.getElementById('bLate').textContent = fmt(late);
     document.getElementById('lateRow').style.display = late > 0 ? '' : 'none';
     document.getElementById('bTransport').textContent = fmt(transport);
-    document.getElementById('transportRow').style.display = transportEnabled ? '' : 'none';
+    document.getElementById('transportRow').style.display = transportEnabled && !isMomentPackage() ? '' : 'none';
 
     const travelTemplate = currentMode === 'self' ? L.travelSelf : L.travelCharter;
     document.getElementById('transportLabel').textContent = travelTemplate.replace('{dur}', dur);
@@ -1560,10 +1638,11 @@
       L.scheduleNotice,
     ];
     if (note) details.push(L.noteLine(note));
-    details.push('', L.shootLine(hours, fmt(shoot)), L.editLine(includedDelivery(hours)));
+    details.push('', isMomentPackage() ? `${L.momentPrice}: $${fmt(shoot)}` : L.shootLine(hours, fmt(shoot)), L.editLine(includedDelivery(hours)));
+    if (isMomentPackage()) details.push(L.momentPeople, L.momentLocation, L.momentTagline);
 
     if (late > 0) details.push(L.lateLine(fmt(lateHrs), fmt(late)));
-    if (transportEnabled) details.push(L.travelLine(modeLabel, dur, fmt(transport)));
+    if (transportEnabled && !isMomentPackage()) details.push(L.travelLine(modeLabel, dur, fmt(transport)));
 
     let body = L.quoteHeader + '\n' + '─'.repeat(28) + '\n';
     body += L.emailIntro + '\n\n';
@@ -1605,10 +1684,14 @@
       startTime: document.getElementById('startTimeField').value,
       note: document.getElementById('clientNoteField').value.trim(),
       hours,
-      transportEnabled,
+      transportEnabled: transportEnabled && !isMomentPackage(),
       transportMode: currentMode,
       durationIndex: currentDuration,
       language: currentLang,
+      fixedPackage: isMomentPackage(),
+      packageLocation: isMomentPackage() ? 'Brandon' : '',
+      packagePeople: isMomentPackage() ? '1–2' : '',
+      packagePrice: isMomentPackage() ? MOMENT_PACKAGE_PRICE : null,
     };
   }
 
@@ -1911,10 +1994,11 @@
     let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.eventType}</span><span style="font-weight:600;text-align:right">${getEventLabel()}</span></div>`;
     if (note) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;margin-bottom:3px">${L.noteToWeichen}</div><div style="font-weight:600;line-height:1.5">${escapeHtml(note)}</div></div>`;
     rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;line-height:1.5">${escapeHtml(L.scheduleNotice)}</div></div>`;
-    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.shooting} (${hours}h × $300/h)</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
+    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${isMomentPackage() ? L.momentPrice : `${L.shooting} (${hours}h × $300/h)`}</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${escapeHtml(includedDelivery(hours))})</span><span style="font-weight:600">${L.included}</span></div>`;
+    if (isMomentPackage()) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4;line-height:1.6"><div>${escapeHtml(L.momentPeople)}</div><div>${escapeHtml(L.momentLocation)}</div><div style="color:#7A6252;font-style:italic">${escapeHtml(L.momentTagline)}</div></div>`;
     if (late > 0) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.lateSurcharge} (${fmt(lateHrs)}h)</span><span style="font-weight:600">$${fmt(late)}</span></div>`;
-    if (transportEnabled) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${modeLabel} · ${dur}</span><span style="font-weight:600">$${fmt(transport)}</span></div>`;
+    if (transportEnabled && !isMomentPackage()) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${modeLabel} · ${dur}</span><span style="font-weight:600">$${fmt(transport)}</span></div>`;
     document.getElementById('reviewBreakdown').innerHTML = rows;
 
     // Total
