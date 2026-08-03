@@ -1,6 +1,6 @@
 # Add Back to the Moment Portrait Service
 
-- State: review
+- State: merged
 - Scope: Add the fixed-price `Back to the Moment｜回到那一刻` black-and-white portrait service to the existing portrait quote flow without changing the pricing behavior of other services.
 
 ## Acceptance Criteria
@@ -39,3 +39,4 @@
 - Regression check confirmed a regular 2-hour event at 19:00 with default out-of-city travel remains $1,020 ($600 shooting + $120 evening + $300 travel).
 - A 390×844 responsive check had no horizontal overflow, and the page produced no console errors.
 - `git diff --check` passed and the two HTML entry points are byte-for-byte identical.
+- Merged to `main` through pull request #1 for GitHub Pages deployment.
