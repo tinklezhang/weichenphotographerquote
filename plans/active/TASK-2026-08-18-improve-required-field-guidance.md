@@ -1,6 +1,6 @@
 # Improve Required Field Guidance
 
-- State: review
+- State: merged
 - Scope: Make incomplete quote submissions obvious and actionable without opening the review modal prematurely.
 
 ## Acceptance Criteria
@@ -35,3 +35,5 @@
 - A complete form opens the review modal; an incomplete form does not.
 - Family Portraits remains CAD $650 and Family Gatherings remains CAD $300 for one hour.
 - Both HTML entry files are identical, and `git diff --check` passed.
+- PR #8 was squash-merged to `main` as `3738d04`.
+- GitHub Pages completed successfully, and the live mobile-width page confirmed the summary, inline messages, and first-field focus.
