@@ -1,6 +1,6 @@
 # Update Family Photography Package
 
-- State: review
+- State: merged
 - Scope: Replace the Family Photography hourly quote with the approved CAD $650 package for up to two hours, remove Filipino language support, and preserve every other service and current portrait package.
 
 ## Acceptance Criteria
@@ -30,3 +30,5 @@
 - Browser checks confirmed Event remains CAD $600 for two hours and its duration control remains editable.
 - Browser checks confirmed Back to the Moment remains CAD $288 with its package card and hidden hourly controls.
 - Both HTML entry files are identical, and `git diff --check` passed.
+- PR #4 was squash-merged to `main` as `65ed687`.
+- GitHub Pages completed successfully, and the live site was verified at the deployed URL.
