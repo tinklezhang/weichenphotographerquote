@@ -1,6 +1,6 @@
 # Split Family Portrait and Gathering Pricing
 
-- State: review
+- State: merged
 - Scope: Apply the CAD $650 fixed package only to Family Portraits while keeping Family birthday parties, anniversaries, and gatherings at CAD $300 per hour.
 
 ## Acceptance Criteria
@@ -32,3 +32,5 @@
 - Browser checks confirmed Event remains CAD $600 for two hours and Back to the Moment remains CAD $288.
 - Payload checks distinguish fixed Family Portraits from hourly Family events.
 - Both HTML entry files are identical, and `git diff --check` passed.
+- PR #6 was squash-merged to `main` as `4e4cca2`.
+- GitHub Pages completed successfully, and the live site confirmed Family Portraits at CAD $650 and Family Gatherings at CAD $300 for one hour.
