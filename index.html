@@ -726,6 +726,19 @@
       font-weight: 500;
     }
     .input-row.invalid { border-color: #c0392b !important; }
+    .validation-summary {
+      display: none;
+      margin: 0 0 18px;
+      padding: 13px 15px;
+      border: 1px solid #d98880;
+      border-left: 4px solid #c0392b;
+      border-radius: 10px;
+      background: #fff6f5;
+      color: #922b21;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
 
     /* Post-copy hint */
     .copy-hint {
@@ -934,6 +947,8 @@
         <textarea id="clientNoteField" data-i18n-placeholder="notePlaceholder" placeholder="Optional: location, guest count, style, or special requests"></textarea>
       </div>
     </div>
+
+    <div class="validation-summary" id="validationSummary" role="alert" aria-live="assertive" tabindex="-1"></div>
 
     <div class="breakdown">
       <div class="breakdown-row type-row">
@@ -1158,8 +1173,10 @@
       errorHours: '⚠️ Shooting duration must be at least 1 hour.',
       errorName: 'Please enter your name.',
       errorEmail: 'Please enter a valid email address.',
+      errorDateRequired: 'Please choose your preferred shoot date.',
       errorDate: 'Please choose today or a future date.',
       errorTime: 'Please choose a future time for today.',
+      validationSummary: (fields) => `Please complete: ${fields.join(', ')}.`,
       calendarNote: 'Past dates are unavailable.',
       scheduleNotice: 'Preferred date and time are not guaranteed. Final availability will be confirmed with Weichen.',
       welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
@@ -1277,8 +1294,10 @@
       errorHours: '⚠️ 拍摄时长至少需要 1 小时。',
       errorName: '请填写您的姓名。',
       errorEmail: '请填写有效邮箱。',
+      errorDateRequired: '请选择希望拍摄日期。',
       errorDate: '请选择今天或未来日期。',
       errorTime: '如果选择今天，请选择尚未过去的时间。',
+      validationSummary: (fields) => `请先完成以下项目：${fields.join('、')}。`,
       calendarNote: '过去的日期不可选择。',
       scheduleNotice: '您填写的是希望拍摄时间，不代表档期已锁定。最终拍摄时间以您和 Weichen 双方确认为准。',
       welcomeMessage: '感谢您选择 Weichen 作为您的摄影师。这份报价单将发送给您，并同步抄送给 Weichen。她会在收到邮件后的 24 小时内回复您。',
@@ -1725,6 +1744,13 @@
   function clearError(rowId, errorId) {
     document.getElementById(rowId).classList.remove('invalid');
     document.getElementById(errorId).style.display = 'none';
+    hideValidationSummary();
+  }
+
+  function hideValidationSummary() {
+    const summary = document.getElementById('validationSummary');
+    summary.style.display = 'none';
+    summary.textContent = '';
   }
 
   function clearFieldError(fieldId) {
@@ -1732,14 +1758,19 @@
     const visualField = fieldId === 'sessionDateField' ? document.getElementById('sessionDateButton') : field;
     const error = document.getElementById(fieldId + 'Error');
     if (visualField) visualField.style.borderColor = '#E0D4C8';
+    if (visualField) visualField.removeAttribute('aria-invalid');
     if (error) error.style.display = 'none';
+    hideValidationSummary();
   }
 
   function setFieldError(fieldId, message) {
     const field = document.getElementById(fieldId);
     const visualField = fieldId === 'sessionDateField' ? document.getElementById('sessionDateButton') : field;
     const error = document.getElementById(fieldId + 'Error');
-    if (visualField) visualField.style.borderColor = '#c0392b';
+    if (visualField) {
+      visualField.style.borderColor = '#c0392b';
+      visualField.setAttribute('aria-invalid', 'true');
+    }
     if (error) {
       error.textContent = message;
       error.style.display = 'block';
@@ -1755,7 +1786,12 @@
     const L = strings[currentLang];
     const today = getLocalToday();
 
-    if (field.value && field.value < today) {
+    if (!field.value) {
+      setFieldError('sessionDateField', L.errorDateRequired);
+      return false;
+    }
+
+    if (field.value < today) {
       field.value = '';
       updateDateButton();
       setFieldError('sessionDateField', L.errorDate);
@@ -1932,32 +1968,45 @@
     const dateVal = document.getElementById('sessionDateField').value;
     const today = getLocalToday();
     const note = document.getElementById('clientNoteField').value.trim();
-    let valid = true;
+    const issues = [];
 
     if (hoursVal < 1) {
       const el = document.getElementById('hoursError');
       el.textContent = L.errorHours;
       el.style.display = 'block';
       document.getElementById('hoursRow').classList.add('invalid');
-      document.getElementById('hoursRow').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      valid = false;
+      issues.push({ fieldId: 'hours', label: L.shootingDuration });
     }
     if (!name) {
       setFieldError('clientNameField', L.errorName);
-      valid = false;
+      issues.push({ fieldId: 'clientNameField', label: L.yourName });
     }
     if (!isValidEmail(email)) {
       setFieldError('clientEmailField', L.errorEmail);
-      valid = false;
+      issues.push({ fieldId: 'clientEmailField', label: L.yourEmail });
     }
-    if (dateVal && dateVal < today) {
+    if (!dateVal) {
+      setFieldError('sessionDateField', L.errorDateRequired);
+      issues.push({ fieldId: 'sessionDateField', label: L.sessionDate });
+    } else if (dateVal < today) {
       setFieldError('sessionDateField', L.errorDate);
-      valid = false;
+      issues.push({ fieldId: 'sessionDateField', label: L.sessionDate });
     }
-    if (!validateScheduleFields()) {
-      valid = false;
+    if (dateVal && dateVal >= today && !validateStartTimeField()) {
+      issues.push({ fieldId: 'startTimeField', label: L.startTime });
     }
-    if (!valid) return;
+    if (issues.length) {
+      const summary = document.getElementById('validationSummary');
+      summary.textContent = L.validationSummary(issues.map(issue => issue.label));
+      summary.style.display = 'block';
+      const first = issues[0];
+      const target = first.fieldId === 'sessionDateField'
+        ? document.getElementById('sessionDateButton')
+        : document.getElementById(first.fieldId);
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.focus({ preventScroll: true });
+      return;
+    }
 
     const { hours, shoot, late, lateHrs, transport, total, includedMin, includedMax } = quoteMath();
     const dateStr = dateVal ? new Date(dateVal + 'T12:00:00').toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
