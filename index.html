@@ -793,7 +793,7 @@
 
     <div class="section-label" data-i18n="photographyType">Photography Type</div>
     <div class="field" style="margin-bottom:28px;">
-      <select class="select-field" id="photographyTypeField" onchange="recalc()"></select>
+      <select class="select-field" id="photographyTypeField" onchange="handlePhotographyTypeChange()"></select>
     </div>
 
     <div class="package-card" id="portraitPackageCard">
@@ -1068,7 +1068,7 @@
       familyRate: 'CAD $650 · Up to 2 hours',
       familyEditingHint: "Includes 30 professionally retouched images of your choice, high-resolution digital files, and an online gallery. Additional professionally retouched images: CAD $20 each.",
       familyDelivery: "30 professionally retouched images of your choice · High-resolution digital files · Online gallery · Additional retouched images CAD $20 each",
-      familyHourlyEditingHint: 'Includes 20+ standard edited photos per hour.',
+      familyHourlyEditingHint: '1-hour minimum. Includes 20+ standard edited photos per hour.',
       portraitEditingHint: 'Includes:\n45–60-minute studio session\n5 professionally retouched digital photos\nAdditional retouched photos: $20 each\n1 complimentary 8×10 professional print\nHigh-resolution digital files\nOnline gallery',
       portraitDelivery: '5 professionally retouched digital photos; additional retouched photos $20 each; 1 complimentary 8×10 professional print; high-resolution digital files; online gallery',
       portraitDuration: '45–60 min',
@@ -1185,7 +1185,7 @@
       familyRate: 'CAD $650 · 最多 2 小时',
       familyEditingHint: '包含由客户选择的 30 张专业精修照片、高清数码文件及在线相册。额外专业精修照片：CAD $20/张。',
       familyDelivery: '客户自选 30 张专业精修照片 · 高清数码文件 · 在线相册 · 额外精修 CAD $20/张',
-      familyHourlyEditingHint: '每小时包含 20+ 张标准修片照片。',
+      familyHourlyEditingHint: '1 小时起。每小时包含 20+ 张标准修片照片。',
       portraitEditingHint: 'Includes｜包含：\n45–60 分钟工作室拍摄\n5 张专业精修数字照片\n现场可额外选购精修照片：$20 / 张\n赠送 1 张 8×10 专业打印照片\nHigh-resolution digital files\nOnline gallery',
       portraitDelivery: '5 张专业精修数字照片；额外精修 $20 / 张；赠送 1 张 8×10 专业打印照片；High-resolution digital files；Online gallery',
       portraitDuration: '45–60 分钟',
@@ -1261,8 +1261,8 @@
       zh: ['企业活动', '年度会员大会与会议', '开业典礼', '公司庆典'],
     },
     family: {
-      en: ['Family Portraits', 'Birthday Parties', 'Anniversary Celebrations', 'Family Gatherings'],
-      zh: ['家庭合照', '生日聚会', '纪念日庆祝', '家庭聚会'],
+      en: ['Family Portraits', 'Family Gatherings'],
+      zh: ['家庭合照', '家庭聚会'],
     },
     portrait: {
       en: ['Back to the Moment', 'Professional Headshots｜职业大头照', 'Business Portraits｜商务肖像', 'LinkedIn / Professional Profile Photos｜职业形象照', 'Personal Portraits｜个人肖像', 'Couples Portraits｜情侣肖像'],
@@ -1393,6 +1393,13 @@
     document.getElementById('photographyTypeField').selectedIndex = -1;
     renderPhotographyTypes();
     applyEventRules();
+    recalc();
+  }
+
+  function handlePhotographyTypeChange() {
+    if (getEventKey() === 'family' && !isFamilyPortraitPackage()) {
+      document.getElementById('hours').value = 1;
+    }
     recalc();
   }
 
