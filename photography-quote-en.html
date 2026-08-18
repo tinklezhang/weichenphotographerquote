@@ -757,7 +757,6 @@
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
       <button class="lang-btn" onclick="setLang('zh')">中文</button>
-      <button class="lang-btn" onclick="setLang('fil')">FIL</button>
     </div>
     <div class="icon">📷</div>
     <h1 data-i18n="title">Weichen Studio Quote</h1>
@@ -786,7 +785,7 @@
       <div class="field">
         <label>
           <span data-i18n="shootingDuration">Shooting Duration</span>
-          <span class="rate">$300 / <span data-i18n="hr">hr</span></span>
+          <span class="rate" id="rateLabel">$300 / <span data-i18n="hr">hr</span></span>
         </label>
         <div class="input-row" id="hoursRow">
           <button id="hoursMinus" onclick="adjust('hours', -1)">−</button>
@@ -964,6 +963,8 @@
 
 <script>
   const SHOOT_RATE = 300;
+  const FAMILY_RATE = 650;
+  const FAMILY_HOURS = 2;
   const FINE_RATE = 40;
   const TRANSPORT_PRICES = [200, 300, 400];
   const QUOTE_API_ENDPOINT = 'https://weichen-quote-email.tinklezhang.workers.dev';
@@ -1023,7 +1024,9 @@
       included: 'Included',
       photo: 'photos',
       editingHint: 'Includes 40–50 standard edited photos per hour.',
-      familyEditingHint: 'Includes 20+ standard edited photos per hour.',
+      familyRate: 'CAD $650 · Up to 2 hours',
+      familyEditingHint: "Includes 30 professionally retouched images of your choice, high-resolution digital files, and an online gallery. Additional professionally retouched images: CAD $20 each.",
+      familyDelivery: "30 professionally retouched images of your choice · High-resolution digital files · Online gallery · Additional retouched images CAD $20 each",
       portraitEditingHint: 'Photo delivery is based on the selected portrait package.',
       portraitDelivery: 'Based on the selected portrait package',
       weekendHint: 'Same rate on weekends. Hours after 18:00 include a 20% evening surcharge.',
@@ -1058,6 +1061,7 @@
       dateLine: (date, time) => `Preferred time: ${date || 'Not selected'}${time ? ' at ' + time : ''}`,
       noteLine: (note) => `Note to Weichen: ${note}`,
       shootLine: (h, cost) => `Shooting: ${h}h × $300 = $${cost}`,
+      familyShootLine: (cost) => `Family Photography: CAD $${cost} · Up to 2 hours`,
       editLine: (delivery) => `Photo delivery: ${delivery}`,
       lateLine: (lateHrs, cost) => `Evening surcharge (${lateHrs}h after 18:00, 20%): $${cost}`,
       travelLine: (mode, dur, cost) => `Travel (${mode} · ${dur}): $${cost}`,
@@ -1124,7 +1128,9 @@
       included: '已包含',
       photo: '张',
       editingHint: '每小时包含 40–50 张标准修片照片。',
-      familyEditingHint: '每小时包含 20+ 张标准修片照片。',
+      familyRate: 'CAD $650 · 最多 2 小时',
+      familyEditingHint: '包含由客户选择的 30 张专业精修照片、高清数码文件及在线相册。额外专业精修照片：CAD $20/张。',
+      familyDelivery: '客户自选 30 张专业精修照片 · 高清数码文件 · 在线相册 · 额外精修 CAD $20/张',
       portraitEditingHint: '照片交付数量以所选肖像摄影方案为准。',
       portraitDelivery: '以所选肖像摄影方案为准',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
@@ -1159,6 +1165,7 @@
       dateLine: (date, time) => `希望时间：${date || '未选择'}${time ? ' ' + time : ''}`,
       noteLine: (note) => `给 Weichen 的留言：${note}`,
       shootLine: (h, cost) => `拍摄费：${h}h × $300 = $${cost}`,
+      familyShootLine: (cost) => `家庭摄影：CAD $${cost} · 最多 2 小时`,
       editLine: (delivery) => `照片交付：${delivery}`,
       lateLine: (lateHrs, cost) => `晚间费用（18:00 后 ${lateHrs}h，加收 20%）：$${cost}`,
       travelLine: (mode, dur, cost) => `交通费（${mode} · ${dur}）：$${cost}`,
@@ -1184,125 +1191,24 @@
       submitSuccess: '报价已发送，并已同步抄送给 Weichen。',
       submitFail: '邮件服务尚未连接，报价内容已先复制。',
     }
-    ,
-    fil: {
-      title: 'Weichen Studio Quote',
-      subtitle: 'Photography Quote',
-      serviceCategory: 'Kategorya ng Serbisyo',
-      photographyType: 'Uri ng Photography',
-      catEvent: 'Event Photography',
-      catCommercial: 'Commercial Photography',
-      catFamily: 'Family Photography',
-      catPortrait: 'Portrait Photography',
-      catCelebration: 'Festivals & Fairs',
-      catCorporate: 'Annual Galas & Celebrations',
-      catPerformance: 'Performances & Concerts',
-      catPrivate: 'Private Parties',
-      shootType: 'Uri ng Pagkuha',
-      typePortrait: 'Portrait',
-      typeFamily: 'Pamilya',
-      typeGrad: 'Graduation',
-      typeEvent: 'Event',
-      yourName: 'Iyong Pangalan',
-      namePlaceholder: 'hal. Maria',
-      yourEmail: 'Iyong Email',
-      emailPlaceholder: 'hal. hello@email.com',
-      sessionDate: 'Gustong Petsa ng Pagkuha',
-      dateButtonPlaceholder: 'Select a date',
-      startTime: 'Oras ng Simula',
-      noteToWeichen: 'Note to Weichen (Optional)',
-      notePlaceholder: 'Optional: location, guest count, style, or special requests',
-      datePlaceholder: 'hal. Hunyo 15',
-      copyHint: '✅ Nakopya na! Ipadala na sa iyong litratista 📩',
-      shootingEditing: 'Rate at Kasama',
-      shootingDuration: 'Tagal ng Pagkuha',
-      hr: 'oras',
-      hrs: 'oras',
-      editing: 'Photo delivery',
-      included: 'Kasama',
-      photo: 'larawan',
-      editingHint: 'Kasama ang 40–50 standard edited photos kada oras.',
-      familyEditingHint: 'Kasama ang 20+ standard edited photos kada oras.',
-      portraitEditingHint: 'Ang bilang ng photos ay batay sa napiling portrait package.',
-      portraitDelivery: 'Batay sa napiling portrait package',
-      weekendHint: 'Pareho ang rate tuwing weekend. May 20% evening surcharge para sa events na magsisimula matapos ang 18:00.',
-      outOfCity: 'Labas ng Lungsod?',
-      no: 'Hindi',
-      yes: 'Oo',
-      transportation: 'Transportasyon',
-      selfDrive: 'Personal Transportation',
-      selfDriveDesc: 'Kasama ang pabalik-balik na biyahe',
-      charter: 'Charter na Sasakyan',
-      charterDesc: 'Kalahating presyo',
-      roundTrip: 'Oras ng pabalik-balik na biyahe',
-      total: 'Kabuuan',
-      estimatedTotal: 'TINATAYANG KABUUAN BAGO ANG BUWIS',
-      print: '🖨 I-print',
-      copyQuote: '📋 Kopyahin',
-      requestDiscount: 'Review & Send Quote',
-      footer: 'Tinatayang quote bago ang buwis. Ang huling presyo ay ayon sa napagkasunduan.',
-      websiteLink: 'Website',
-      facebookLink: 'Facebook',
-      instagramLink: 'Instagram',
-      eventType: 'Uri ng photography',
-      shooting: 'Pagkuha',
-      lateSurcharge: 'Evening surcharge after 18:00 (20%)',
-      travelSelf: 'Bayad sa biyahe (Personal transportation · {dur})',
-      travelCharter: 'Bayad sa biyahe (Charter · {dur})',
-      dur: ['1–2 oras', '3–4 oras', '5–6 oras'],
-      quoteHeader: '📷 Weichen Studio Quote',
-      clientLine: (name, email) => `Client: ${name}\nEmail: ${email}`,
-      eventLine: (eventType) => `Uri ng photography: ${eventType}`,
-      dateLine: (date, time) => `Preferred time: ${date || 'Hindi napili'}${time ? ' at ' + time : ''}`,
-      noteLine: (note) => `Note to Weichen: ${note}`,
-      shootLine: (h, cost) => `Shooting: ${h}h × $300 = $${cost}`,
-      editLine: (delivery) => `Photo delivery: ${delivery}`,
-      lateLine: (lateHrs, cost) => `Evening surcharge (${lateHrs}h after 18:00, 20%): $${cost}`,
-      travelLine: (mode, dur, cost) => `Bayad sa biyahe (${mode} · ${dur}): $${cost}`,
-      selfDriveLabel: 'Personal transportation',
-      charterLabel: 'Charter',
-      totalLine: (total) => `💰 Kabuuan bago ang buwis: $${total}`,
-      footerNote: 'Tinatayang quote bago ang buwis. Ang huling presyo ay ayon sa napagkasunduan.',
-      copied: '✓ Nakopya!',
-      copiedFriend: '✓ Nakopya na — ipadala na!',
-      errorHours: '⚠️ Ang tagal ng pagkuha ay dapat hindi bababa sa 1 oras.',
-      errorName: 'Pakilagay ang iyong pangalan.',
-      errorEmail: 'Pakilagay ang valid na email address.',
-      errorDate: 'Pumili ng petsa ngayon o sa hinaharap.',
-      errorTime: 'Please choose a future time for today.',
-      calendarNote: 'Past dates are unavailable.',
-      scheduleNotice: 'Preferred date and time are not guaranteed. Final availability will be confirmed with Weichen.',
-      welcomeMessage: 'Thank you for choosing Weichen as your photographer. Your quote will be sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
-      emailIntro: 'Thank you for choosing Weichen as your photographer. Your quote has been sent to you and copied to Weichen. She will reply within 24 hours after receiving the email.',
-      emailSectionClient: 'Client Information',
-      emailSectionQuote: 'Quote Details',
-      emailSectionTotal: 'Estimated Total Before Tax',
-      emailClosing: 'Maraming salamat sa iyong tiwala. Tinatayang quote ito bago ang buwis; ang final booking details ay kukumpirmahin kay Weichen.',
-      submitSuccess: 'Quote sent. A copy has also been sent to Weichen.',
-      submitFail: 'Email service is not connected yet. The quote has been copied instead.',
-    }
   };
 
   const serviceTypes = {
     events: {
       en: ['Concerts', 'Festivals', 'Community Events', 'Art Exhibitions'],
       zh: ['音乐会', '节庆活动', '社区活动', '艺术展览'],
-      fil: ['Concerts', 'Festivals', 'Community Events', 'Art Exhibitions'],
     },
     commercial: {
       en: ['Corporate Events', 'AGMs & Conferences', 'Opening Ceremonies', 'Company Celebrations'],
       zh: ['企业活动', '年度会员大会与会议', '开业典礼', '公司庆典'],
-      fil: ['Corporate Events', 'AGMs & Conferences', 'Opening Ceremonies', 'Company Celebrations'],
     },
     family: {
       en: ['Family Portraits', 'Birthday Parties', 'Anniversary Celebrations', 'Family Gatherings'],
       zh: ['家庭合照', '生日聚会', '纪念日庆祝', '家庭聚会'],
-      fil: ['Family Portraits', 'Birthday Parties', 'Anniversary Celebrations', 'Family Gatherings'],
     },
     portrait: {
       en: ['Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
       zh: ['职业头像', '环境肖像', '创意肖像', '个人品牌照'],
-      fil: ['Professional Headshots', 'Environmental Portraits', 'Creative Portraits', 'Personal Branding'],
     },
   };
 
@@ -1339,12 +1245,12 @@
   }
 
   function setLang(lang) {
+    if (!['en', 'zh'].includes(lang)) return;
     currentLang = lang;
     document.querySelectorAll('.lang-btn').forEach(b => {
       b.classList.toggle('active',
         (b.textContent === 'EN' && lang === 'en') ||
-        (b.textContent === '中文' && lang === 'zh') ||
-        (b.textContent === 'FIL' && lang === 'fil')
+        (b.textContent === '中文' && lang === 'zh')
       );
     });
     // Update all static i18n elements
@@ -1417,7 +1323,7 @@
       case 'commercial':
         return `${Math.round(hours * 40)} - ${Math.round(hours * 50)} ${L.photo}`;
       case 'family':
-        return `${Math.round(hours * 20)}+ ${L.photo}`;
+        return L.familyDelivery;
       case 'portrait':
         return L.portraitDelivery;
       default:
@@ -1437,9 +1343,14 @@
     const hoursMinus = document.getElementById('hoursMinus');
     const hoursPlus = document.getElementById('hoursPlus');
 
-    hoursInput.disabled = false;
-    hoursMinus.disabled = false;
-    hoursPlus.disabled = false;
+    const isFamily = getEventKey() === 'family';
+    if (isFamily) hoursInput.value = FAMILY_HOURS;
+    hoursInput.disabled = isFamily;
+    hoursMinus.disabled = isFamily;
+    hoursPlus.disabled = isFamily;
+    document.getElementById('rateLabel').textContent = isFamily
+      ? strings[currentLang].familyRate
+      : `$300 / ${strings[currentLang].hr}`;
   }
 
   function eveningHours(startTime, totalHours) {
@@ -1454,10 +1365,12 @@
 
   function quoteMath() {
     const hours = getHours();
-    const shoot = hours * SHOOT_RATE;
+    const isFamily = getEventKey() === 'family';
+    const shoot = isFamily ? FAMILY_RATE : hours * SHOOT_RATE;
     const startTime = document.getElementById('startTimeField').value;
     const lateHrs = eveningHours(startTime, hours);
-    const late = lateHrs * SHOOT_RATE * 0.2;
+    const lateRate = isFamily ? FAMILY_RATE / FAMILY_HOURS : SHOOT_RATE;
+    const late = lateHrs * lateRate * 0.2;
     const transport = transportCost();
     return {
       hours,
@@ -1466,7 +1379,7 @@
       lateHrs,
       transport,
       total: shoot + late + transport,
-      includedMin: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 40) : (getEventKey() === 'family' ? Math.round(hours * 20) : null),
+      includedMin: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 40) : (isFamily ? 30 : null),
       includedMax: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 50) : null,
     };
   }
@@ -1502,7 +1415,9 @@
 
     document.getElementById('bEventLabel').textContent = L.eventType;
     document.getElementById('bEvent').textContent = getEventLabel();
-    document.getElementById('bShootLabel').textContent = `${L.shooting} (${hours}h × $300/h)`;
+    document.getElementById('bShootLabel').textContent = getEventKey() === 'family'
+      ? L.familyRate
+      : `${L.shooting} (${hours}h × $300/h)`;
     document.getElementById('bEditLabel').textContent = `${L.editing} (${includedDelivery(hours)})`;
     document.getElementById('bShoot').textContent = fmt(shoot);
     document.getElementById('bIncluded').textContent = L.included;
@@ -1560,7 +1475,7 @@
       L.scheduleNotice,
     ];
     if (note) details.push(L.noteLine(note));
-    details.push('', L.shootLine(hours, fmt(shoot)), L.editLine(includedDelivery(hours)));
+    details.push('', getEventKey() === 'family' ? L.familyShootLine(fmt(shoot)) : L.shootLine(hours, fmt(shoot)), L.editLine(includedDelivery(hours)));
 
     if (late > 0) details.push(L.lateLine(fmt(lateHrs), fmt(late)));
     if (transportEnabled) details.push(L.travelLine(modeLabel, dur, fmt(transport)));
@@ -1636,18 +1551,6 @@
       sending: '发送中...',
       totalLabel: '税前总计',
       requestDiscount: '确认并发送报价',
-    },
-    fil: {
-      title: 'Suriin ang Iyong Quote',
-      subtitle: 'Pakikumpirma ang detalye bago ipadala ang quote.',
-      nameLabel: '👤',
-      emailLabel: '✉️',
-      dateLabel: '📅',
-      editBtn: '✏️ I-edit',
-      copyBtn: 'Send Quote',
-      sending: 'Sending...',
-      totalLabel: 'Kabuuan bago ang buwis',
-      requestDiscount: 'Review & Send Quote',
     },
   };
 
@@ -1911,7 +1814,8 @@
     let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.eventType}</span><span style="font-weight:600;text-align:right">${getEventLabel()}</span></div>`;
     if (note) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;margin-bottom:3px">${L.noteToWeichen}</div><div style="font-weight:600;line-height:1.5">${escapeHtml(note)}</div></div>`;
     rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;line-height:1.5">${escapeHtml(L.scheduleNotice)}</div></div>`;
-    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.shooting} (${hours}h × $300/h)</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
+    const shootingLabel = getEventKey() === 'family' ? L.familyRate : `${L.shooting} (${hours}h × $300/h)`;
+    rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${shootingLabel}</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${escapeHtml(includedDelivery(hours))})</span><span style="font-weight:600">${L.included}</span></div>`;
     if (late > 0) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.lateSurcharge} (${fmt(lateHrs)}h)</span><span style="font-weight:600">$${fmt(late)}</span></div>`;
     if (transportEnabled) rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${modeLabel} · ${dur}</span><span style="font-weight:600">$${fmt(transport)}</span></div>`;
