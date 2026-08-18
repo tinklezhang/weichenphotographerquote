@@ -1067,6 +1067,7 @@
       familyRate: 'CAD $650 · Up to 2 hours',
       familyEditingHint: "Includes 30 professionally retouched images of your choice, high-resolution digital files, and an online gallery. Additional professionally retouched images: CAD $20 each.",
       familyDelivery: "30 professionally retouched images of your choice · High-resolution digital files · Online gallery · Additional retouched images CAD $20 each",
+      familyHourlyEditingHint: 'Includes 20+ standard edited photos per hour.',
       portraitEditingHint: 'Photo delivery is based on the selected portrait package.',
       portraitDelivery: 'Based on the selected portrait package',
       weekendHint: 'Same rate on weekends. Hours after 18:00 include a 20% evening surcharge.',
@@ -1180,6 +1181,7 @@
       familyRate: 'CAD $650 · 最多 2 小时',
       familyEditingHint: '包含由客户选择的 30 张专业精修照片、高清数码文件及在线相册。额外专业精修照片：CAD $20/张。',
       familyDelivery: '客户自选 30 张专业精修照片 · 高清数码文件 · 在线相册 · 额外精修 CAD $20/张',
+      familyHourlyEditingHint: '每小时包含 20+ 张标准修片照片。',
       portraitEditingHint: '照片交付数量以所选肖像摄影方案为准。',
       portraitDelivery: '以所选肖像摄影方案为准',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
@@ -1358,6 +1360,10 @@
     return getEventKey() === 'portrait' && document.getElementById('photographyTypeField').value === 'back-to-the-moment';
   }
 
+  function isFamilyPortraitPackage() {
+    return getEventKey() === 'family' && document.getElementById('photographyTypeField').value === '0';
+  }
+
   function renderPhotographyTypes() {
     const field = document.getElementById('photographyTypeField');
     const previousIndex = field.selectedIndex;
@@ -1387,7 +1393,7 @@
       case 'commercial':
         return `${Math.round(hours * 40)} - ${Math.round(hours * 50)} ${L.photo}`;
       case 'family':
-        return L.familyDelivery;
+        return isFamilyPortraitPackage() ? L.familyDelivery : `${Math.round(hours * 20)}+ ${L.photo}`;
       case 'portrait':
         return L.portraitDelivery;
       default:
@@ -1398,7 +1404,7 @@
   function deliveryHint() {
     const L = strings[currentLang];
     if (isMomentPackage()) return L.momentTagline;
-    if (getEventKey() === 'family') return L.familyEditingHint;
+    if (getEventKey() === 'family') return isFamilyPortraitPackage() ? L.familyEditingHint : L.familyHourlyEditingHint;
     if (getEventKey() === 'portrait') return L.portraitEditingHint;
     return L.editingHint;
   }
@@ -1409,12 +1415,12 @@
     const hoursPlus = document.getElementById('hoursPlus');
 
     const fixedPackage = isMomentPackage();
-    const familySelected = getEventKey() === 'family';
-    if (familySelected) hoursInput.value = FAMILY_HOURS;
-    hoursInput.disabled = fixedPackage || familySelected;
-    hoursMinus.disabled = fixedPackage || familySelected;
-    hoursPlus.disabled = fixedPackage || familySelected;
-    document.getElementById('rateLabel').textContent = familySelected
+    const familyPackage = isFamilyPortraitPackage();
+    if (familyPackage) hoursInput.value = FAMILY_HOURS;
+    hoursInput.disabled = fixedPackage || familyPackage;
+    hoursMinus.disabled = fixedPackage || familyPackage;
+    hoursPlus.disabled = fixedPackage || familyPackage;
+    document.getElementById('rateLabel').textContent = familyPackage
       ? strings[currentLang].familyRate
       : `$300 / ${strings[currentLang].hr}`;
     if (fixedPackage && transportEnabled) {
@@ -1443,11 +1449,11 @@
     if (isMomentPackage()) {
       return { hours, shoot: MOMENT_PACKAGE_PRICE, late: 0, lateHrs: 0, transport: 0, total: MOMENT_PACKAGE_PRICE, includedMin: 2, includedMax: 2 };
     }
-    const isFamily = getEventKey() === 'family';
-    const shoot = isFamily ? FAMILY_RATE : hours * SHOOT_RATE;
+    const familyPackage = isFamilyPortraitPackage();
+    const shoot = familyPackage ? FAMILY_RATE : hours * SHOOT_RATE;
     const startTime = document.getElementById('startTimeField').value;
     const lateHrs = eveningHours(startTime, hours);
-    const lateRate = isFamily ? FAMILY_RATE / FAMILY_HOURS : SHOOT_RATE;
+    const lateRate = familyPackage ? FAMILY_RATE / FAMILY_HOURS : SHOOT_RATE;
     const late = lateHrs * lateRate * 0.2;
     const transport = transportCost();
     return {
@@ -1457,7 +1463,7 @@
       lateHrs,
       transport,
       total: shoot + late + transport,
-      includedMin: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 40) : (isFamily ? 30 : null),
+      includedMin: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 40) : (getEventKey() === 'family' ? (familyPackage ? 30 : Math.round(hours * 20)) : null),
       includedMax: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 50) : null,
     };
   }
@@ -1495,7 +1501,7 @@
     document.getElementById('bEvent').textContent = getEventLabel();
     document.getElementById('bShootLabel').textContent = isMomentPackage()
       ? L.momentPrice
-      : (getEventKey() === 'family' ? L.familyRate : `${L.shooting} (${hours}h × $300/h)`);
+      : (isFamilyPortraitPackage() ? L.familyRate : `${L.shooting} (${hours}h × $300/h)`);
     document.getElementById('bEditLabel').textContent = `${L.editing} (${includedDelivery(hours)})`;
     document.getElementById('bShoot').textContent = fmt(shoot);
     document.getElementById('bIncluded').textContent = L.included;
@@ -1553,7 +1559,7 @@
       L.scheduleNotice,
     ];
     if (note) details.push(L.noteLine(note));
-    details.push('', isMomentPackage() ? `${L.momentPrice}: $${fmt(shoot)}` : (getEventKey() === 'family' ? L.familyShootLine(fmt(shoot)) : L.shootLine(hours, fmt(shoot))), L.editLine(includedDelivery(hours)));
+    details.push('', isMomentPackage() ? `${L.momentPrice}: $${fmt(shoot)}` : (isFamilyPortraitPackage() ? L.familyShootLine(fmt(shoot)) : L.shootLine(hours, fmt(shoot))), L.editLine(includedDelivery(hours)));
     if (isMomentPackage()) details.push(L.momentPeople, L.momentLocation, L.momentTagline);
 
     if (late > 0) details.push(L.lateLine(fmt(lateHrs), fmt(late)));
@@ -1603,10 +1609,10 @@
       transportMode: currentMode,
       durationIndex: currentDuration,
       language: currentLang,
-      fixedPackage: isMomentPackage(),
+      fixedPackage: isMomentPackage() || isFamilyPortraitPackage(),
       packageLocation: isMomentPackage() ? 'Brandon' : '',
       packagePeople: isMomentPackage() ? '1–2' : '',
-      packagePrice: isMomentPackage() ? MOMENT_PACKAGE_PRICE : null,
+      packagePrice: isMomentPackage() ? MOMENT_PACKAGE_PRICE : (isFamilyPortraitPackage() ? FAMILY_RATE : null),
     };
   }
 
@@ -1897,7 +1903,7 @@
     let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.eventType}</span><span style="font-weight:600;text-align:right">${getEventLabel()}</span></div>`;
     if (note) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;margin-bottom:3px">${L.noteToWeichen}</div><div style="font-weight:600;line-height:1.5">${escapeHtml(note)}</div></div>`;
     rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;line-height:1.5">${escapeHtml(L.scheduleNotice)}</div></div>`;
-    const shootingLabel = isMomentPackage() ? L.momentPrice : (getEventKey() === 'family' ? L.familyRate : `${L.shooting} (${hours}h × $300/h)`);
+    const shootingLabel = isMomentPackage() ? L.momentPrice : (isFamilyPortraitPackage() ? L.familyRate : `${L.shooting} (${hours}h × $300/h)`);
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${shootingLabel}</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${escapeHtml(includedDelivery(hours))})</span><span style="font-weight:600">${L.included}</span></div>`;
     if (isMomentPackage()) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4;line-height:1.6"><div>${escapeHtml(L.momentPeople)}</div><div>${escapeHtml(L.momentLocation)}</div><div style="color:#7A6252;font-style:italic">${escapeHtml(L.momentTagline)}</div></div>`;
