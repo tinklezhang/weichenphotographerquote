@@ -342,24 +342,59 @@
     }
 
     .breakdown-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      display: grid;
+      grid-template-columns: minmax(130px, 1fr) minmax(0, 1.7fr);
+      align-items: start;
       font-size: 13px;
       color: #7A6252;
-      padding: 5px 0;
-      gap: 12px;
+      padding: 8px 0;
+      gap: 18px;
     }
 
     .breakdown-row span:first-child {
       min-width: 0;
-      overflow-wrap: anywhere;
+      overflow-wrap: break-word;
       line-height: 1.4;
     }
 
     .breakdown-row span:last-child {
-      flex-shrink: 0;
       text-align: right;
+      line-height: 1.4;
+      overflow-wrap: break-word;
+    }
+
+    .breakdown-row.amount-row {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .breakdown-row.delivery-row {
+      display: block;
+      padding-top: 10px;
+    }
+
+    .delivery-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 5px;
+    }
+
+    .delivery-heading span:last-child {
+      color: #6B4F35;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .delivery-list {
+      margin: 0;
+      padding-left: 18px;
+      color: #7A6252;
+      line-height: 1.55;
+    }
+
+    .delivery-list li + li {
+      margin-top: 2px;
     }
 
     .breakdown-row.subtotal {
@@ -719,13 +754,12 @@
       .breakdown { padding: 16px; }
       .breakdown-row {
         align-items: flex-start;
+        grid-template-columns: minmax(105px, 0.8fr) minmax(0, 1.2fr);
+        gap: 10px;
       }
-      .breakdown-row:not(.subtotal) {
-        flex-direction: column;
-        gap: 3px;
-      }
-      .breakdown-row span:last-child {
-        align-self: flex-end;
+      .breakdown-row.amount-row,
+      .breakdown-row.subtotal {
+        grid-template-columns: minmax(0, 1fr) auto;
       }
       .link-row {
         gap: 10px;
@@ -902,23 +936,26 @@
     </div>
 
     <div class="breakdown">
-      <div class="breakdown-row">
+      <div class="breakdown-row type-row">
         <span id="bEventLabel">Event type</span>
         <span id="bEvent">Festivals & Fairs</span>
       </div>
-      <div class="breakdown-row">
+      <div class="breakdown-row amount-row">
         <span id="bShootLabel">Shooting</span>
         <span>$<span id="bShoot">600</span></span>
       </div>
-      <div class="breakdown-row">
-        <span id="bEditLabel">Standard edited photos</span>
-        <span id="bIncluded">Included</span>
+      <div class="breakdown-row delivery-row">
+        <div class="delivery-heading">
+          <span id="bEditLabel">Photo delivery</span>
+          <span id="bIncluded">Included</span>
+        </div>
+        <ul class="delivery-list" id="bDeliveryList"></ul>
       </div>
-      <div class="breakdown-row" id="lateRow" style="display:none;">
+      <div class="breakdown-row amount-row" id="lateRow" style="display:none;">
         <span id="lateLabel">Evening surcharge</span>
         <span>$<span id="bLate">0</span></span>
       </div>
-      <div class="breakdown-row" id="transportRow" style="display:none;">
+      <div class="breakdown-row amount-row" id="transportRow" style="display:none;">
         <span id="transportLabel">Travel fee (Personal transportation · 3–4 hrs)</span>
         <span>$<span id="bTransport">0</span></span>
       </div>
@@ -1066,6 +1103,7 @@
       photo: 'photos',
       editingHint: 'Includes 40–50 standard edited photos per hour.',
       familyRate: 'CAD $650 · Up to 2 hours',
+      familySummaryLine: 'Outdoor Family Session · Up to 2 hours',
       familyEditingHint: "Includes 30 professionally retouched images of your choice, high-resolution digital files, and an online gallery. Additional professionally retouched images: CAD $20 each.",
       familyDelivery: "30 professionally retouched images of your choice · High-resolution digital files · Online gallery · Additional retouched images CAD $20 each",
       familyHourlyEditingHint: '1-hour minimum. Includes 20+ standard edited photos per hour.',
@@ -1074,6 +1112,7 @@
       portraitDuration: '45–60 min',
       portraitRate: 'CAD $450 / 45–60 min',
       portraitShootLine: 'Indoor Studio Portrait: CAD $450 / 45–60 min',
+      portraitSummaryLine: 'Indoor Studio Portrait · 45–60 min',
       weekendHint: 'Same rate on weekends. Hours after 18:00 include a 20% evening surcharge.',
       outOfCity: 'Out-of-City Shoot?',
       no: 'No',
@@ -1183,14 +1222,16 @@
       photo: '张',
       editingHint: '每小时包含 40–50 张标准修片照片。',
       familyRate: 'CAD $650 · 最多 2 小时',
+      familySummaryLine: '户外家庭拍摄 · 最多 2 小时',
       familyEditingHint: '包含由客户选择的 30 张专业精修照片、高清数码文件及在线相册。额外专业精修照片：CAD $20/张。',
       familyDelivery: '客户自选 30 张专业精修照片 · 高清数码文件 · 在线相册 · 额外精修 CAD $20/张',
       familyHourlyEditingHint: '1 小时起。每小时包含 20+ 张标准修片照片。',
-      portraitEditingHint: 'Includes｜包含：\n45–60 分钟工作室拍摄\n5 张专业精修数字照片\n现场可额外选购精修照片：$20 / 张\n赠送 1 张 8×10 专业打印照片\nHigh-resolution digital files\nOnline gallery',
-      portraitDelivery: '5 张专业精修数字照片；额外精修 $20 / 张；赠送 1 张 8×10 专业打印照片；High-resolution digital files；Online gallery',
+      portraitEditingHint: '包含：\n45–60 分钟室内影棚拍摄\n5 张专业精修数字照片\n可额外选购精修照片：$20 / 张\n赠送 1 张 8×10 专业打印照片\n高清数字文件\n在线相册',
+      portraitDelivery: '5 张专业精修数字照片；额外精修 $20 / 张；赠送 1 张 8×10 专业打印照片；高清数字文件；在线相册',
       portraitDuration: '45–60 分钟',
       portraitRate: 'CAD $450 / 45–60 分钟',
       portraitShootLine: '室内影棚肖像摄影：CAD $450 / 45–60 分钟',
+      portraitSummaryLine: '室内影棚肖像摄影 · 45–60 分钟',
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
       outOfCity: '是否出城拍摄？',
       no: '否',
@@ -1427,6 +1468,13 @@
     return L.editingHint;
   }
 
+  function deliveryItems(hours) {
+    const delivery = includedDelivery(hours);
+    if (isStudioPortraitPackage()) return delivery.split(/;\s*|；/);
+    if (isFamilyPortraitPackage()) return delivery.split(' · ');
+    return [delivery];
+  }
+
   function applyEventRules() {
     const hoursInput = document.getElementById('hours');
     const hoursMinus = document.getElementById('hoursMinus');
@@ -1529,8 +1577,11 @@
     document.getElementById('bEvent').textContent = getEventLabel();
     document.getElementById('bShootLabel').textContent = isMomentPackage()
       ? L.momentPrice
-      : (isStudioPortraitPackage() ? L.portraitShootLine : (isFamilyPortraitPackage() ? L.familyRate : `${L.shooting} (${hours}h × $300/h)`));
-    document.getElementById('bEditLabel').textContent = `${L.editing} (${includedDelivery(hours)})`;
+      : (isStudioPortraitPackage() ? L.portraitSummaryLine : (isFamilyPortraitPackage() ? L.familySummaryLine : `${L.shooting} (${hours}h × $300/h)`));
+    document.getElementById('bEditLabel').textContent = L.editing;
+    document.getElementById('bDeliveryList').innerHTML = deliveryItems(hours)
+      .map(item => `<li>${escapeHtml(item)}</li>`)
+      .join('');
     document.getElementById('bShoot').textContent = fmt(shoot);
     document.getElementById('bIncluded').textContent = L.included;
     document.querySelector('[data-i18n="editingHint"]').textContent = deliveryHint();
@@ -1931,7 +1982,9 @@
     let rows = `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.eventType}</span><span style="font-weight:600;text-align:right">${getEventLabel()}</span></div>`;
     if (note) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;margin-bottom:3px">${L.noteToWeichen}</div><div style="font-weight:600;line-height:1.5">${escapeHtml(note)}</div></div>`;
     rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4"><div style="color:#7A6252;line-height:1.5">${escapeHtml(L.scheduleNotice)}</div></div>`;
-    const shootingLabel = isMomentPackage() ? L.momentPrice : (isFamilyPortraitPackage() ? L.familyRate : `${L.shooting} (${hours}h × $300/h)`);
+    const shootingLabel = isMomentPackage()
+      ? L.momentPrice
+      : (isStudioPortraitPackage() ? L.portraitSummaryLine : (isFamilyPortraitPackage() ? L.familySummaryLine : `${L.shooting} (${hours}h × $300/h)`));
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${shootingLabel}</span><span style="font-weight:600">$${fmt(shoot)}</span></div>`;
     rows += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #F0EBE4"><span>${L.editing} (${escapeHtml(includedDelivery(hours))})</span><span style="font-weight:600">${L.included}</span></div>`;
     if (isMomentPackage()) rows += `<div style="display:block;padding:8px 0;border-bottom:1px solid #F0EBE4;line-height:1.6"><div>${escapeHtml(L.momentPeople)}</div><div>${escapeHtml(L.momentLocation)}</div><div style="color:#7A6252;font-style:italic">${escapeHtml(L.momentTagline)}</div></div>`;
