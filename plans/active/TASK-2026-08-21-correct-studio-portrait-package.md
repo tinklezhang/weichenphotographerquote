@@ -1,6 +1,6 @@
 # Correct Studio Portrait Package
 
-- State: review
+- State: merged
 - Scope: Correct only the existing Indoor Studio Portrait package to CAD $300 for 45 minutes while preserving its five portrait photos, one complimentary 8×10 print, and all unrelated services.
 
 ## Acceptance Criteria
@@ -33,3 +33,6 @@
 - Studio Portrait hides the hourly duration control and totals CAD $300 before any selected travel fee.
 - Regression checks passed: Back to the Moment CAD $288, Outdoor Family Session CAD $650, Family Gatherings CAD $300, two-hour Event CAD $600, and two-hour Commercial CAD $600.
 - Browser console reported no errors and `git diff --check` passed.
+- PR #10 was squash-merged to `main` as `76cfa6f`.
+- GitHub Pages deployment `32529493475` completed successfully.
+- The live English and Chinese quote page was verified at CAD $300 / 45 minutes with the approved five-photo and 8×10-print inclusions.
