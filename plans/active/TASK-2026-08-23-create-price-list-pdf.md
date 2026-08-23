@@ -1,6 +1,6 @@
 # Create Weichen Studio Price List PDF
 
-- State: review
+- State: merged
 - Scope: Create a polished bilingual client-facing PDF price list based on the current quote calculator services and approved prices.
 
 ## Acceptance Criteria
@@ -29,3 +29,4 @@
 - Poppler rendering and visual inspection confirmed no overlap, clipping, broken Chinese glyphs, or unreadable text.
 - Text validation confirmed the new Studio Portrait package is CAD $200 for 20-30 minutes with two retouched digital photos and no print.
 - The final artifact is `/Users/weichenzhang/output/pdf/Weichen_Studio_Price_List.pdf`.
+- The matching quote-calculator values were released through PR #12 and verified on the public site after successful Pages deployment run `32645860870`.

@@ -1,6 +1,6 @@
 # Reprice Studio Portrait Package
 
-- State: review
+- State: merged
 - Scope: Change only the existing Indoor Studio Portrait package to CAD $200 for 20–30 minutes with two professionally retouched digital photos and no print, while preserving all unrelated services.
 
 ## Acceptance Criteria
@@ -35,3 +35,6 @@
 - Browser console reported no errors.
 - Regression totals passed: Back to the Moment CAD $288, Outdoor Family Session CAD $650, Family Gatherings CAD $300, two-hour Event CAD $600, and two-hour Commercial CAD $600.
 - `git diff --check` passed.
+- Released through PR #12 and squash-merged as `e8c2e67fa8ef0cc35967dc8553335202056409fc`.
+- GitHub Pages deployment run `32645860870` completed successfully.
+- Live English and Chinese checks confirmed CAD $200, 20–30 minutes, two retouched digital photos, no print, and no browser console errors.
