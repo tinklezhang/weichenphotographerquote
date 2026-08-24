@@ -1046,6 +1046,7 @@
 <script>
   const SHOOT_RATE = 300;
   const STUDIO_PORTRAIT_RATE = 200;
+  const OUTDOOR_PORTRAIT_PHOTOS_PER_HOUR = 5;
   const FAMILY_RATE = 650;
   const FAMILY_HOURS = 2;
   const MOMENT_PACKAGE_PRICE = 288;
@@ -1126,8 +1127,10 @@
       portraitDelivery: '2 professionally retouched digital photos; additional retouched photos $20 each; high-resolution digital files; online gallery',
       portraitDuration: '20–30 min',
       portraitRate: 'CAD $200 / 20–30 min',
-      portraitShootLine: 'Indoor Studio Portrait: CAD $200 / 20–30 min',
-      portraitSummaryLine: 'Indoor Studio Portrait · 20–30 min',
+      portraitShootLine: 'Studio Portraits: CAD $200 / 20–30 min',
+      portraitSummaryLine: 'Studio Portraits · 20–30 min',
+      outdoorPortraitEditingHint: '1-hour minimum. Includes 5 professionally retouched digital photos per hour, high-resolution digital files, and an online gallery.',
+      outdoorPortraitDelivery: (hours) => `${Math.round(hours * OUTDOOR_PORTRAIT_PHOTOS_PER_HOUR)} professionally retouched digital photos; high-resolution digital files; online gallery`,
       weekendHint: 'Same rate on weekends. Hours after 18:00 include a 20% evening surcharge.',
       outOfCity: 'Out-of-City Shoot?',
       no: 'No',
@@ -1247,8 +1250,10 @@
       portraitDelivery: '2 张专业精修数字照片；额外精修 $20 / 张；高清数字文件；在线相册',
       portraitDuration: '20–30 分钟',
       portraitRate: 'CAD $200 / 20–30 分钟',
-      portraitShootLine: '室内影棚肖像摄影：CAD $200 / 20–30 分钟',
-      portraitSummaryLine: '室内影棚肖像摄影 · 20–30 分钟',
+      portraitShootLine: '影棚肖像：CAD $200 / 20–30 分钟',
+      portraitSummaryLine: '影棚肖像 · 20–30 分钟',
+      outdoorPortraitEditingHint: '1 小时起。每小时包含 5 张专业精修数字照片、高清数字文件和在线相册。',
+      outdoorPortraitDelivery: (hours) => `${Math.round(hours * OUTDOOR_PORTRAIT_PHOTOS_PER_HOUR)} 张专业精修数字照片；高清数字文件；在线相册`,
       weekendHint: '周末活动不加价。18:00 后开始的活动会加收 20% 晚间费用。',
       outOfCity: '是否出城拍摄？',
       no: '否',
@@ -1325,8 +1330,8 @@
       zh: ['户外家庭拍摄', '派对摄影'],
     },
     portrait: {
-      en: ['Back to the Moment', 'Professional Headshots', 'Personal Portraits', 'Couples Portraits'],
-      zh: ['回到那一刻', '职业形象照', '个人肖像', '情侣肖像'],
+      en: ['Back to the Moment', 'Studio Portraits', 'Outdoor Portraits', 'Couples Portraits'],
+      zh: ['回到那一刻', '影棚肖像', '户外肖像', '情侣肖像'],
     },
   };
 
@@ -1432,7 +1437,13 @@
   }
 
   function isStudioPortraitPackage() {
-    return getEventKey() === 'portrait' && !isMomentPackage();
+    if (getEventKey() !== 'portrait') return false;
+    const type = document.getElementById('photographyTypeField').value;
+    return type === 'studio-portraits' || type === 'couples-portraits';
+  }
+
+  function isOutdoorPortraitPackage() {
+    return getEventKey() === 'portrait' && document.getElementById('photographyTypeField').value === 'outdoor-portraits';
   }
 
   function renderPhotographyTypes() {
@@ -1442,7 +1453,8 @@
     field.innerHTML = '';
     options.forEach((label, index) => {
       const option = document.createElement('option');
-      option.value = getEventKey() === 'portrait' && index === 0 ? 'back-to-the-moment' : String(index);
+      const portraitValues = ['back-to-the-moment', 'studio-portraits', 'outdoor-portraits', 'couples-portraits'];
+      option.value = getEventKey() === 'portrait' ? portraitValues[index] : String(index);
       option.textContent = label;
       field.appendChild(option);
     });
@@ -1460,6 +1472,7 @@
     if (getEventKey() === 'family' && !isFamilyPortraitPackage()) {
       document.getElementById('hours').value = 1;
     }
+    if (isOutdoorPortraitPackage()) document.getElementById('hours').value = 1;
     recalc();
   }
 
@@ -1473,7 +1486,7 @@
       case 'family':
         return isFamilyPortraitPackage() ? L.familyDelivery : `${Math.round(hours * 20)}+ ${L.photo}`;
       case 'portrait':
-        return L.portraitDelivery;
+        return isOutdoorPortraitPackage() ? L.outdoorPortraitDelivery(hours) : L.portraitDelivery;
       default:
         return '';
     }
@@ -1483,13 +1496,14 @@
     const L = strings[currentLang];
     if (isMomentPackage()) return L.momentTagline;
     if (getEventKey() === 'family') return isFamilyPortraitPackage() ? L.familyEditingHint : L.familyHourlyEditingHint;
+    if (isOutdoorPortraitPackage()) return L.outdoorPortraitEditingHint;
     if (getEventKey() === 'portrait') return L.portraitEditingHint;
     return L.editingHint;
   }
 
   function deliveryItems(hours) {
     const delivery = includedDelivery(hours);
-    if (isStudioPortraitPackage()) return delivery.split(/;\s*|；/);
+    if (isStudioPortraitPackage() || isOutdoorPortraitPackage()) return delivery.split(/;\s*|；/);
     if (isFamilyPortraitPackage()) return delivery.split(' · ');
     return [delivery];
   }
@@ -1558,8 +1572,14 @@
       lateHrs,
       transport,
       total: shoot + late + transport,
-      includedMin: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 40) : (getEventKey() === 'family' ? (familyPackage ? 30 : Math.round(hours * 20)) : null),
-      includedMax: ['events', 'commercial'].includes(getEventKey()) ? Math.round(hours * 50) : null,
+      includedMin: ['events', 'commercial'].includes(getEventKey())
+        ? Math.round(hours * 40)
+        : (getEventKey() === 'family'
+          ? (familyPackage ? 30 : Math.round(hours * 20))
+          : (isOutdoorPortraitPackage() ? Math.round(hours * OUTDOOR_PORTRAIT_PHOTOS_PER_HOUR) : null)),
+      includedMax: ['events', 'commercial'].includes(getEventKey())
+        ? Math.round(hours * 50)
+        : (isOutdoorPortraitPackage() ? Math.round(hours * OUTDOOR_PORTRAIT_PHOTOS_PER_HOUR) : null),
     };
   }
 
@@ -1707,7 +1727,7 @@
       transportMode: currentMode,
       durationIndex: currentDuration,
       language: currentLang,
-      fixedPackage: isMomentPackage() || isFamilyPortraitPackage(),
+      fixedPackage: isMomentPackage() || isFamilyPortraitPackage() || isStudioPortraitPackage(),
       packageLocation: isMomentPackage() ? 'Brandon' : '',
       packagePeople: isMomentPackage() ? '1–2' : '',
       packagePrice: isMomentPackage() ? MOMENT_PACKAGE_PRICE : (isStudioPortraitPackage() ? STUDIO_PORTRAIT_RATE : (isFamilyPortraitPackage() ? FAMILY_RATE : null)),
