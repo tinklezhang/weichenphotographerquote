@@ -1330,8 +1330,8 @@
       zh: ['户外家庭拍摄', '派对摄影'],
     },
     portrait: {
-      en: ['Back to the Moment', 'Studio Portraits', 'Outdoor Portraits', 'Couples Portraits'],
-      zh: ['回到那一刻', '影棚肖像', '户外肖像', '情侣肖像'],
+      en: ['Back to the Moment', 'Studio Portraits', 'Outdoor Portraits'],
+      zh: ['回到那一刻', '影棚肖像', '户外肖像'],
     },
   };
 
@@ -1439,7 +1439,7 @@
   function isStudioPortraitPackage() {
     if (getEventKey() !== 'portrait') return false;
     const type = document.getElementById('photographyTypeField').value;
-    return type === 'studio-portraits' || type === 'couples-portraits';
+    return type === 'studio-portraits';
   }
 
   function isOutdoorPortraitPackage() {
@@ -1453,7 +1453,7 @@
     field.innerHTML = '';
     options.forEach((label, index) => {
       const option = document.createElement('option');
-      const portraitValues = ['back-to-the-moment', 'studio-portraits', 'outdoor-portraits', 'couples-portraits'];
+      const portraitValues = ['back-to-the-moment', 'studio-portraits', 'outdoor-portraits'];
       option.value = getEventKey() === 'portrait' ? portraitValues[index] : String(index);
       option.textContent = label;
       field.appendChild(option);
