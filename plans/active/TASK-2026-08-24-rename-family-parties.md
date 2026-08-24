@@ -1,6 +1,6 @@
 # Rename Family Gatherings to Parties
 
-- State: review
+- State: merged
 - Scope: Rename the Family Photography hourly service from `Family Gatherings` to `Parties`, with the Chinese label `派对摄影`, without changing pricing, delivery quantities, or calculations.
 
 ## Acceptance Criteria
@@ -32,3 +32,5 @@
 - Chinese browser check confirmed `家庭摄影 — 派对摄影`, CAD $300 for one hour, and 20+ photos.
 - Browser console reported no warnings or errors.
 - `git diff --check` passed.
+- Released through PR #14 and squash-merged as `8e65adf1710d7b6c638606f6762eeb6112efeb8f`.
+- GitHub Pages deployment run `32736560816` completed successfully.
