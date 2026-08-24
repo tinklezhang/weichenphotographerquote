@@ -1,6 +1,6 @@
 # Restructure Portrait Packages
 
-- State: review
+- State: merged
 - Scope: Consolidate Professional Headshots and Personal Portraits into Studio Portraits, add an Outdoor Portraits hourly service, and preserve the approved Back to the Moment and Couples Portraits options.
 
 ## Acceptance Criteria
@@ -37,3 +37,6 @@
 - Regression checks confirmed Couples Portraits remains CAD $200 and Back to the Moment remains CAD $288.
 - Browser console reported no warnings or errors.
 - `git diff --check` passed.
+- Released through PR #15 and squash-merged as `f5af8d3b7f5c3adc584e2972ce3ca7c2ce0ea558`.
+- GitHub Pages deployment run `32737011781` completed successfully.
+- Live-site checks confirmed the four portrait options, Studio CAD $200 package, Outdoor CAD $300 hourly package, correct delivery counts, and no browser console warnings or errors.
