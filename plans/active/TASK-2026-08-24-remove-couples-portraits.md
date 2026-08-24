@@ -1,6 +1,6 @@
 # Remove Couples Portraits
 
-- State: review
+- State: merged
 - Scope: Remove Couples Portraits from the Portrait Photography choices while preserving the three approved portrait offerings and all pricing logic.
 
 ## Acceptance Criteria
@@ -33,3 +33,6 @@
 - Regression checks confirmed Back to the Moment CAD $288, Studio CAD $200 with two photos, and Outdoor CAD $300 per hour with five photos.
 - Browser console reported no warnings or errors.
 - `git diff --check` passed.
+- Released through PR #17 and squash-merged as `2104d2c55a5f49445e55b44010ac96e27931809d`.
+- GitHub Pages deployment run `32737966367` completed successfully.
+- Cache-busted live-site checks confirmed the English and Chinese portrait menus contain only the three approved options, with no console warnings or errors.
