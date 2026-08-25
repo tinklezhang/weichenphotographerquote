@@ -1,6 +1,6 @@
 # Reprice Outdoor Family Session to CAD $600
 
-- State: review
+- State: merged
 - Scope: Change the existing Outdoor Family Session fixed package from CAD $650 to CAD $600 while retaining its maximum two-hour duration and current deliverables.
 
 ## Acceptance Criteria
@@ -34,3 +34,6 @@
 - Regression checks confirmed Parties CAD $300, Studio Portraits CAD $200, Outdoor Portraits CAD $300 per hour, and Back to the Moment CAD $288.
 - Browser console reported no warnings or errors.
 - `git diff --check` passed.
+- Released through PR #19 and squash-merged as `baf0f42e3871eb8e76c45d56d926f2a31b38229e`.
+- GitHub Pages deployment run `32880049615` completed successfully.
+- Cache-busted live English and Chinese checks confirmed CAD $600, the two-hour maximum, 30 included retouched photos, removal of the old $650 value, and no browser console warnings or errors.
