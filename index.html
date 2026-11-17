@@ -1045,7 +1045,7 @@
 
 <script>
   const SHOOT_RATE = 300;
-  const STUDIO_PORTRAIT_RATE = 200;
+  const STUDIO_PORTRAIT_RATE = 150;
   const OUTDOOR_PORTRAIT_PHOTOS_PER_HOUR = 5;
   const FAMILY_RATE = 600;
   const FAMILY_HOURS = 2;
@@ -1126,8 +1126,8 @@
       portraitEditingHint: 'Includes:\n20–30-minute studio session\n2 professionally retouched digital photos\nAdditional retouched photos: $20 each\nHigh-resolution digital files\nOnline gallery',
       portraitDelivery: '2 professionally retouched digital photos; additional retouched photos $20 each; high-resolution digital files; online gallery',
       portraitDuration: '20–30 min',
-      portraitRate: 'CAD $200 / 20–30 min',
-      portraitShootLine: 'Studio Portraits: CAD $200 / 20–30 min',
+      portraitRate: 'CAD $150 / 20–30 min',
+      portraitShootLine: 'Studio Portraits: CAD $150 / 20–30 min',
       portraitSummaryLine: 'Studio Portraits · 20–30 min',
       outdoorPortraitEditingHint: '1-hour minimum. Includes 5 professionally retouched digital photos per hour, high-resolution digital files, and an online gallery.',
       outdoorPortraitDelivery: (hours) => `${Math.round(hours * OUTDOOR_PORTRAIT_PHOTOS_PER_HOUR)} professionally retouched digital photos; high-resolution digital files; online gallery`,
@@ -1249,8 +1249,8 @@
       portraitEditingHint: '包含：\n20–30 分钟室内影棚拍摄\n2 张专业精修数字照片\n可额外选购精修照片：$20 / 张\n高清数字文件\n在线相册',
       portraitDelivery: '2 张专业精修数字照片；额外精修 $20 / 张；高清数字文件；在线相册',
       portraitDuration: '20–30 分钟',
-      portraitRate: 'CAD $200 / 20–30 分钟',
-      portraitShootLine: '影棚肖像：CAD $200 / 20–30 分钟',
+      portraitRate: 'CAD $150 / 20–30 分钟',
+      portraitShootLine: '影棚肖像：CAD $150 / 20–30 分钟',
       portraitSummaryLine: '影棚肖像 · 20–30 分钟',
       outdoorPortraitEditingHint: '1 小时起。每小时包含 5 张专业精修数字照片、高清数字文件和在线相册。',
       outdoorPortraitDelivery: (hours) => `${Math.round(hours * OUTDOOR_PORTRAIT_PHOTOS_PER_HOUR)} 张专业精修数字照片；高清数字文件；在线相册`,
@@ -1330,8 +1330,8 @@
       zh: ['户外家庭拍摄', '派对摄影'],
     },
     portrait: {
-      en: ['Back to the Moment', 'Studio Portraits', 'Outdoor Portraits'],
-      zh: ['回到那一刻', '影棚肖像', '户外肖像'],
+      en: ['Studio Portraits', 'Back to the Moment', 'Outdoor Portraits'],
+      zh: ['影棚肖像', '回到那一刻', '户外肖像'],
     },
   };
 
@@ -1453,7 +1453,7 @@
     field.innerHTML = '';
     options.forEach((label, index) => {
       const option = document.createElement('option');
-      const portraitValues = ['back-to-the-moment', 'studio-portraits', 'outdoor-portraits'];
+      const portraitValues = ['studio-portraits', 'back-to-the-moment', 'outdoor-portraits'];
       option.value = getEventKey() === 'portrait' ? portraitValues[index] : String(index);
       option.textContent = label;
       field.appendChild(option);
